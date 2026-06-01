@@ -13,8 +13,9 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) throw redirect({ to: "/login" });
+    if (typeof window === "undefined") return;
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) throw redirect({ to: "/login" });
   },
   component: AppLayout,
 });
@@ -100,6 +101,16 @@ function AppLayout() {
     await signOut();
     navigate({ to: "/login" });
   }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-sm text-muted-foreground">
+        Loading…
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen flex bg-background">
