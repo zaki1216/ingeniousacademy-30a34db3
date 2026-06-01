@@ -101,7 +101,18 @@ function RootShell({ children }: { children: ReactNode }) {
 function AuthReactiveInvalidator() {
   const router = useRouter();
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+    let lastUserId: string | null | undefined = undefined;
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      // Only react to actual sign-in / sign-out transitions to avoid
+      // invalidation loops from INITIAL_SESSION / TOKEN_REFRESHED events.
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT") return;
+      const nextUserId = session?.user?.id ?? null;
+      if (lastUserId === undefined) {
+        lastUserId = nextUserId;
+        return;
+      }
+      if (nextUserId === lastUserId) return;
+      lastUserId = nextUserId;
       router.invalidate();
     });
     return () => sub.subscription.unsubscribe();
