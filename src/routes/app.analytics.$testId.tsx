@@ -76,12 +76,6 @@ function TestDrilldown() {
     },
   });
 
-  if (role !== "admin") {
-    return <div className="p-4 text-sm text-muted-foreground">Admins only.</div>;
-  }
-
-  if (isLoading) return <div className="text-sm text-muted-foreground">Loading…</div>;
-
   const test = data?.test;
   const questions = data?.questions ?? [];
   const results = data?.results ?? [];
@@ -95,8 +89,6 @@ function TestDrilldown() {
     }
     return Array.from(map.values());
   }, [results]);
-
-  const nameOf = (id: string) => students.find((s) => s.id === id)?.name ?? "—";
 
   // Per-question accuracy across latest attempts
   const perQuestionStats = useMemo(() => {
@@ -114,6 +106,14 @@ function TestDrilldown() {
       return { q, correct, answered, pct };
     });
   }, [questions, latestByStudent]);
+
+  const nameOf = (id: string) => students.find((s) => s.id === id)?.name ?? "—";
+
+  if (role !== "admin") {
+    return <div className="p-4 text-sm text-muted-foreground">Admins only.</div>;
+  }
+
+  if (isLoading) return <div className="text-sm text-muted-foreground">Loading…</div>;
 
   return (
     <div className="space-y-4">
