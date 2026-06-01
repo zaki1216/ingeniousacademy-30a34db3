@@ -17,6 +17,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
+import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppContentRouteImport } from './routes/app.content'
 
 const SetupRoute = SetupRouteImport.update({
@@ -59,6 +60,11 @@ const AppStudentsRoute = AppStudentsRouteImport.update({
   path: '/students',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLecturesRoute = AppLecturesRouteImport.update({
+  id: '/lectures',
+  path: '/lectures',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppContentRoute = AppContentRouteImport.update({
   id: '/content',
   path: '/content',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
+  '/app/lectures': typeof AppLecturesRoute
   '/app/students': typeof AppStudentsRoute
   '/app/': typeof AppIndexRoute
 }
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
+  '/app/lectures': typeof AppLecturesRoute
   '/app/students': typeof AppStudentsRoute
   '/app': typeof AppIndexRoute
 }
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
+  '/app/lectures': typeof AppLecturesRoute
   '/app/students': typeof AppStudentsRoute
   '/app/': typeof AppIndexRoute
 }
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/setup'
     | '/app/content'
+    | '/app/lectures'
     | '/app/students'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/setup'
     | '/app/content'
+    | '/app/lectures'
     | '/app/students'
     | '/app'
   id:
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/setup'
     | '/app/content'
+    | '/app/lectures'
     | '/app/students'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -200,6 +212,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/lectures': {
+      id: '/app/lectures'
+      path: '/lectures'
+      fullPath: '/app/lectures'
+      preLoaderRoute: typeof AppLecturesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/content': {
       id: '/app/content'
       path: '/content'
@@ -212,12 +231,14 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppContentRoute: typeof AppContentRoute
+  AppLecturesRoute: typeof AppLecturesRoute
   AppStudentsRoute: typeof AppStudentsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppContentRoute: AppContentRoute,
+  AppLecturesRoute: AppLecturesRoute,
   AppStudentsRoute: AppStudentsRoute,
   AppIndexRoute: AppIndexRoute,
 }
