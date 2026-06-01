@@ -232,6 +232,24 @@ function AnalyticsPage() {
                   </ResponsiveContainer>
                 </div>
               )}
+              {perTest.length > 0 && (
+                <div className="mt-4 space-y-1">
+                  <div className="text-xs font-medium text-muted-foreground mb-1">Drill down by test</div>
+                  {perTest.map((t) => (
+                    <Link
+                      key={t.id}
+                      to="/app/analytics/$testId"
+                      params={{ testId: t.id }}
+                      className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
+                    >
+                      <span className="truncate">{t.test}</span>
+                      <span className="text-xs text-muted-foreground shrink-0 ml-2">
+                        {t.attempts} attempts · {t.avg}%
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
