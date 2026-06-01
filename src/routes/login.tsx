@@ -121,7 +121,9 @@ function LoginPage() {
               </Link>
             </div>
             <p className="text-xs text-center text-muted-foreground pt-2">
-              Accounts are created by your academy admin. No public signup.
+              {mode === "student"
+                ? "Accounts are created by your academy admin. No public signup."
+                : "Super Admin account created during first-time setup only."}
             </p>
           </form>
         </CardContent>
