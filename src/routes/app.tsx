@@ -29,6 +29,7 @@ const adminNav: NavItem[] = [
   { to: "/app/tests", label: "Tests", icon: ClipboardList },
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
   { to: "/app/results", label: "Results", icon: BarChart3 },
+  { to: "/app/analytics", label: "Analytics", icon: TrendingUp },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
