@@ -21,6 +21,7 @@ import { Route as AppStudentsRouteImport } from './routes/app.students'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppContentRouteImport } from './routes/app.content'
+import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 
 const SetupRoute = SetupRouteImport.update({
@@ -83,6 +84,11 @@ const AppContentRoute = AppContentRouteImport.update({
   path: '/content',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTestsTestIdRoute = AppTestsTestIdRouteImport.update({
   id: '/$testId',
   path: '/$testId',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/announcements'
     | '/app/content'
     | '/app/lectures'
     | '/app/notes'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/announcements'
     | '/app/content'
     | '/app/lectures'
     | '/app/notes'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/announcements'
     | '/app/content'
     | '/app/lectures'
     | '/app/notes'
@@ -276,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppContentRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/announcements': {
+      id: '/app/announcements'
+      path: '/announcements'
+      fullPath: '/app/announcements'
+      preLoaderRoute: typeof AppAnnouncementsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/tests/$testId': {
       id: '/app/tests/$testId'
       path: '/$testId'
@@ -299,6 +318,7 @@ const AppTestsRouteWithChildren = AppTestsRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppAnnouncementsRoute: typeof AppAnnouncementsRoute
   AppContentRoute: typeof AppContentRoute
   AppLecturesRoute: typeof AppLecturesRoute
   AppNotesRoute: typeof AppNotesRoute
@@ -308,6 +328,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAnnouncementsRoute: AppAnnouncementsRoute,
   AppContentRoute: AppContentRoute,
   AppLecturesRoute: AppLecturesRoute,
   AppNotesRoute: AppNotesRoute,
