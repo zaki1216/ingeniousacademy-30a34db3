@@ -19,7 +19,9 @@ export const Route = createFileRoute("/app")({
   component: AppLayout,
 });
 
-const adminNav = [
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean };
+
+const adminNav: NavItem[] = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/app/students", label: "Students", icon: Users },
   { to: "/app/content", label: "Content", icon: BookOpen },
@@ -28,16 +30,17 @@ const adminNav = [
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
   { to: "/app/results", label: "Results", icon: BarChart3 },
   { to: "/app/settings", label: "Settings", icon: Settings },
-] as const;
+];
 
-const studentNav = [
+const studentNav: NavItem[] = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/app/lectures", label: "Lectures", icon: BookOpen },
   { to: "/app/notes", label: "Notes", icon: FileText },
   { to: "/app/tests", label: "Tests", icon: ClipboardList },
   { to: "/app/results", label: "My Results", icon: BarChart3 },
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
-] as const;
+];
+
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { role } = useAuth();
