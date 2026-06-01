@@ -17,6 +17,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
+import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppContentRouteImport } from './routes/app.content'
 
@@ -60,6 +61,11 @@ const AppStudentsRoute = AppStudentsRouteImport.update({
   path: '/students',
   getParentRoute: () => AppRoute,
 } as any)
+const AppNotesRoute = AppNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLecturesRoute = AppLecturesRouteImport.update({
   id: '/lectures',
   path: '/lectures',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
+  '/app/notes': typeof AppNotesRoute
   '/app/students': typeof AppStudentsRoute
   '/app/': typeof AppIndexRoute
 }
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
+  '/app/notes': typeof AppNotesRoute
   '/app/students': typeof AppStudentsRoute
   '/app': typeof AppIndexRoute
 }
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
+  '/app/notes': typeof AppNotesRoute
   '/app/students': typeof AppStudentsRoute
   '/app/': typeof AppIndexRoute
 }
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/app/content'
     | '/app/lectures'
+    | '/app/notes'
     | '/app/students'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/app/content'
     | '/app/lectures'
+    | '/app/notes'
     | '/app/students'
     | '/app'
   id:
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/app/content'
     | '/app/lectures'
+    | '/app/notes'
     | '/app/students'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -212,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/notes': {
+      id: '/app/notes'
+      path: '/notes'
+      fullPath: '/app/notes'
+      preLoaderRoute: typeof AppNotesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/lectures': {
       id: '/app/lectures'
       path: '/lectures'
@@ -232,6 +251,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppContentRoute: typeof AppContentRoute
   AppLecturesRoute: typeof AppLecturesRoute
+  AppNotesRoute: typeof AppNotesRoute
   AppStudentsRoute: typeof AppStudentsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
@@ -239,6 +259,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppContentRoute: AppContentRoute,
   AppLecturesRoute: AppLecturesRoute,
+  AppNotesRoute: AppNotesRoute,
   AppStudentsRoute: AppStudentsRoute,
   AppIndexRoute: AppIndexRoute,
 }
