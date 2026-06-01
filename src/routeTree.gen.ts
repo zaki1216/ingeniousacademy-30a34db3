@@ -16,6 +16,15 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppTestsRouteImport } from './routes/app.tests'
+import { Route as AppStudentsRouteImport } from './routes/app.students'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppResultsRouteImport } from './routes/app.results'
+import { Route as AppNotesRouteImport } from './routes/app.notes'
+import { Route as AppLecturesRouteImport } from './routes/app.lectures'
+import { Route as AppContentRouteImport } from './routes/app.content'
+import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
+import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 
 const SetupRoute = SetupRouteImport.update({
   id: '/setup',
@@ -52,6 +61,51 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppTestsRoute = AppTestsRouteImport.update({
+  id: '/tests',
+  path: '/tests',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppStudentsRoute = AppStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppResultsRoute = AppResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotesRoute = AppNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLecturesRoute = AppLecturesRouteImport.update({
+  id: '/lectures',
+  path: '/lectures',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContentRoute = AppContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTestsTestIdRoute = AppTestsTestIdRouteImport.update({
+  id: '/$testId',
+  path: '/$testId',
+  getParentRoute: () => AppTestsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,7 +114,16 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/content': typeof AppContentRoute
+  '/app/lectures': typeof AppLecturesRoute
+  '/app/notes': typeof AppNotesRoute
+  '/app/results': typeof AppResultsRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/tests': typeof AppTestsRouteWithChildren
   '/app/': typeof AppIndexRoute
+  '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -68,7 +131,16 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/content': typeof AppContentRoute
+  '/app/lectures': typeof AppLecturesRoute
+  '/app/notes': typeof AppNotesRoute
+  '/app/results': typeof AppResultsRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/tests': typeof AppTestsRouteWithChildren
   '/app': typeof AppIndexRoute
+  '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,7 +150,16 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/content': typeof AppContentRoute
+  '/app/lectures': typeof AppLecturesRoute
+  '/app/notes': typeof AppNotesRoute
+  '/app/results': typeof AppResultsRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/tests': typeof AppTestsRouteWithChildren
   '/app/': typeof AppIndexRoute
+  '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -89,7 +170,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/announcements'
+    | '/app/content'
+    | '/app/lectures'
+    | '/app/notes'
+    | '/app/results'
+    | '/app/settings'
+    | '/app/students'
+    | '/app/tests'
     | '/app/'
+    | '/app/tests/$testId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -97,7 +187,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/announcements'
+    | '/app/content'
+    | '/app/lectures'
+    | '/app/notes'
+    | '/app/results'
+    | '/app/settings'
+    | '/app/students'
+    | '/app/tests'
     | '/app'
+    | '/app/tests/$testId'
   id:
     | '__root__'
     | '/'
@@ -106,7 +205,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/announcements'
+    | '/app/content'
+    | '/app/lectures'
+    | '/app/notes'
+    | '/app/results'
+    | '/app/settings'
+    | '/app/students'
+    | '/app/tests'
     | '/app/'
+    | '/app/tests/$testId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,14 +277,105 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/tests': {
+      id: '/app/tests'
+      path: '/tests'
+      fullPath: '/app/tests'
+      preLoaderRoute: typeof AppTestsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/students': {
+      id: '/app/students'
+      path: '/students'
+      fullPath: '/app/students'
+      preLoaderRoute: typeof AppStudentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/results': {
+      id: '/app/results'
+      path: '/results'
+      fullPath: '/app/results'
+      preLoaderRoute: typeof AppResultsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/notes': {
+      id: '/app/notes'
+      path: '/notes'
+      fullPath: '/app/notes'
+      preLoaderRoute: typeof AppNotesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/lectures': {
+      id: '/app/lectures'
+      path: '/lectures'
+      fullPath: '/app/lectures'
+      preLoaderRoute: typeof AppLecturesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/content': {
+      id: '/app/content'
+      path: '/content'
+      fullPath: '/app/content'
+      preLoaderRoute: typeof AppContentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/announcements': {
+      id: '/app/announcements'
+      path: '/announcements'
+      fullPath: '/app/announcements'
+      preLoaderRoute: typeof AppAnnouncementsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/tests/$testId': {
+      id: '/app/tests/$testId'
+      path: '/$testId'
+      fullPath: '/app/tests/$testId'
+      preLoaderRoute: typeof AppTestsTestIdRouteImport
+      parentRoute: typeof AppTestsRoute
+    }
   }
 }
 
+interface AppTestsRouteChildren {
+  AppTestsTestIdRoute: typeof AppTestsTestIdRoute
+}
+
+const AppTestsRouteChildren: AppTestsRouteChildren = {
+  AppTestsTestIdRoute: AppTestsTestIdRoute,
+}
+
+const AppTestsRouteWithChildren = AppTestsRoute._addFileChildren(
+  AppTestsRouteChildren,
+)
+
 interface AppRouteChildren {
+  AppAnnouncementsRoute: typeof AppAnnouncementsRoute
+  AppContentRoute: typeof AppContentRoute
+  AppLecturesRoute: typeof AppLecturesRoute
+  AppNotesRoute: typeof AppNotesRoute
+  AppResultsRoute: typeof AppResultsRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppStudentsRoute: typeof AppStudentsRoute
+  AppTestsRoute: typeof AppTestsRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAnnouncementsRoute: AppAnnouncementsRoute,
+  AppContentRoute: AppContentRoute,
+  AppLecturesRoute: AppLecturesRoute,
+  AppNotesRoute: AppNotesRoute,
+  AppResultsRoute: AppResultsRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppStudentsRoute: AppStudentsRoute,
+  AppTestsRoute: AppTestsRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
 }
 
