@@ -126,6 +126,7 @@ function AnalyticsPage() {
       map.set(r.test_id, cur);
     }
     return Array.from(map.entries()).map(([id, v]) => ({
+      id,
       test: titleOf(id),
       avg: +(v.sum / v.n).toFixed(1),
       attempts: v.n,
