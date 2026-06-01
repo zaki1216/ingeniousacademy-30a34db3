@@ -38,8 +38,9 @@ import { useAuth } from "@/lib/auth/AuthContext";
 
 export const Route = createFileRoute("/app/analytics")({
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) throw redirect({ to: "/login" });
+    if (typeof window === "undefined") return;
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) throw redirect({ to: "/login" });
   },
   component: AnalyticsPage,
 });
