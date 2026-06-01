@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, redirect, useNavigate, useRouterState } 
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
-  Megaphone, BarChart3, GraduationCap, LogOut, Menu, Settings,
+  Megaphone, BarChart3, GraduationCap, LogOut, Menu, Settings, TrendingUp,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
