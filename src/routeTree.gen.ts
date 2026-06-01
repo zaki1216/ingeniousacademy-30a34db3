@@ -26,6 +26,7 @@ import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
+import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 
 const SetupRoute = SetupRouteImport.update({
   id: '/setup',
@@ -112,6 +113,11 @@ const AppTestsTestIdRoute = AppTestsTestIdRouteImport.update({
   path: '/$testId',
   getParentRoute: () => AppTestsRoute,
 } as any)
+const AppAnalyticsTestIdRoute = AppAnalyticsTestIdRouteImport.update({
+  id: '/$testId',
+  path: '/$testId',
+  getParentRoute: () => AppAnalyticsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -120,7 +126,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
-  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/app/students': typeof AppStudentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/': typeof AppIndexRoute
+  '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
 export interface FileRoutesByTo {
@@ -138,7 +145,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
-  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/app/students': typeof AppStudentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app': typeof AppIndexRoute
+  '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
 export interface FileRoutesById {
@@ -158,7 +166,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
-  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/content': typeof AppContentRoute
   '/app/lectures': typeof AppLecturesRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/app/students': typeof AppStudentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/': typeof AppIndexRoute
+  '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
 export interface FileRouteTypes {
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/tests'
     | '/app/'
+    | '/app/analytics/$testId'
     | '/app/tests/$testId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/tests'
     | '/app'
+    | '/app/analytics/$testId'
     | '/app/tests/$testId'
   id:
     | '__root__'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/tests'
     | '/app/'
+    | '/app/analytics/$testId'
     | '/app/tests/$testId'
   fileRoutesById: FileRoutesById
 }
@@ -359,8 +371,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTestsTestIdRouteImport
       parentRoute: typeof AppTestsRoute
     }
+    '/app/analytics/$testId': {
+      id: '/app/analytics/$testId'
+      path: '/$testId'
+      fullPath: '/app/analytics/$testId'
+      preLoaderRoute: typeof AppAnalyticsTestIdRouteImport
+      parentRoute: typeof AppAnalyticsRoute
+    }
   }
 }
+
+interface AppAnalyticsRouteChildren {
+  AppAnalyticsTestIdRoute: typeof AppAnalyticsTestIdRoute
+}
+
+const AppAnalyticsRouteChildren: AppAnalyticsRouteChildren = {
+  AppAnalyticsTestIdRoute: AppAnalyticsTestIdRoute,
+}
+
+const AppAnalyticsRouteWithChildren = AppAnalyticsRoute._addFileChildren(
+  AppAnalyticsRouteChildren,
+)
 
 interface AppTestsRouteChildren {
   AppTestsTestIdRoute: typeof AppTestsTestIdRoute
@@ -375,7 +406,7 @@ const AppTestsRouteWithChildren = AppTestsRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
-  AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppAnalyticsRoute: typeof AppAnalyticsRouteWithChildren
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
   AppContentRoute: typeof AppContentRoute
   AppLecturesRoute: typeof AppLecturesRoute
@@ -388,7 +419,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAnalyticsRoute: AppAnalyticsRoute,
+  AppAnalyticsRoute: AppAnalyticsRouteWithChildren,
   AppAnnouncementsRoute: AppAnnouncementsRoute,
   AppContentRoute: AppContentRoute,
   AppLecturesRoute: AppLecturesRoute,

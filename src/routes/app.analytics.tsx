@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
@@ -126,6 +126,7 @@ function AnalyticsPage() {
       map.set(r.test_id, cur);
     }
     return Array.from(map.entries()).map(([id, v]) => ({
+      id,
       test: titleOf(id),
       avg: +(v.sum / v.n).toFixed(1),
       attempts: v.n,
@@ -229,6 +230,24 @@ function AnalyticsPage() {
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
+                </div>
+              )}
+              {perTest.length > 0 && (
+                <div className="mt-4 space-y-1">
+                  <div className="text-xs font-medium text-muted-foreground mb-1">Drill down by test</div>
+                  {perTest.map((t) => (
+                    <Link
+                      key={t.id}
+                      to="/app/analytics/$testId"
+                      params={{ testId: t.id }}
+                      className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
+                    >
+                      <span className="truncate">{t.test}</span>
+                      <span className="text-xs text-muted-foreground shrink-0 ml-2">
+                        {t.attempts} attempts · {t.avg}%
+                      </span>
+                    </Link>
+                  ))}
                 </div>
               )}
             </CardContent>
