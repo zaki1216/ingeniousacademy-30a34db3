@@ -22,6 +22,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<"student" | "admin">("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -64,6 +65,30 @@ function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
+            <div className="flex rounded-lg border border-border p-1">
+              <button
+                type="button"
+                onClick={() => setMode("student")}
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
+                  mode === "student"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Student
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("admin")}
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
+                  mode === "admin"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Admin
+              </button>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -96,7 +121,9 @@ function LoginPage() {
               </Link>
             </div>
             <p className="text-xs text-center text-muted-foreground pt-2">
-              Accounts are created by your academy admin. No public signup.
+              {mode === "student"
+                ? "Accounts are created by your academy admin. No public signup."
+                : "Super Admin account created during first-time setup only."}
             </p>
           </form>
         </CardContent>
