@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, ClipboardList, ListChecks } from "lucide-react";
+import { Plus, Pencil, Trash2, ClipboardList, ListChecks, Sword, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,33 @@ function TestsPage() {
     enabled: !!user?.id && role === "student",
     queryFn: async () => (await supabase.from("results").select("test_id, percentage").eq("student_id", user!.id)).data ?? [],
   });
+
+  const lecturesAll = useQuery({
+    queryKey: ["lectures-all-min"],
+    enabled: role === "student",
+    queryFn: async () => (await supabase.from("lectures").select("id, chapter_id")).data ?? [],
+  });
+  const myCompletions = useQuery({
+    queryKey: ["video-completions", user?.id],
+    enabled: !!user?.id && role === "student",
+    queryFn: async () => (await supabase.from("video_completions").select("lecture_id").eq("user_id", user!.id)).data ?? [],
+  });
+
+  const bossUnlocked = useMemo(() => {
+    const map = new Map<string, boolean>();
+    if (role !== "student") return map;
+    const doneSet = new Set((myCompletions.data ?? []).map((c) => c.lecture_id));
+    const byChapter = new Map<string, string[]>();
+    for (const l of lecturesAll.data ?? []) {
+      const arr = byChapter.get(l.chapter_id) ?? [];
+      arr.push(l.id);
+      byChapter.set(l.chapter_id, arr);
+    }
+    for (const [chId, lecIds] of byChapter) {
+      map.set(chId, lecIds.length > 0 && lecIds.every((id) => doneSet.has(id)));
+    }
+    return map;
+  }, [lecturesAll.data, myCompletions.data, role]);
 
   const visible = useMemo(() => {
     const list = tests.data ?? [];
