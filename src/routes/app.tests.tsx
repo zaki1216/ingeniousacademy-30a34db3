@@ -126,22 +126,36 @@ function TestsPage() {
       <div className="space-y-2">
         {visible.map((t) => {
           const r = myResult(t.id);
+          const isBoss = t.is_boss;
+          const unlocked = !isBoss || role === "admin" || (bossUnlocked.get(t.chapter_id) ?? false);
           return (
-            <Card key={t.id}>
+            <Card key={t.id} className={isBoss ? "border-amber-500/50 bg-gradient-to-br from-amber-500/5 to-transparent" : ""}>
               <CardContent className="p-3 flex items-center gap-3">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <ClipboardList className="h-6 w-6" />
+                <div className={`h-12 w-12 rounded-lg flex items-center justify-center shrink-0 ${isBoss ? "bg-amber-500/15 text-amber-600" : "bg-primary/10 text-primary"}`}>
+                  {isBoss ? <Sword className="h-6 w-6" /> : <ClipboardList className="h-6 w-6" />}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-medium truncate">{t.title}</div>
+                  <div className="font-medium truncate flex items-center gap-2">
+                    {t.title}
+                    {isBoss && <Badge className="bg-amber-500 text-white hover:bg-amber-500">BOSS</Badge>}
+                  </div>
                   <div className="text-xs text-muted-foreground truncate">{chLabel(t.chapter_id)} · {t.total_marks} marks</div>
                   {r && <Badge variant="secondary" className="mt-1">Last score: {r.percentage}%</Badge>}
+                  {isBoss && role === "student" && !unlocked && (
+                    <div className="text-[11px] text-amber-700 dark:text-amber-400 mt-1 flex items-center gap-1">
+                      <Lock className="h-3 w-3" /> Watch every lecture in this chapter to unlock
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-1 flex-wrap justify-end">
                   {role === "student" && (
-                    <Button asChild size="sm">
-                      <Link to="/app/tests/$testId" params={{ testId: t.id }}>{r ? "Retake" : "Start"}</Link>
-                    </Button>
+                    unlocked ? (
+                      <Button asChild size="sm" className={isBoss ? "bg-amber-500 hover:bg-amber-600 text-white" : ""}>
+                        <Link to="/app/tests/$testId" params={{ testId: t.id }}>{r ? "Retake" : isBoss ? "Battle" : "Start"}</Link>
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" disabled><Lock className="h-4 w-4 mr-1" />Locked</Button>
+                    )
                   )}
                   {role === "admin" && (
                     <>
