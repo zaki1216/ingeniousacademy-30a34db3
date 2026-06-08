@@ -33,12 +33,13 @@ export const getTalentTree = createServerFn({ method: "GET" })
     const total = totalTalentPoints(level);
     const available = Math.max(0, total - spent);
     const unlocked = await loadUnlocked(userId);
+    const effective = await loadEffectiveTalents();
     return {
       level,
       available,
       total,
       spent,
-      talents: TALENTS.map((t) => {
+      talents: effective.map((t) => {
         const tier = unlocked[t.code] ?? 0;
         return {
           code: t.code,
