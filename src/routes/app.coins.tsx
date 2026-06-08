@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Coins } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
 import { getCoinHistory } from "@/lib/api/gamification.functions";
 
 export const Route = createFileRoute("/app/coins")({ component: CoinsPage });
