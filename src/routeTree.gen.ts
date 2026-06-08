@@ -33,6 +33,7 @@ import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
+import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
 
 const SetupRoute = SetupRouteImport.update({
   id: '/setup',
@@ -154,6 +155,11 @@ const AppAnalyticsTestIdRoute = AppAnalyticsTestIdRouteImport.update({
   path: '/$testId',
   getParentRoute: () => AppAnalyticsRoute,
 } as any)
+const AppAdminTalentsRoute = AppAdminTalentsRouteImport.update({
+  id: '/admin/talents',
+  path: '/admin/talents',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app': typeof AppIndexRoute
+  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
@@ -230,6 +238,7 @@ export interface FileRoutesById {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
 }
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
+    | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
   fileRoutesByTo: FileRoutesByTo
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app'
+    | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
   id:
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
+    | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
   fileRoutesById: FileRoutesById
@@ -492,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsTestIdRouteImport
       parentRoute: typeof AppAnalyticsRoute
     }
+    '/app/admin/talents': {
+      id: '/app/admin/talents'
+      path: '/admin/talents'
+      fullPath: '/app/admin/talents'
+      preLoaderRoute: typeof AppAdminTalentsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -536,6 +555,7 @@ interface AppRouteChildren {
   AppTestsRoute: typeof AppTestsRouteWithChildren
   AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppAdminTalentsRoute: typeof AppAdminTalentsRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -555,6 +575,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppTestsRoute: AppTestsRouteWithChildren,
   AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppAdminTalentsRoute: AppAdminTalentsRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
