@@ -171,6 +171,8 @@ function StudentDashboard({ userId }: { userId?: string }) {
         />
       )}
 
+      <ActiveBonusesCard />
+
       <DailyChestCard />
 
       {/* Continue Adventure / World map preview */}
