@@ -22,9 +22,12 @@ import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppResultsRouteImport } from './routes/app.results'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLecturesRouteImport } from './routes/app.lectures'
+import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
 import { Route as AppContentRouteImport } from './routes/app.content'
+import { Route as AppCoinsRouteImport } from './routes/app.coins'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
+import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 
@@ -93,9 +96,19 @@ const AppLecturesRoute = AppLecturesRouteImport.update({
   path: '/lectures',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLeaderboardRoute = AppLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppContentRoute = AppContentRouteImport.update({
   id: '/content',
   path: '/content',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCoinsRoute = AppCoinsRouteImport.update({
+  id: '/coins',
+  path: '/coins',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
@@ -106,6 +119,11 @@ const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
 const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAchievementsRoute = AppAchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
   getParentRoute: () => AppRoute,
 } as any)
 const AppTestsTestIdRoute = AppTestsTestIdRouteImport.update({
@@ -126,9 +144,12 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/achievements': typeof AppAchievementsRoute
   '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/coins': typeof AppCoinsRoute
   '/app/content': typeof AppContentRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/results': typeof AppResultsRoute
@@ -145,9 +166,12 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/achievements': typeof AppAchievementsRoute
   '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/coins': typeof AppCoinsRoute
   '/app/content': typeof AppContentRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/results': typeof AppResultsRoute
@@ -166,9 +190,12 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
+  '/app/achievements': typeof AppAchievementsRoute
   '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/coins': typeof AppCoinsRoute
   '/app/content': typeof AppContentRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/results': typeof AppResultsRoute
@@ -188,9 +215,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/achievements'
     | '/app/analytics'
     | '/app/announcements'
+    | '/app/coins'
     | '/app/content'
+    | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
     | '/app/results'
@@ -207,9 +237,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/achievements'
     | '/app/analytics'
     | '/app/announcements'
+    | '/app/coins'
     | '/app/content'
+    | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
     | '/app/results'
@@ -227,9 +260,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/setup'
+    | '/app/achievements'
     | '/app/analytics'
     | '/app/announcements'
+    | '/app/coins'
     | '/app/content'
+    | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
     | '/app/results'
@@ -343,11 +379,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLecturesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/leaderboard': {
+      id: '/app/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/app/leaderboard'
+      preLoaderRoute: typeof AppLeaderboardRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/content': {
       id: '/app/content'
       path: '/content'
       fullPath: '/app/content'
       preLoaderRoute: typeof AppContentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/coins': {
+      id: '/app/coins'
+      path: '/coins'
+      fullPath: '/app/coins'
+      preLoaderRoute: typeof AppCoinsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/announcements': {
@@ -362,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/app/analytics'
       preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/achievements': {
+      id: '/app/achievements'
+      path: '/achievements'
+      fullPath: '/app/achievements'
+      preLoaderRoute: typeof AppAchievementsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/tests/$testId': {
@@ -406,9 +463,12 @@ const AppTestsRouteWithChildren = AppTestsRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppAchievementsRoute: typeof AppAchievementsRoute
   AppAnalyticsRoute: typeof AppAnalyticsRouteWithChildren
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
+  AppCoinsRoute: typeof AppCoinsRoute
   AppContentRoute: typeof AppContentRoute
+  AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppLecturesRoute: typeof AppLecturesRoute
   AppNotesRoute: typeof AppNotesRoute
   AppResultsRoute: typeof AppResultsRoute
@@ -419,9 +479,12 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAchievementsRoute: AppAchievementsRoute,
   AppAnalyticsRoute: AppAnalyticsRouteWithChildren,
   AppAnnouncementsRoute: AppAnnouncementsRoute,
+  AppCoinsRoute: AppCoinsRoute,
   AppContentRoute: AppContentRoute,
+  AppLeaderboardRoute: AppLeaderboardRoute,
   AppLecturesRoute: AppLecturesRoute,
   AppNotesRoute: AppNotesRoute,
   AppResultsRoute: AppResultsRoute,
