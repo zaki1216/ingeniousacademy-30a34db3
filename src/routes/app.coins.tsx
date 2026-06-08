@@ -40,6 +40,8 @@ function CoinsPage() {
         </CardContent>
       </Card>
 
+      <ActiveBonusesCard title="Reward Bonuses Active" />
+
       <div className="space-y-2">
         {q.data?.transactions.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">No coins earned yet.</p>
