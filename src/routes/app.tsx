@@ -49,6 +49,7 @@ const studentNav: NavItem[] = [
   { to: "/app/talents", label: "Talents", icon: Sparkles },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
   { to: "/app/coins", label: "Coins", icon: Coins },
+  { to: "/app/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/notes", label: "Scrolls", icon: FileText },
   { to: "/app/announcements", label: "News", icon: Megaphone },
 ];
