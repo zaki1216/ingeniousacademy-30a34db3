@@ -13,6 +13,7 @@ type RewardSummary = {
   newXp: number;
   newCoins: number;
   newAchievements: { code: string; name: string; description: string; icon: string }[];
+  weeklyStreakBonus: { xp: number; coins: number; streakDays: number } | null;
 };
 
 async function ensureStatsRow(userId: string) {
@@ -31,14 +32,22 @@ async function ensureStatsRow(userId: string) {
   return inserted;
 }
 
-async function applyStreak(userId: string): Promise<{ streak_days: number; max_streak: number }> {
+type WeeklyBonus = { xp: number; coins: number; streakDays: number };
+
+const WEEKLY_STREAK_BONUS_XP = 150;
+const WEEKLY_STREAK_BONUS_COINS = 75;
+
+async function applyStreak(
+  userId: string,
+): Promise<{ streak_days: number; max_streak: number; weeklyBonus: WeeklyBonus | null }> {
   const stats = await ensureStatsRow(userId);
   const today = new Date().toISOString().slice(0, 10);
   const last = stats.last_active_date;
   let streak = stats.streak_days ?? 0;
   if (last === today) {
-    return { streak_days: streak, max_streak: stats.max_streak ?? streak };
+    return { streak_days: streak, max_streak: stats.max_streak ?? streak, weeklyBonus: null };
   }
+  const prevStreak = streak;
   if (last) {
     const lastDate = new Date(last + "T00:00:00Z");
     const todayDate = new Date(today + "T00:00:00Z");
@@ -52,7 +61,29 @@ async function applyStreak(userId: string): Promise<{ streak_days: number; max_s
     .from("gamification_stats")
     .update({ streak_days: streak, max_streak, last_active_date: today, updated_at: new Date().toISOString() })
     .eq("user_id", userId);
-  return { streak_days: streak, max_streak };
+
+  const weeklyBonus =
+    streak > prevStreak && streak % 7 === 0
+      ? { xp: WEEKLY_STREAK_BONUS_XP, coins: WEEKLY_STREAK_BONUS_COINS, streakDays: streak }
+      : null;
+
+  return { streak_days: streak, max_streak, weeklyBonus };
+}
+
+async function awardWeeklyStreakBonus(userId: string, bonus: WeeklyBonus) {
+  const stats = await ensureStatsRow(userId);
+  const newXp = stats.xp + bonus.xp;
+  const newCoins = stats.coins + bonus.coins;
+  await supabaseAdmin
+    .from("gamification_stats")
+    .update({ xp: newXp, coins: newCoins, level: levelFromXp(newXp), updated_at: new Date().toISOString() })
+    .eq("user_id", userId);
+  await supabaseAdmin.from("xp_transactions").insert({
+    user_id: userId, amount: bonus.xp, reason: "weekly_streak", metadata: { streakDays: bonus.streakDays },
+  });
+  await supabaseAdmin.from("coin_transactions").insert({
+    user_id: userId, amount: bonus.coins, reason: "weekly_streak", metadata: { streakDays: bonus.streakDays },
+  });
 }
 
 async function evaluateAchievements(userId: string): Promise<RewardSummary["newAchievements"]> {
@@ -132,7 +163,10 @@ async function grantRewards(
   reason: string,
   metadata?: Record<string, string | number | boolean>,
 ): Promise<RewardSummary> {
-  await applyStreak(userId);
+  const streakResult = await applyStreak(userId);
+  if (streakResult.weeklyBonus) {
+    await awardWeeklyStreakBonus(userId, streakResult.weeklyBonus);
+  }
   const before = await ensureStatsRow(userId);
   const newXp = before.xp + xpAmount;
   const newCoins = before.coins + coinAmount;
@@ -154,15 +188,21 @@ async function grantRewards(
   // Re-read in case achievements added xp/coins
   const after = await ensureStatsRow(userId);
 
+  // Compute pre-grant level for accurate level-up detection (before streak bonus already applied to `before`)
+  const preGrantLevel = streakResult.weeklyBonus
+    ? levelFromXp(before.xp - streakResult.weeklyBonus.xp)
+    : before.level;
+
   return {
-    xpAwarded: xpAmount,
-    coinsAwarded: coinAmount,
-    leveledUp: after.level > before.level,
-    oldLevel: before.level,
+    xpAwarded: xpAmount + (streakResult.weeklyBonus?.xp ?? 0),
+    coinsAwarded: coinAmount + (streakResult.weeklyBonus?.coins ?? 0),
+    leveledUp: after.level > preGrantLevel,
+    oldLevel: preGrantLevel,
     newLevel: after.level,
     newXp: after.xp,
     newCoins: after.coins,
     newAchievements,
+    weeklyStreakBonus: streakResult.weeklyBonus,
   };
 }
 
@@ -185,6 +225,7 @@ export const completeVideo = createServerFn({ method: "POST" })
         xpAwarded: 0, coinsAwarded: 0, leveledUp: false,
         oldLevel: stats.level, newLevel: stats.level, newXp: stats.xp, newCoins: stats.coins,
         newAchievements: [],
+        weeklyStreakBonus: null,
       };
     }
     await supabaseAdmin.from("video_completions").insert({ user_id: userId, lecture_id: data.lectureId });
@@ -233,6 +274,7 @@ export const awardQuizRewards = createServerFn({ method: "POST" })
         xpAwarded: 0, coinsAwarded: 0, leveledUp: false,
         oldLevel: stats.level, newLevel: stats.level, newXp: stats.xp, newCoins: stats.coins,
         newAchievements: [],
+        weeklyStreakBonus: null,
       };
     }
     const { data: test } = await supabaseAdmin
@@ -244,14 +286,22 @@ export const awardQuizRewards = createServerFn({ method: "POST" })
     return { alreadyAwarded: false, ...result };
   });
 
-// ---------- Daily check-in (no rewards, just streak) ----------
+// ---------- Daily check-in (no rewards, just streak + weekly bonus) ----------
 export const dailyCheckIn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await ensureStatsRow(context.userId);
     const streak = await applyStreak(context.userId);
+    if (streak.weeklyBonus) {
+      await awardWeeklyStreakBonus(context.userId, streak.weeklyBonus);
+    }
     const newAchievements = await evaluateAchievements(context.userId);
-    return { ...streak, newAchievements };
+    return {
+      streak_days: streak.streak_days,
+      max_streak: streak.max_streak,
+      weeklyStreakBonus: streak.weeklyBonus,
+      newAchievements,
+    };
   });
 
 // ---------- Dashboard ----------
