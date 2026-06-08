@@ -23,7 +23,6 @@ import { Route as AppStudentsRouteImport } from './routes/app.students'
 import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppResultsRouteImport } from './routes/app.results'
-import { Route as AppPvpRouteImport } from './routes/app.pvp'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
@@ -32,6 +31,7 @@ import { Route as AppCoinsRouteImport } from './routes/app.coins'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
+import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
@@ -108,11 +108,6 @@ const AppResultsRoute = AppResultsRouteImport.update({
   path: '/results',
   getParentRoute: () => AppRoute,
 } as any)
-const AppPvpRoute = AppPvpRouteImport.update({
-  id: '/pvp',
-  path: '/pvp',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppNotesRoute = AppNotesRouteImport.update({
   id: '/notes',
   path: '/notes',
@@ -153,6 +148,11 @@ const AppAchievementsRoute = AppAchievementsRouteImport.update({
   path: '/achievements',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPvpIndexRoute = AppPvpIndexRouteImport.update({
+  id: '/pvp/',
+  path: '/pvp/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTestsTestIdRoute = AppTestsTestIdRouteImport.update({
   id: '/$testId',
   path: '/$testId',
@@ -169,14 +169,14 @@ const AppAdminTalentsRoute = AppAdminTalentsRouteImport.update({
   getParentRoute: () => AppRoute,
 } as any)
 const AppPvpDuelIdRoute = AppPvpDuelIdRouteImport.update({
-  id: '/duel/$id',
-  path: '/duel/$id',
-  getParentRoute: () => AppPvpRoute,
+  id: '/pvp/duel/$id',
+  path: '/pvp/duel/$id',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppPvpBrIdRoute = AppPvpBrIdRouteImport.update({
-  id: '/br/$id',
-  path: '/br/$id',
-  getParentRoute: () => AppPvpRoute,
+  id: '/pvp/br/$id',
+  path: '/pvp/br/$id',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -194,7 +194,6 @@ export interface FileRoutesByFullPath {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
-  '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
@@ -206,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
+  '/app/pvp/': typeof AppPvpIndexRoute
   '/app/pvp/br/$id': typeof AppPvpBrIdRoute
   '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
@@ -223,7 +223,6 @@ export interface FileRoutesByTo {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
-  '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
@@ -235,6 +234,7 @@ export interface FileRoutesByTo {
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
+  '/app/pvp': typeof AppPvpIndexRoute
   '/app/pvp/br/$id': typeof AppPvpBrIdRoute
   '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
@@ -254,7 +254,6 @@ export interface FileRoutesById {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
-  '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
@@ -266,6 +265,7 @@ export interface FileRoutesById {
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
+  '/app/pvp/': typeof AppPvpIndexRoute
   '/app/pvp/br/$id': typeof AppPvpBrIdRoute
   '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
@@ -286,7 +286,6 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
-    | '/app/pvp'
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
@@ -298,6 +297,7 @@ export interface FileRouteTypes {
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
+    | '/app/pvp/'
     | '/app/pvp/br/$id'
     | '/app/pvp/duel/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -315,7 +315,6 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
-    | '/app/pvp'
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
@@ -327,6 +326,7 @@ export interface FileRouteTypes {
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
+    | '/app/pvp'
     | '/app/pvp/br/$id'
     | '/app/pvp/duel/$id'
   id:
@@ -345,7 +345,6 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
-    | '/app/pvp'
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
@@ -357,6 +356,7 @@ export interface FileRouteTypes {
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
+    | '/app/pvp/'
     | '/app/pvp/br/$id'
     | '/app/pvp/duel/$id'
   fileRoutesById: FileRoutesById
@@ -470,13 +470,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppResultsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/pvp': {
-      id: '/app/pvp'
-      path: '/pvp'
-      fullPath: '/app/pvp'
-      preLoaderRoute: typeof AppPvpRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/notes': {
       id: '/app/notes'
       path: '/notes'
@@ -533,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAchievementsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/pvp/': {
+      id: '/app/pvp/'
+      path: '/pvp'
+      fullPath: '/app/pvp/'
+      preLoaderRoute: typeof AppPvpIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/tests/$testId': {
       id: '/app/tests/$testId'
       path: '/$testId'
@@ -556,17 +556,17 @@ declare module '@tanstack/react-router' {
     }
     '/app/pvp/duel/$id': {
       id: '/app/pvp/duel/$id'
-      path: '/duel/$id'
+      path: '/pvp/duel/$id'
       fullPath: '/app/pvp/duel/$id'
       preLoaderRoute: typeof AppPvpDuelIdRouteImport
-      parentRoute: typeof AppPvpRoute
+      parentRoute: typeof AppRoute
     }
     '/app/pvp/br/$id': {
       id: '/app/pvp/br/$id'
-      path: '/br/$id'
+      path: '/pvp/br/$id'
       fullPath: '/app/pvp/br/$id'
       preLoaderRoute: typeof AppPvpBrIdRouteImport
-      parentRoute: typeof AppPvpRoute
+      parentRoute: typeof AppRoute
     }
   }
 }
@@ -582,19 +582,6 @@ const AppAnalyticsRouteChildren: AppAnalyticsRouteChildren = {
 const AppAnalyticsRouteWithChildren = AppAnalyticsRoute._addFileChildren(
   AppAnalyticsRouteChildren,
 )
-
-interface AppPvpRouteChildren {
-  AppPvpBrIdRoute: typeof AppPvpBrIdRoute
-  AppPvpDuelIdRoute: typeof AppPvpDuelIdRoute
-}
-
-const AppPvpRouteChildren: AppPvpRouteChildren = {
-  AppPvpBrIdRoute: AppPvpBrIdRoute,
-  AppPvpDuelIdRoute: AppPvpDuelIdRoute,
-}
-
-const AppPvpRouteWithChildren =
-  AppPvpRoute._addFileChildren(AppPvpRouteChildren)
 
 interface AppTestsRouteChildren {
   AppTestsTestIdRoute: typeof AppTestsTestIdRoute
@@ -617,7 +604,6 @@ interface AppRouteChildren {
   AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppLecturesRoute: typeof AppLecturesRoute
   AppNotesRoute: typeof AppNotesRoute
-  AppPvpRoute: typeof AppPvpRouteWithChildren
   AppResultsRoute: typeof AppResultsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppShopRoute: typeof AppShopRoute
@@ -627,6 +613,9 @@ interface AppRouteChildren {
   AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
+  AppPvpIndexRoute: typeof AppPvpIndexRoute
+  AppPvpBrIdRoute: typeof AppPvpBrIdRoute
+  AppPvpDuelIdRoute: typeof AppPvpDuelIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -638,7 +627,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppLeaderboardRoute: AppLeaderboardRoute,
   AppLecturesRoute: AppLecturesRoute,
   AppNotesRoute: AppNotesRoute,
-  AppPvpRoute: AppPvpRouteWithChildren,
   AppResultsRoute: AppResultsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppShopRoute: AppShopRoute,
@@ -648,6 +636,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
+  AppPvpIndexRoute: AppPvpIndexRoute,
+  AppPvpBrIdRoute: AppPvpBrIdRoute,
+  AppPvpDuelIdRoute: AppPvpDuelIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -663,3 +654,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

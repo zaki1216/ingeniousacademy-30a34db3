@@ -20,7 +20,7 @@ import {
   listOpenBrRooms,
 } from "@/lib/api/pvp-br.functions";
 
-export const Route = createFileRoute("/app/pvp")({ component: PvpHub });
+export const Route = createFileRoute("/app/pvp/")({ component: PvpHub });
 
 function PvpHub() {
   return (
