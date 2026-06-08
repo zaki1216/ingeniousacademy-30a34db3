@@ -226,12 +226,13 @@ function TestDialog({
   const [title, setTitle] = useState(initial?.title ?? "");
   const [chapterId, setChapterId] = useState(initial?.chapter_id ?? "");
   const [totalMarks, setTotalMarks] = useState(initial?.total_marks ?? 0);
+  const [isBoss, setIsBoss] = useState<boolean>(initial?.is_boss ?? false);
   const [saving, setSaving] = useState(false);
 
   async function submit() {
     setSaving(true);
     try {
-      await onSubmit({ title, chapter_id: chapterId, total_marks: Number(totalMarks) });
+      await onSubmit({ title, chapter_id: chapterId, total_marks: Number(totalMarks), is_boss: isBoss });
       setOpen(false);
       toast.success("Saved");
     } catch (e: any) {
@@ -258,6 +259,10 @@ function TestDialog({
             </Select>
           </div>
           <div><Label>Total marks (auto-calculated from questions)</Label><Input type="number" value={totalMarks} onChange={(e) => setTotalMarks(Number(e.target.value))} /></div>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={isBoss} onChange={(e) => setIsBoss(e.target.checked)} />
+            Boss quiz (unlocks after all chapter lectures are watched; bonus +100 XP / +50 coins)
+          </label>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
