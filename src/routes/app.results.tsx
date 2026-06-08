@@ -4,6 +4,7 @@ import { BarChart3 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 
