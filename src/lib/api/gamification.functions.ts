@@ -31,14 +31,22 @@ async function ensureStatsRow(userId: string) {
   return inserted;
 }
 
-async function applyStreak(userId: string): Promise<{ streak_days: number; max_streak: number }> {
+type WeeklyBonus = { xp: number; coins: number; streakDays: number };
+
+const WEEKLY_STREAK_BONUS_XP = 150;
+const WEEKLY_STREAK_BONUS_COINS = 75;
+
+async function applyStreak(
+  userId: string,
+): Promise<{ streak_days: number; max_streak: number; weeklyBonus: WeeklyBonus | null }> {
   const stats = await ensureStatsRow(userId);
   const today = new Date().toISOString().slice(0, 10);
   const last = stats.last_active_date;
   let streak = stats.streak_days ?? 0;
   if (last === today) {
-    return { streak_days: streak, max_streak: stats.max_streak ?? streak };
+    return { streak_days: streak, max_streak: stats.max_streak ?? streak, weeklyBonus: null };
   }
+  const prevStreak = streak;
   if (last) {
     const lastDate = new Date(last + "T00:00:00Z");
     const todayDate = new Date(today + "T00:00:00Z");
@@ -52,7 +60,29 @@ async function applyStreak(userId: string): Promise<{ streak_days: number; max_s
     .from("gamification_stats")
     .update({ streak_days: streak, max_streak, last_active_date: today, updated_at: new Date().toISOString() })
     .eq("user_id", userId);
-  return { streak_days: streak, max_streak };
+
+  const weeklyBonus =
+    streak > prevStreak && streak % 7 === 0
+      ? { xp: WEEKLY_STREAK_BONUS_XP, coins: WEEKLY_STREAK_BONUS_COINS, streakDays: streak }
+      : null;
+
+  return { streak_days: streak, max_streak, weeklyBonus };
+}
+
+async function awardWeeklyStreakBonus(userId: string, bonus: WeeklyBonus) {
+  const stats = await ensureStatsRow(userId);
+  const newXp = stats.xp + bonus.xp;
+  const newCoins = stats.coins + bonus.coins;
+  await supabaseAdmin
+    .from("gamification_stats")
+    .update({ xp: newXp, coins: newCoins, level: levelFromXp(newXp), updated_at: new Date().toISOString() })
+    .eq("user_id", userId);
+  await supabaseAdmin.from("xp_transactions").insert({
+    user_id: userId, amount: bonus.xp, reason: "weekly_streak", metadata: { streakDays: bonus.streakDays },
+  });
+  await supabaseAdmin.from("coin_transactions").insert({
+    user_id: userId, amount: bonus.coins, reason: "weekly_streak", metadata: { streakDays: bonus.streakDays },
+  });
 }
 
 async function evaluateAchievements(userId: string): Promise<RewardSummary["newAchievements"]> {
