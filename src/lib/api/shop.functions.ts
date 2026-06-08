@@ -98,7 +98,8 @@ export const equipShopItem = createServerFn({ method: "POST" })
           : "equipped_title";
     await supabaseAdmin
       .from("profiles")
-      .update({ [col]: item.value })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .update({ [col]: item.value } as any)
       .eq("id", userId);
     return { ok: true };
   });
