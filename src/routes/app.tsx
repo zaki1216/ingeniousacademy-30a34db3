@@ -32,6 +32,7 @@ const adminNav: NavItem[] = [
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
   { to: "/app/results", label: "Results", icon: BarChart3 },
   { to: "/app/analytics", label: "Analytics", icon: TrendingUp },
+  { to: "/app/admin/talents", label: "Talents", icon: Sparkles },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
