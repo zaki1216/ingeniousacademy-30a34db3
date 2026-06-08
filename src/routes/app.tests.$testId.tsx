@@ -47,7 +47,7 @@ function TakeTestPage() {
       const r = await submitFn({ data: { testId, answers } });
       setResult({ score: r.score, total: r.total, percentage: r.percentage });
       try {
-        const rw = await awardFn({ data: { testId, percentage: r.percentage } });
+        const rw = await awardFn({ data: { testId } });
         if (!rw.alreadyAwarded) {
           setReward({ ...rw, title: "Quiz complete!" });
           qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
