@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { HeroCard } from "@/components/gamification/HeroCard";
 import { DailyChestCard } from "@/components/gamification/DailyChestCard";
+import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
 import { getGamificationDashboard, dailyCheckIn } from "@/lib/api/gamification.functions";
 import { getIcon } from "@/lib/gamification/icons";
 
