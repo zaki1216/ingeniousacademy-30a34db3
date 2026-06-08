@@ -16,8 +16,10 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppWorldsRouteImport } from './routes/app.worlds'
 import { Route as AppTestsRouteImport } from './routes/app.tests'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
+import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppResultsRouteImport } from './routes/app.results'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
@@ -66,6 +68,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppWorldsRoute = AppWorldsRouteImport.update({
+  id: '/worlds',
+  path: '/worlds',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTestsRoute = AppTestsRouteImport.update({
   id: '/tests',
   path: '/tests',
@@ -74,6 +81,11 @@ const AppTestsRoute = AppTestsRouteImport.update({
 const AppStudentsRoute = AppStudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppShopRoute = AppShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
@@ -154,8 +166,10 @@ export interface FileRoutesByFullPath {
   '/app/notes': typeof AppNotesRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/shop': typeof AppShopRoute
   '/app/students': typeof AppStudentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
+  '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -176,8 +190,10 @@ export interface FileRoutesByTo {
   '/app/notes': typeof AppNotesRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/shop': typeof AppShopRoute
   '/app/students': typeof AppStudentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
+  '/app/worlds': typeof AppWorldsRoute
   '/app': typeof AppIndexRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -200,8 +216,10 @@ export interface FileRoutesById {
   '/app/notes': typeof AppNotesRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/shop': typeof AppShopRoute
   '/app/students': typeof AppStudentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
+  '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -225,8 +243,10 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/results'
     | '/app/settings'
+    | '/app/shop'
     | '/app/students'
     | '/app/tests'
+    | '/app/worlds'
     | '/app/'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -247,8 +267,10 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/results'
     | '/app/settings'
+    | '/app/shop'
     | '/app/students'
     | '/app/tests'
+    | '/app/worlds'
     | '/app'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -270,8 +292,10 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/results'
     | '/app/settings'
+    | '/app/shop'
     | '/app/students'
     | '/app/tests'
+    | '/app/worlds'
     | '/app/'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -337,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/worlds': {
+      id: '/app/worlds'
+      path: '/worlds'
+      fullPath: '/app/worlds'
+      preLoaderRoute: typeof AppWorldsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/tests': {
       id: '/app/tests'
       path: '/tests'
@@ -349,6 +380,13 @@ declare module '@tanstack/react-router' {
       path: '/students'
       fullPath: '/app/students'
       preLoaderRoute: typeof AppStudentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/shop': {
+      id: '/app/shop'
+      path: '/shop'
+      fullPath: '/app/shop'
+      preLoaderRoute: typeof AppShopRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/settings': {
@@ -473,8 +511,10 @@ interface AppRouteChildren {
   AppNotesRoute: typeof AppNotesRoute
   AppResultsRoute: typeof AppResultsRoute
   AppSettingsRoute: typeof AppSettingsRoute
+  AppShopRoute: typeof AppShopRoute
   AppStudentsRoute: typeof AppStudentsRoute
   AppTestsRoute: typeof AppTestsRouteWithChildren
+  AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
@@ -489,8 +529,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppNotesRoute: AppNotesRoute,
   AppResultsRoute: AppResultsRoute,
   AppSettingsRoute: AppSettingsRoute,
+  AppShopRoute: AppShopRoute,
   AppStudentsRoute: AppStudentsRoute,
   AppTestsRoute: AppTestsRouteWithChildren,
+  AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
