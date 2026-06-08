@@ -24,6 +24,7 @@ function TakeTestPage() {
 
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [result, setResult] = useState<{ score: number; total: number; percentage: number } | null>(null);
+  const [reward, setReward] = useState<RewardPayload | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -45,8 +46,15 @@ function TakeTestPage() {
     try {
       const r = await submitFn({ data: { testId, answers } });
       setResult({ score: r.score, total: r.total, percentage: r.percentage });
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to submit");
+      try {
+        const rw = await awardFn({ data: { testId, percentage: r.percentage } });
+        if (!rw.alreadyAwarded) {
+          setReward({ ...rw, title: "Quiz complete!" });
+          qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
+        }
+      } catch { /* ignore reward errors */ }
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Failed to submit");
     } finally {
       setSubmitting(false);
     }
