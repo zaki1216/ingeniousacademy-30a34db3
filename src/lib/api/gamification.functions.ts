@@ -286,14 +286,22 @@ export const awardQuizRewards = createServerFn({ method: "POST" })
     return { alreadyAwarded: false, ...result };
   });
 
-// ---------- Daily check-in (no rewards, just streak) ----------
+// ---------- Daily check-in (no rewards, just streak + weekly bonus) ----------
 export const dailyCheckIn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await ensureStatsRow(context.userId);
     const streak = await applyStreak(context.userId);
+    if (streak.weeklyBonus) {
+      await awardWeeklyStreakBonus(context.userId, streak.weeklyBonus);
+    }
     const newAchievements = await evaluateAchievements(context.userId);
-    return { ...streak, newAchievements };
+    return {
+      streak_days: streak.streak_days,
+      max_streak: streak.max_streak,
+      weeklyStreakBonus: streak.weeklyBonus,
+      newAchievements,
+    };
   });
 
 // ---------- Dashboard ----------
