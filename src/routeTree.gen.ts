@@ -29,6 +29,7 @@ import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppCoinsRouteImport } from './routes/app.coins'
+import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
@@ -36,6 +37,7 @@ import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
+import { Route as AppAdminAttendanceRouteImport } from './routes/app.admin.attendance'
 import { Route as AppPvpDuelIdRouteImport } from './routes/app.pvp.duel.$id'
 import { Route as AppPvpBrIdRouteImport } from './routes/app.pvp.br.$id'
 
@@ -139,6 +141,11 @@ const AppCoinsRoute = AppCoinsRouteImport.update({
   path: '/coins',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAttendanceRoute = AppAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
   id: '/announcements',
   path: '/announcements',
@@ -174,6 +181,11 @@ const AppAdminTalentsRoute = AppAdminTalentsRouteImport.update({
   path: '/admin/talents',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminAttendanceRoute = AppAdminAttendanceRouteImport.update({
+  id: '/admin/attendance',
+  path: '/admin/attendance',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPvpDuelIdRoute = AppPvpDuelIdRouteImport.update({
   id: '/duel/$id',
   path: '/duel/$id',
@@ -195,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/app/achievements': typeof AppAchievementsRoute
   '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
   '/app/content': typeof AppContentRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
@@ -209,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -225,6 +239,7 @@ export interface FileRoutesByTo {
   '/app/achievements': typeof AppAchievementsRoute
   '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
   '/app/content': typeof AppContentRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
@@ -238,6 +253,7 @@ export interface FileRoutesByTo {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app': typeof AppIndexRoute
+  '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -256,6 +272,7 @@ export interface FileRoutesById {
   '/app/achievements': typeof AppAchievementsRoute
   '/app/analytics': typeof AppAnalyticsRouteWithChildren
   '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
   '/app/content': typeof AppContentRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
@@ -270,6 +287,7 @@ export interface FileRoutesById {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -289,6 +307,7 @@ export interface FileRouteTypes {
     | '/app/achievements'
     | '/app/analytics'
     | '/app/announcements'
+    | '/app/attendance'
     | '/app/coins'
     | '/app/content'
     | '/app/leaderboard'
@@ -303,6 +322,7 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
+    | '/app/admin/attendance'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -319,6 +339,7 @@ export interface FileRouteTypes {
     | '/app/achievements'
     | '/app/analytics'
     | '/app/announcements'
+    | '/app/attendance'
     | '/app/coins'
     | '/app/content'
     | '/app/leaderboard'
@@ -332,6 +353,7 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app'
+    | '/app/admin/attendance'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -349,6 +371,7 @@ export interface FileRouteTypes {
     | '/app/achievements'
     | '/app/analytics'
     | '/app/announcements'
+    | '/app/attendance'
     | '/app/coins'
     | '/app/content'
     | '/app/leaderboard'
@@ -363,6 +386,7 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
+    | '/app/admin/attendance'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -522,6 +546,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCoinsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/attendance': {
+      id: '/app/attendance'
+      path: '/attendance'
+      fullPath: '/app/attendance'
+      preLoaderRoute: typeof AppAttendanceRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/announcements': {
       id: '/app/announcements'
       path: '/announcements'
@@ -569,6 +600,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/talents'
       fullPath: '/app/admin/talents'
       preLoaderRoute: typeof AppAdminTalentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/attendance': {
+      id: '/app/admin/attendance'
+      path: '/admin/attendance'
+      fullPath: '/app/admin/attendance'
+      preLoaderRoute: typeof AppAdminAttendanceRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/pvp/duel/$id': {
@@ -631,6 +669,7 @@ interface AppRouteChildren {
   AppAchievementsRoute: typeof AppAchievementsRoute
   AppAnalyticsRoute: typeof AppAnalyticsRouteWithChildren
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
+  AppAttendanceRoute: typeof AppAttendanceRoute
   AppCoinsRoute: typeof AppCoinsRoute
   AppContentRoute: typeof AppContentRoute
   AppLeaderboardRoute: typeof AppLeaderboardRoute
@@ -645,6 +684,7 @@ interface AppRouteChildren {
   AppTestsRoute: typeof AppTestsRouteWithChildren
   AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
 }
 
@@ -652,6 +692,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAchievementsRoute: AppAchievementsRoute,
   AppAnalyticsRoute: AppAnalyticsRouteWithChildren,
   AppAnnouncementsRoute: AppAnnouncementsRoute,
+  AppAttendanceRoute: AppAttendanceRoute,
   AppCoinsRoute: AppCoinsRoute,
   AppContentRoute: AppContentRoute,
   AppLeaderboardRoute: AppLeaderboardRoute,
@@ -666,6 +707,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppTestsRoute: AppTestsRouteWithChildren,
   AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppAdminAttendanceRoute: AppAdminAttendanceRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
 }
 
