@@ -1,6 +1,6 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { GraduationCap } from "lucide-react";
+import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ function LoginPage() {
       <Card className="w-full max-w-md shadow-[var(--shadow-card)]">
         <CardHeader className="text-center">
           <div className="mx-auto h-16 w-16 rounded-2xl bg-white flex items-center justify-center overflow-hidden mb-2 shadow-[var(--shadow-card)]">
-            <img src={(await import("@/assets/ingenious-logo.jpg.asset.json")).default?.url ?? ""} alt="Ingenious Academy" className="h-14 w-14 object-contain" />
+            <img src={logoAsset.url} alt="Ingenious Academy" className="h-14 w-14 object-contain" />
           </div>
           <CardTitle className="text-2xl">Ingenious Academy</CardTitle>
           <CardDescription>Learn Smart. Understand Better. Score Higher.</CardDescription>
