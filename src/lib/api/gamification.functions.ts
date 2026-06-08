@@ -276,7 +276,6 @@ export const awardQuizRewards = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({
     testId: z.string().uuid(),
-    percentage: z.number().min(0).max(100),
   }).parse(d))
   .handler(async ({ data, context }) => {
     const userId = context.userId;
@@ -298,13 +297,26 @@ export const awardQuizRewards = createServerFn({ method: "POST" })
         weeklyStreakBonus: null,
       };
     }
+    // Server-side lookup of the actual graded result — never trust a client-supplied percentage.
+    const { data: result } = await supabaseAdmin
+      .from("results")
+      .select("percentage")
+      .eq("student_id", userId)
+      .eq("test_id", data.testId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!result) {
+      throw new Error("No submitted result found for this test");
+    }
+    const percentage = Number(result.percentage);
     const { data: test } = await supabaseAdmin
       .from("tests").select("is_boss").eq("id", data.testId).single();
     let xp = 30, coins = 10;
-    if (data.percentage >= 80) { xp += 20; coins += 10; }
+    if (percentage >= 80) { xp += 20; coins += 10; }
     if (test?.is_boss) { xp += 100; coins += 50; }
-    const result = await grantRewards(userId, xp, coins, "quiz_complete", { testId: data.testId, percentage: data.percentage });
-    return { alreadyAwarded: false, ...result };
+    const rewardResult = await grantRewards(userId, xp, coins, "quiz_complete", { testId: data.testId, percentage });
+    return { alreadyAwarded: false, ...rewardResult };
   });
 
 // ---------- Daily check-in (no rewards, just streak + weekly bonus) ----------
