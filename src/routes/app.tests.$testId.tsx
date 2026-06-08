@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -9,14 +9,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { getTestForStudent, submitTest } from "@/lib/api/academy.functions";
+import { awardQuizRewards } from "@/lib/api/gamification.functions";
+import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 
 export const Route = createFileRoute("/app/tests/$testId")({ component: TakeTestPage });
 
 function TakeTestPage() {
   const { testId } = Route.useParams();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const getFn = useServerFn(getTestForStudent);
   const submitFn = useServerFn(submitTest);
+  const awardFn = useServerFn(awardQuizRewards);
 
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [result, setResult] = useState<{ score: number; total: number; percentage: number } | null>(null);
