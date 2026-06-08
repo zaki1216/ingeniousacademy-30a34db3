@@ -42,6 +42,7 @@ const studentNav: NavItem[] = [
   { to: "/app/worlds", label: "Worlds", icon: Map },
   { to: "/app/lectures", label: "Missions", icon: BookOpen },
   { to: "/app/tests", label: "Battles", icon: Swords },
+  { to: "/app/pvp", label: "Arena", icon: Swords },
   { to: "/app/leaderboard", label: "Rank", icon: Trophy },
   { to: "/app/achievements", label: "Badges", icon: Award },
   { to: "/app/talents", label: "Talents", icon: Sparkles },
