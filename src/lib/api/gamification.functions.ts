@@ -130,7 +130,7 @@ async function grantRewards(
   xpAmount: number,
   coinAmount: number,
   reason: string,
-  metadata?: Record<string, unknown>,
+  metadata?: Record<string, string | number | boolean>,
 ): Promise<RewardSummary> {
   await applyStreak(userId);
   const before = await ensureStatsRow(userId);
