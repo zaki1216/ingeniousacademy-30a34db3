@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, GraduationCap, LogOut, Menu, Settings, TrendingUp,
-  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles,
+  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: 
 const adminNav: NavItem[] = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/app/students", label: "Students", icon: Users },
+  { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/content", label: "Content", icon: BookOpen },
   { to: "/app/notes", label: "Notes", icon: FileText },
   { to: "/app/tests", label: "Tests", icon: ClipboardList },
@@ -48,6 +49,7 @@ const studentNav: NavItem[] = [
   { to: "/app/talents", label: "Talents", icon: Sparkles },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
   { to: "/app/coins", label: "Coins", icon: Coins },
+  { to: "/app/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/notes", label: "Scrolls", icon: FileText },
   { to: "/app/announcements", label: "News", icon: Megaphone },
 ];

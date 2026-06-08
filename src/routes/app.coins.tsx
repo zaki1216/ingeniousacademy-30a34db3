@@ -15,6 +15,8 @@ const REASON_LABELS: Record<string, string> = {
   achievement: "Achievement unlocked",
   boss_quiz: "Boss quiz defeated",
   weekly_streak: "7-day streak bonus",
+  attendance_present: "Attendance: Present",
+  attendance_absent: "Attendance: Absent",
 };
 
 function CoinsPage() {
