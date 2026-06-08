@@ -304,6 +304,213 @@ export type Database = {
           },
         ]
       }
+      pvp_br_players: {
+        Row: {
+          eliminated: boolean
+          eliminated_at_index: number | null
+          finish_place: number | null
+          id: string
+          joined_at: string
+          room_id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          eliminated?: boolean
+          eliminated_at_index?: number | null
+          finish_place?: number | null
+          id?: string
+          joined_at?: string
+          room_id: string
+          score?: number
+          user_id: string
+        }
+        Update: {
+          eliminated?: boolean
+          eliminated_at_index?: number | null
+          finish_place?: number | null
+          id?: string
+          joined_at?: string
+          room_id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pvp_br_players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "pvp_br_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pvp_br_questions: {
+        Row: {
+          id: string
+          order_index: number
+          question_id: string
+          room_id: string
+        }
+        Insert: {
+          id?: string
+          order_index: number
+          question_id: string
+          room_id: string
+        }
+        Update: {
+          id?: string
+          order_index?: number
+          question_id?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pvp_br_questions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "pvp_br_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pvp_br_rooms: {
+        Row: {
+          code: string
+          created_at: string
+          current_question_index: number
+          finished_at: string | null
+          host_id: string
+          id: string
+          max_players: number
+          prize_coins: number
+          prize_xp: number
+          started_at: string | null
+          status: string
+          updated_at: string
+          winner_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          current_question_index?: number
+          finished_at?: string | null
+          host_id: string
+          id?: string
+          max_players?: number
+          prize_coins?: number
+          prize_xp?: number
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          winner_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          current_question_index?: number
+          finished_at?: string | null
+          host_id?: string
+          id?: string
+          max_players?: number
+          prize_coins?: number
+          prize_xp?: number
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
+      pvp_duel_answers: {
+        Row: {
+          created_at: string
+          duel_id: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          selected: string | null
+          time_ms: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duel_id: string
+          id?: string
+          is_correct?: boolean
+          question_id: string
+          selected?: string | null
+          time_ms?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duel_id?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          selected?: string | null
+          time_ms?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pvp_duel_answers_duel_id_fkey"
+            columns: ["duel_id"]
+            isOneToOne: false
+            referencedRelation: "pvp_duels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pvp_duels: {
+        Row: {
+          challenger_id: string
+          challenger_score: number
+          created_at: string
+          expires_at: string
+          id: string
+          opponent_id: string
+          opponent_score: number
+          prize_coins: number
+          prize_xp: number
+          question_ids: string[]
+          status: string
+          updated_at: string
+          winner_id: string | null
+        }
+        Insert: {
+          challenger_id: string
+          challenger_score?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          opponent_id: string
+          opponent_score?: number
+          prize_coins?: number
+          prize_xp?: number
+          question_ids: string[]
+          status?: string
+          updated_at?: string
+          winner_id?: string | null
+        }
+        Update: {
+          challenger_id?: string
+          challenger_score?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          opponent_id?: string
+          opponent_score?: number
+          prize_coins?: number
+          prize_xp?: number
+          question_ids?: string[]
+          status?: string
+          updated_at?: string
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       questions: {
         Row: {
           correct_option: number
