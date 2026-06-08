@@ -61,7 +61,9 @@ export const createBrRoom = createServerFn({ method: "POST" })
   });
 
 // ========== LIST OPEN ROOMS ==========
-export const listOpenBrRooms = createServerFn({ method: "GET" }).handler(async () => {
+export const listOpenBrRooms = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
   const { data } = await supabaseAdmin
     .from("pvp_br_rooms")
     .select("id, code, status, prize_coins, prize_xp, created_at")
