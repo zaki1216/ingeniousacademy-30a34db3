@@ -14,10 +14,6 @@ async function loadUnlocked(userId: string): Promise<Record<string, number>> {
   return map;
 }
 
-export async function loadUnlockedTalents(userId: string) {
-  return loadUnlocked(userId);
-}
-
 export const getTalentTree = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {

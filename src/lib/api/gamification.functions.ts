@@ -4,7 +4,16 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { levelFromXp } from "@/lib/gamification/leveling";
 import { getMultipliers } from "@/lib/gamification/talents";
-import { loadUnlockedTalents } from "@/lib/api/talents.functions";
+
+async function loadUnlockedTalents(userId: string): Promise<Record<string, number>> {
+  const { data } = await supabaseAdmin
+    .from("user_talents")
+    .select("talent_code, tier")
+    .eq("user_id", userId);
+  const map: Record<string, number> = {};
+  for (const row of data ?? []) map[row.talent_code] = row.tier;
+  return map;
+}
 
 type RewardSummary = {
   xpAwarded: number;
