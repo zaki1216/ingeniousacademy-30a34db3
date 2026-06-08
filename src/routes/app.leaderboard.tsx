@@ -43,7 +43,7 @@ function LeaderboardPage() {
         </h1>
         <p className="text-sm text-muted-foreground">
           {mode === "xp"
-            ? `Your class ranked by XP ${period === "all" ? "earned all-time" : `earned in the last ${period === "weekly" ? "7" : "30" days`}.`
+            ? (period === "all" ? "Your class ranked by XP earned all-time." : `Your class ranked by XP earned in the last ${period === "weekly" ? "7" : "30"} days.`)
             : "Your class ranked by attendance."}
         </p>
       </div>
