@@ -2,14 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
-import { Users, BookOpen, FileText, ClipboardList, Megaphone, GraduationCap, Award, Trophy } from "lucide-react";
+import {
+  Users, BookOpen, FileText, ClipboardList, Megaphone, GraduationCap,
+  Map, Swords, Trophy, ShoppingBag, Award, ChevronRight, Sparkles,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { GameStatsCard } from "@/components/gamification/GameStatsCard";
+import { HeroCard } from "@/components/gamification/HeroCard";
+import { DailyChestCard } from "@/components/gamification/DailyChestCard";
 import { getGamificationDashboard, dailyCheckIn } from "@/lib/api/gamification.functions";
 import { getIcon } from "@/lib/gamification/icons";
 
@@ -108,6 +111,15 @@ function AdminDashboard() {
   );
 }
 
+const QUICK_ACTIONS: { to: string; label: string; sub: string; icon: typeof Map; gradient: string }[] = [
+  { to: "/app/worlds", label: "World Map", sub: "Explore worlds", icon: Map, gradient: "from-blue-500 to-indigo-600" },
+  { to: "/app/tests", label: "Boss Battles", sub: "Fight bosses", icon: Swords, gradient: "from-rose-500 to-orange-500" },
+  { to: "/app/leaderboard", label: "Rankings", sub: "Climb the ladder", icon: Trophy, gradient: "from-amber-400 to-yellow-600" },
+  { to: "/app/shop", label: "Hero Shop", sub: "Spend coins", icon: ShoppingBag, gradient: "from-fuchsia-500 to-purple-600" },
+  { to: "/app/achievements", label: "Badges", sub: "Collect them all", icon: Award, gradient: "from-emerald-400 to-teal-600" },
+  { to: "/app/coins", label: "Treasury", sub: "Coin history", icon: Sparkles, gradient: "from-cyan-400 to-blue-500" },
+];
+
 function StudentDashboard({ userId }: { userId?: string }) {
   const checkIn = useServerFn(dailyCheckIn);
   const getDash = useServerFn(getGamificationDashboard);
@@ -124,9 +136,14 @@ function StudentDashboard({ userId }: { userId?: string }) {
   });
 
   const profile = useQuery({
-    queryKey: ["profile-name", userId],
+    queryKey: ["profile-cosmetics", userId],
     enabled: !!userId,
-    queryFn: async () => (await supabase.from("profiles").select("name").eq("id", userId!).maybeSingle()).data,
+    queryFn: async () =>
+      (await supabase
+        .from("profiles")
+        .select("name, equipped_avatar, equipped_frame, equipped_title")
+        .eq("id", userId!)
+        .maybeSingle()).data,
   });
 
   const announcements = useQuery({
@@ -139,126 +156,152 @@ function StudentDashboard({ userId }: { userId?: string }) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold">
-          Welcome{profile.data?.name ? `, ${profile.data.name}` : ""} 👋
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">Learn. Level up. Earn rewards.</p>
-      </div>
-
       {stats && (
-        <GameStatsCard
+        <HeroCard
+          name={profile.data?.name || "Hero"}
           xp={stats.xp}
           level={stats.level}
           coins={stats.coins}
           streak={stats.streak_days}
-          maxStreak={stats.max_streak}
+          avatar={profile.data?.equipped_avatar as string | null | undefined}
+          frame={profile.data?.equipped_frame as string | null | undefined}
+          title={profile.data?.equipped_title as string | null | undefined}
         />
       )}
 
-      <div className="grid grid-cols-2 gap-3">
-        <Button asChild variant="outline" className="h-auto py-3 justify-start">
-          <Link to="/app/leaderboard">
-            <Trophy className="h-4 w-4 mr-2 text-primary" />
-            <span className="text-left">
-              <span className="block font-semibold">Leaderboard</span>
-              <span className="block text-xs text-muted-foreground">Compete with classmates</span>
-            </span>
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="h-auto py-3 justify-start">
-          <Link to="/app/achievements">
-            <Award className="h-4 w-4 mr-2 text-primary" />
-            <span className="text-left">
-              <span className="block font-semibold">Achievements</span>
-              <span className="block text-xs text-muted-foreground">Unlock badges</span>
-            </span>
-          </Link>
-        </Button>
-      </div>
+      <DailyChestCard />
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Recent badges</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {(dash.data?.recentAchievements ?? []).length === 0 ? (
-            <p className="text-sm text-muted-foreground">No badges unlocked yet. Complete a lecture or quiz to earn your first!</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {dash.data?.recentAchievements.map((row, i) => {
-                const a = (row as { achievement: { code: string; name: string; description: string; icon: string } }).achievement;
-                const Icon = getIcon(a.icon);
-                return (
-                  <motion.div
-                    key={a.code}
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="rounded-lg border p-2.5 flex items-center gap-2"
-                  >
-                    <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-sm font-semibold truncate">{a.name}</div>
-                      <div className="text-xs text-muted-foreground truncate">{a.description}</div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+      {/* Continue Adventure / World map preview */}
+      <Link to="/app/worlds" className="block">
+        <motion.div
+          whileTap={{ scale: 0.98 }}
+          className="relative overflow-hidden rounded-2xl p-5 glass-card glow-primary"
+        >
+          <div className="absolute inset-0 opacity-50 pointer-events-none bg-[radial-gradient(circle_at_80%_30%,#22C55E_0%,transparent_55%)]" />
+          <div className="relative flex items-center gap-3">
+            <div className="h-14 w-14 rounded-2xl bg-[image:var(--gradient-primary)] flex items-center justify-center text-3xl glow-primary">
+              🗺️
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <div className="flex-1">
+              <div className="text-[10px] uppercase tracking-widest text-amber-300 font-bold">Adventure</div>
+              <div className="text-lg font-extrabold leading-tight">Continue your quest</div>
+              <div className="text-xs text-muted-foreground">Enter the world map and conquer new realms</div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </div>
+        </motion.div>
+      </Link>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Subject progress</CardTitle>
-          <CardDescription>Lectures watched per subject</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {(dash.data?.subjectProgress ?? []).length === 0 && (
-            <p className="text-sm text-muted-foreground">No subjects yet.</p>
-          )}
-          {dash.data?.subjectProgress.map((s) => {
-            const pct = s.total > 0 ? Math.round((s.watched / s.total) * 100) : 0;
+      {/* Quick actions grid */}
+      <div>
+        <h2 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground mb-2 px-1">
+          Quick travel
+        </h2>
+        <div className="grid grid-cols-3 gap-2.5">
+          {QUICK_ACTIONS.map((a, i) => {
+            const Icon = a.icon;
             return (
-              <div key={s.id}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="font-medium">{s.name}</span>
-                  <span className="text-muted-foreground">{s.watched} / {s.total}</span>
-                </div>
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
-                  <motion.div
-                    className="h-full bg-[image:var(--gradient-primary)]"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${pct}%` }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
-                  />
-                </div>
-              </div>
+              <motion.div
+                key={a.to}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04 }}
+              >
+                <Link
+                  to={a.to}
+                  className="block rounded-2xl glass-card p-3 text-center hover:scale-[1.03] transition-transform"
+                >
+                  <div className={`mx-auto h-12 w-12 rounded-xl bg-gradient-to-br ${a.gradient} flex items-center justify-center shadow-lg`}>
+                    <Icon className="h-6 w-6 text-white drop-shadow" />
+                  </div>
+                  <div className="mt-2 text-xs font-bold leading-tight">{a.label}</div>
+                  <div className="text-[10px] text-muted-foreground leading-tight">{a.sub}</div>
+                </Link>
+              </motion.div>
             );
           })}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* World progress */}
+      {(dash.data?.subjectProgress ?? []).length > 0 && (
+        <div className="rounded-2xl glass-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-extrabold flex items-center gap-2">
+              <Map className="h-4 w-4 text-primary-glow" /> Your Worlds
+            </h2>
+            <Link to="/app/worlds" className="text-xs font-bold text-primary-glow">View all →</Link>
+          </div>
+          <div className="space-y-3">
+            {dash.data?.subjectProgress.slice(0, 4).map((s) => {
+              const pct = s.total > 0 ? Math.round((s.watched / s.total) * 100) : 0;
+              return (
+                <div key={s.id}>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-semibold">{s.name}</span>
+                    <span className="text-muted-foreground">{pct}%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                    <motion.div
+                      className="h-full bg-[image:var(--gradient-primary)]"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.8 }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Recent badges */}
+      {(dash.data?.recentAchievements ?? []).length > 0 && (
+        <div className="rounded-2xl glass-card p-4">
+          <h2 className="font-extrabold flex items-center gap-2 mb-3">
+            <Award className="h-4 w-4 text-amber-300" /> Recent badges
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {dash.data?.recentAchievements.map((row, i) => {
+              const a = (row as { achievement: { code: string; name: string; description: string; icon: string } }).achievement;
+              const Icon = getIcon(a.icon);
+              return (
+                <motion.div
+                  key={a.code}
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="rounded-xl bg-white/5 border border-white/10 p-2.5 flex items-center gap-2"
+                >
+                  <div className="h-9 w-9 rounded-lg bg-[image:var(--gradient-primary)] text-primary-foreground flex items-center justify-center shrink-0">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold truncate">{a.name}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">{a.description}</div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {(announcements.data?.length ?? 0) > 0 && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Megaphone className="h-4 w-4 text-primary" /> Announcements
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
+        <div className="rounded-2xl glass-card p-4">
+          <h2 className="font-extrabold flex items-center gap-2 mb-2">
+            <Megaphone className="h-4 w-4 text-primary-glow" /> News from the Kingdom
+          </h2>
+          <div className="space-y-2">
             {announcements.data?.map((a) => (
-              <div key={a.id} className="border-l-4 border-primary pl-3 py-1">
-                <div className="font-semibold text-sm">{a.title}</div>
+              <div key={a.id} className="border-l-4 border-primary-glow pl-3 py-1">
+                <div className="font-bold text-sm">{a.title}</div>
                 <div className="text-sm text-muted-foreground">{a.message}</div>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );
