@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarDays, CheckCircle2, XCircle } from "lucide-react";
+import { CalendarDays, CheckCircle2, XCircle, Flame, Trophy } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,13 +18,52 @@ function Page() {
   const absent = rows.filter((r) => r.status === "absent").length;
   const net = rows.reduce((s, r) => s + r.coins_delta, 0);
 
+  // Streaks: rows come newest-first. Current = consecutive "present" from latest record. Best = longest run of "present".
+  const ordered = [...rows].sort((a, b) => a.date.localeCompare(b.date)); // oldest -> newest
+  let best = 0;
+  let run = 0;
+  for (const r of ordered) {
+    if (r.status === "present") { run++; if (run > best) best = run; }
+    else run = 0;
+  }
+  let current = 0;
+  for (const r of rows) { // newest-first
+    if (r.status === "present") current++;
+    else break;
+  }
+
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <CalendarDays className="h-6 w-6 text-primary" /> My Attendance
         </h1>
-        <p className="text-sm text-muted-foreground">Your attendance history & coin impact</p>
+        <p className="text-sm text-muted-foreground">Your attendance history, streaks & coin impact</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="overflow-hidden">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 text-white flex items-center justify-center shadow">
+              <Flame className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Current streak</div>
+              <div className="text-2xl font-extrabold">{current} <span className="text-xs text-muted-foreground font-semibold">day{current === 1 ? "" : "s"}</span></div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="overflow-hidden">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-600 text-white flex items-center justify-center shadow">
+              <Trophy className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Best streak</div>
+              <div className="text-2xl font-extrabold">{best} <span className="text-xs text-muted-foreground font-semibold">day{best === 1 ? "" : "s"}</span></div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
