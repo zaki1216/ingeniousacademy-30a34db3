@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, GraduationCap, LogOut, Menu, Settings, TrendingUp,
-  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles,
+  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
