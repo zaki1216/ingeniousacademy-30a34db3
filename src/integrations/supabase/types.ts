@@ -475,6 +475,66 @@ export type Database = {
           },
         ]
       }
+      talent_audit_log: {
+        Row: {
+          action: string
+          admin_user_id: string | null
+          created_at: string
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+          talent_code: string
+        }
+        Insert: {
+          action: string
+          admin_user_id?: string | null
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          talent_code: string
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string | null
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          talent_code?: string
+        }
+        Relationships: []
+      }
+      talent_configs: {
+        Row: {
+          cost_per_tier: number[]
+          created_at: string
+          max_tier: number
+          per_tier_value: number
+          talent_code: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cost_per_tier: number[]
+          created_at?: string
+          max_tier: number
+          per_tier_value: number
+          talent_code: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cost_per_tier?: number[]
+          created_at?: string
+          max_tier?: number
+          per_tier_value?: number
+          talent_code?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       tests: {
         Row: {
           chapter_id: string
