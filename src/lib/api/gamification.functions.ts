@@ -163,7 +163,10 @@ async function grantRewards(
   reason: string,
   metadata?: Record<string, string | number | boolean>,
 ): Promise<RewardSummary> {
-  await applyStreak(userId);
+  const streakResult = await applyStreak(userId);
+  if (streakResult.weeklyBonus) {
+    await awardWeeklyStreakBonus(userId, streakResult.weeklyBonus);
+  }
   const before = await ensureStatsRow(userId);
   const newXp = before.xp + xpAmount;
   const newCoins = before.coins + coinAmount;
@@ -185,15 +188,21 @@ async function grantRewards(
   // Re-read in case achievements added xp/coins
   const after = await ensureStatsRow(userId);
 
+  // Compute pre-grant level for accurate level-up detection (before streak bonus already applied to `before`)
+  const preGrantLevel = streakResult.weeklyBonus
+    ? levelFromXp(before.xp - streakResult.weeklyBonus.xp)
+    : before.level;
+
   return {
-    xpAwarded: xpAmount,
-    coinsAwarded: coinAmount,
-    leveledUp: after.level > before.level,
-    oldLevel: before.level,
+    xpAwarded: xpAmount + (streakResult.weeklyBonus?.xp ?? 0),
+    coinsAwarded: coinAmount + (streakResult.weeklyBonus?.coins ?? 0),
+    leveledUp: after.level > preGrantLevel,
+    oldLevel: preGrantLevel,
     newLevel: after.level,
     newXp: after.xp,
     newCoins: after.coins,
     newAchievements,
+    weeklyStreakBonus: streakResult.weeklyBonus,
   };
 }
 
