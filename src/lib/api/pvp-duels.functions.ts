@@ -250,9 +250,13 @@ export const submitDuelAnswers = createServerFn({ method: "POST" })
     await supabaseAdmin.from("pvp_duel_answers").insert(rows);
 
     const isChallenger = duel.challenger_id === uid;
-    const updates: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
-    };
+    const updates: {
+      updated_at: string;
+      challenger_score?: number;
+      opponent_score?: number;
+      status?: string;
+      winner_id?: string | null;
+    } = { updated_at: new Date().toISOString() };
     if (isChallenger) updates.challenger_score = score;
     else updates.opponent_score = score;
 
