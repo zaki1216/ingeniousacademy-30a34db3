@@ -13,6 +13,7 @@ const REASON_LABELS: Record<string, string> = {
   quiz_complete: "Quiz completed",
   achievement: "Achievement unlocked",
   boss_quiz: "Boss quiz defeated",
+  weekly_streak: "7-day streak bonus",
 };
 
 function CoinsPage() {
