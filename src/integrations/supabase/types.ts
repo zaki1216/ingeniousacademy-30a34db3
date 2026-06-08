@@ -141,8 +141,10 @@ export type Database = {
       }
       gamification_stats: {
         Row: {
+          chest_cycle_day: number
           coins: number
           last_active_date: string | null
+          last_chest_claim_date: string | null
           level: number
           max_streak: number
           streak_days: number
@@ -151,8 +153,10 @@ export type Database = {
           xp: number
         }
         Insert: {
+          chest_cycle_day?: number
           coins?: number
           last_active_date?: string | null
+          last_chest_claim_date?: string | null
           level?: number
           max_streak?: number
           streak_days?: number
@@ -161,8 +165,10 @@ export type Database = {
           xp?: number
         }
         Update: {
+          chest_cycle_day?: number
           coins?: number
           last_active_date?: string | null
+          last_chest_claim_date?: string | null
           level?: number
           max_streak?: number
           streak_days?: number
@@ -249,6 +255,9 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          equipped_avatar: string | null
+          equipped_frame: string | null
+          equipped_title: string | null
           id: string
           is_active: boolean
           name: string
@@ -259,6 +268,9 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          equipped_avatar?: string | null
+          equipped_frame?: string | null
+          equipped_title?: string | null
           id: string
           is_active?: boolean
           name: string
@@ -269,6 +281,9 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          equipped_avatar?: string | null
+          equipped_frame?: string | null
+          equipped_title?: string | null
           id?: string
           is_active?: boolean
           name?: string
@@ -367,6 +382,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shop_items: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string
+          price_coins: number
+          rarity: string
+          sort_order: number
+          type: string
+          value: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+          price_coins?: number
+          rarity?: string
+          sort_order?: number
+          type: string
+          value: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
+          price_coins?: number
+          rarity?: string
+          sort_order?: number
+          type?: string
+          value?: string
+        }
+        Relationships: []
       }
       standards: {
         Row: {
@@ -481,6 +532,32 @@ export type Database = {
             columns: ["achievement_id"]
             isOneToOne: false
             referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_inventory: {
+        Row: {
+          acquired_at: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
             referencedColumns: ["id"]
           },
         ]
