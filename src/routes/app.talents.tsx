@@ -62,7 +62,7 @@ function TalentsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {data.talents.map((t, i) => (
+        {data.talents.map((t: typeof data.talents[number], i: number) => (
           <motion.div
             key={t.code}
             initial={{ opacity: 0, y: 12 }}

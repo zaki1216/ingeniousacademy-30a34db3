@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Coins } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
 import { getCoinHistory } from "@/lib/api/gamification.functions";
 
 export const Route = createFileRoute("/app/coins")({ component: CoinsPage });
@@ -38,6 +39,8 @@ function CoinsPage() {
           <div className="text-xs text-muted-foreground">coins</div>
         </CardContent>
       </Card>
+
+      <ActiveBonusesCard title="Reward Bonuses Active" />
 
       <div className="space-y-2">
         {q.data?.transactions.length === 0 && (

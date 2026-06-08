@@ -4,6 +4,7 @@ import { BarChart3 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 
@@ -41,6 +42,8 @@ function ResultsPage() {
         <h1 className="text-2xl font-bold">{role === "admin" ? "All Results" : "My Results"}</h1>
         <p className="text-sm text-muted-foreground">{data?.length ?? 0} attempts</p>
       </div>
+
+      {role === "student" && <ActiveBonusesCard title="XP & Coin Bonuses on this screen" />}
 
       <div className="space-y-2">
         {data?.map((r) => {

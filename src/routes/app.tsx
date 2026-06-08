@@ -32,6 +32,7 @@ const adminNav: NavItem[] = [
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
   { to: "/app/results", label: "Results", icon: BarChart3 },
   { to: "/app/analytics", label: "Analytics", icon: TrendingUp },
+  { to: "/app/admin/talents", label: "Talents", icon: Sparkles },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
@@ -41,6 +42,7 @@ const studentNav: NavItem[] = [
   { to: "/app/worlds", label: "Worlds", icon: Map },
   { to: "/app/lectures", label: "Missions", icon: BookOpen },
   { to: "/app/tests", label: "Battles", icon: Swords },
+  { to: "/app/pvp", label: "Arena", icon: Swords },
   { to: "/app/leaderboard", label: "Rank", icon: Trophy },
   { to: "/app/achievements", label: "Badges", icon: Award },
   { to: "/app/talents", label: "Talents", icon: Sparkles },

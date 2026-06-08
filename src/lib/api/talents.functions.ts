@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { TALENTS, talentByCode, totalTalentPoints, costForNextTier } from "@/lib/gamification/talents";
+import { applyOverrides, totalTalentPoints, costForNextTier } from "@/lib/gamification/talents";
+
+async function loadEffectiveTalents() {
+  const { data } = await supabaseAdmin.from("talent_configs").select("*");
+  return applyOverrides((data ?? []) as never);
+}
 
 async function loadUnlocked(userId: string): Promise<Record<string, number>> {
   const { data } = await supabaseAdmin
@@ -28,12 +33,13 @@ export const getTalentTree = createServerFn({ method: "GET" })
     const total = totalTalentPoints(level);
     const available = Math.max(0, total - spent);
     const unlocked = await loadUnlocked(userId);
+    const effective = await loadEffectiveTalents();
     return {
       level,
       available,
       total,
       spent,
-      talents: TALENTS.map((t) => {
+      talents: effective.map((t) => {
         const tier = unlocked[t.code] ?? 0;
         return {
           code: t.code,
@@ -55,8 +61,10 @@ export const unlockTalentTier = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ code: z.string().min(1).max(64) }).parse(d))
   .handler(async ({ data, context }) => {
     const userId = context.userId;
-    const talent = talentByCode(data.code);
+    const effective = await loadEffectiveTalents();
+    const talent = effective.find((t) => t.code === data.code);
     if (!talent) throw new Error("Unknown talent");
+
 
     const { data: stats } = await supabaseAdmin
       .from("gamification_stats")

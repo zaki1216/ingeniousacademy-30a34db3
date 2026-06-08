@@ -23,6 +23,7 @@ import { Route as AppStudentsRouteImport } from './routes/app.students'
 import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppResultsRouteImport } from './routes/app.results'
+import { Route as AppPvpRouteImport } from './routes/app.pvp'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
@@ -31,8 +32,12 @@ import { Route as AppCoinsRouteImport } from './routes/app.coins'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
+import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
+import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
+import { Route as AppPvpDuelIdRouteImport } from './routes/app.pvp.duel.$id'
+import { Route as AppPvpBrIdRouteImport } from './routes/app.pvp.br.$id'
 
 const SetupRoute = SetupRouteImport.update({
   id: '/setup',
@@ -104,6 +109,11 @@ const AppResultsRoute = AppResultsRouteImport.update({
   path: '/results',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPvpRoute = AppPvpRouteImport.update({
+  id: '/pvp',
+  path: '/pvp',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppNotesRoute = AppNotesRouteImport.update({
   id: '/notes',
   path: '/notes',
@@ -144,6 +154,11 @@ const AppAchievementsRoute = AppAchievementsRouteImport.update({
   path: '/achievements',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPvpIndexRoute = AppPvpIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppPvpRoute,
+} as any)
 const AppTestsTestIdRoute = AppTestsTestIdRouteImport.update({
   id: '/$testId',
   path: '/$testId',
@@ -153,6 +168,21 @@ const AppAnalyticsTestIdRoute = AppAnalyticsTestIdRouteImport.update({
   id: '/$testId',
   path: '/$testId',
   getParentRoute: () => AppAnalyticsRoute,
+} as any)
+const AppAdminTalentsRoute = AppAdminTalentsRouteImport.update({
+  id: '/admin/talents',
+  path: '/admin/talents',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPvpDuelIdRoute = AppPvpDuelIdRouteImport.update({
+  id: '/duel/$id',
+  path: '/duel/$id',
+  getParentRoute: () => AppPvpRoute,
+} as any)
+const AppPvpBrIdRoute = AppPvpBrIdRouteImport.update({
+  id: '/br/$id',
+  path: '/br/$id',
+  getParentRoute: () => AppPvpRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -170,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
+  '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
@@ -178,8 +209,12 @@ export interface FileRoutesByFullPath {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
+  '/app/pvp/': typeof AppPvpIndexRoute
+  '/app/pvp/br/$id': typeof AppPvpBrIdRoute
+  '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -203,8 +238,12 @@ export interface FileRoutesByTo {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app': typeof AppIndexRoute
+  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
+  '/app/pvp': typeof AppPvpIndexRoute
+  '/app/pvp/br/$id': typeof AppPvpBrIdRoute
+  '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -222,6 +261,7 @@ export interface FileRoutesById {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
+  '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
@@ -230,8 +270,12 @@ export interface FileRoutesById {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
+  '/app/pvp/': typeof AppPvpIndexRoute
+  '/app/pvp/br/$id': typeof AppPvpBrIdRoute
+  '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -250,6 +294,7 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
+    | '/app/pvp'
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
@@ -258,8 +303,12 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
+    | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
+    | '/app/pvp/'
+    | '/app/pvp/br/$id'
+    | '/app/pvp/duel/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -283,8 +332,12 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app'
+    | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
+    | '/app/pvp'
+    | '/app/pvp/br/$id'
+    | '/app/pvp/duel/$id'
   id:
     | '__root__'
     | '/'
@@ -301,6 +354,7 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
+    | '/app/pvp'
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
@@ -309,8 +363,12 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
+    | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
+    | '/app/pvp/'
+    | '/app/pvp/br/$id'
+    | '/app/pvp/duel/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -422,6 +480,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppResultsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/pvp': {
+      id: '/app/pvp'
+      path: '/pvp'
+      fullPath: '/app/pvp'
+      preLoaderRoute: typeof AppPvpRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/notes': {
       id: '/app/notes'
       path: '/notes'
@@ -478,6 +543,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAchievementsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/pvp/': {
+      id: '/app/pvp/'
+      path: '/'
+      fullPath: '/app/pvp/'
+      preLoaderRoute: typeof AppPvpIndexRouteImport
+      parentRoute: typeof AppPvpRoute
+    }
     '/app/tests/$testId': {
       id: '/app/tests/$testId'
       path: '/$testId'
@@ -491,6 +563,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/analytics/$testId'
       preLoaderRoute: typeof AppAnalyticsTestIdRouteImport
       parentRoute: typeof AppAnalyticsRoute
+    }
+    '/app/admin/talents': {
+      id: '/app/admin/talents'
+      path: '/admin/talents'
+      fullPath: '/app/admin/talents'
+      preLoaderRoute: typeof AppAdminTalentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/pvp/duel/$id': {
+      id: '/app/pvp/duel/$id'
+      path: '/duel/$id'
+      fullPath: '/app/pvp/duel/$id'
+      preLoaderRoute: typeof AppPvpDuelIdRouteImport
+      parentRoute: typeof AppPvpRoute
+    }
+    '/app/pvp/br/$id': {
+      id: '/app/pvp/br/$id'
+      path: '/br/$id'
+      fullPath: '/app/pvp/br/$id'
+      preLoaderRoute: typeof AppPvpBrIdRouteImport
+      parentRoute: typeof AppPvpRoute
     }
   }
 }
@@ -506,6 +599,21 @@ const AppAnalyticsRouteChildren: AppAnalyticsRouteChildren = {
 const AppAnalyticsRouteWithChildren = AppAnalyticsRoute._addFileChildren(
   AppAnalyticsRouteChildren,
 )
+
+interface AppPvpRouteChildren {
+  AppPvpIndexRoute: typeof AppPvpIndexRoute
+  AppPvpBrIdRoute: typeof AppPvpBrIdRoute
+  AppPvpDuelIdRoute: typeof AppPvpDuelIdRoute
+}
+
+const AppPvpRouteChildren: AppPvpRouteChildren = {
+  AppPvpIndexRoute: AppPvpIndexRoute,
+  AppPvpBrIdRoute: AppPvpBrIdRoute,
+  AppPvpDuelIdRoute: AppPvpDuelIdRoute,
+}
+
+const AppPvpRouteWithChildren =
+  AppPvpRoute._addFileChildren(AppPvpRouteChildren)
 
 interface AppTestsRouteChildren {
   AppTestsTestIdRoute: typeof AppTestsTestIdRoute
@@ -528,6 +636,7 @@ interface AppRouteChildren {
   AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppLecturesRoute: typeof AppLecturesRoute
   AppNotesRoute: typeof AppNotesRoute
+  AppPvpRoute: typeof AppPvpRouteWithChildren
   AppResultsRoute: typeof AppResultsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppShopRoute: typeof AppShopRoute
@@ -536,6 +645,7 @@ interface AppRouteChildren {
   AppTestsRoute: typeof AppTestsRouteWithChildren
   AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppAdminTalentsRoute: typeof AppAdminTalentsRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -547,6 +657,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppLeaderboardRoute: AppLeaderboardRoute,
   AppLecturesRoute: AppLecturesRoute,
   AppNotesRoute: AppNotesRoute,
+  AppPvpRoute: AppPvpRouteWithChildren,
   AppResultsRoute: AppResultsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppShopRoute: AppShopRoute,
@@ -555,6 +666,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppTestsRoute: AppTestsRouteWithChildren,
   AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppAdminTalentsRoute: AppAdminTalentsRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

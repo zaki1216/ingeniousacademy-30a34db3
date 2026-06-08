@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.tg_update_updated_at() FROM PUBLIC, authenticated, anon;

@@ -11,12 +11,12 @@ export type Talent = {
   code: string;
   name: string;
   description: string;
-  icon: string;        // emoji for now
-  color: string;       // tailwind gradient e.g. "from-amber-400 to-orange-500"
+  icon: string;
+  color: string;
   maxTier: number;
-  costPerTier: number[]; // length == maxTier
+  costPerTier: number[];
   effect: TalentEffect;
-  requires?: { code: string; tier: number }; // optional prerequisite
+  requires?: { code: string; tier: number };
 };
 
 export const TALENTS: Talent[] = [
@@ -66,23 +66,58 @@ export function talentByCode(code: string): Talent | undefined {
   return TALENTS.find((t) => t.code === code);
 }
 
-// Total talent points earned: 1 per 5 levels (level 5 → 1, level 10 → 2, ...).
 export function totalTalentPoints(level: number): number {
   return Math.floor(level / 5);
 }
 
 export function costForNextTier(t: Talent, currentTier: number): number | null {
   if (currentTier >= t.maxTier) return null;
-  return t.costPerTier[currentTier]; // currentTier is 0-indexed into next tier cost
+  return t.costPerTier[currentTier];
 }
 
-// Compute multipliers/grace given an unlocked map { code: tier }.
-export function getMultipliers(unlocked: Record<string, number>) {
-  const xpMult =
-    1 + (unlocked["xp_boost"] ?? 0) * 0.05;
-  const coinMult =
-    1 + (unlocked["coin_multiplier"] ?? 0) * 0.05;
-  const streakShield = unlocked["streak_shield"] ?? 0;
-  const hintOrbs = unlocked["hint_orb"] ?? 0;
-  return { xpMult, coinMult, streakShield, hintOrbs };
+export function getMultipliers(
+  unlocked: Record<string, number>,
+  perTierOverrides?: Record<string, number>,
+) {
+  const xpPer = perTierOverrides?.xp_boost ?? 0.05;
+  const coinPer = perTierOverrides?.coin_multiplier ?? 0.05;
+  const shieldPer = perTierOverrides?.streak_shield ?? 1;
+  const hintPer = perTierOverrides?.hint_orb ?? 1;
+  return {
+    xpMult: 1 + (unlocked["xp_boost"] ?? 0) * xpPer,
+    coinMult: 1 + (unlocked["coin_multiplier"] ?? 0) * coinPer,
+    streakShield: Math.round((unlocked["streak_shield"] ?? 0) * shieldPer),
+    hintOrbs: Math.round((unlocked["hint_orb"] ?? 0) * hintPer),
+  };
+}
+
+// Build the effective catalog by layering DB overrides on top of defaults.
+export function applyOverrides(
+  overrides: Array<{
+    talent_code: string;
+    max_tier: number;
+    cost_per_tier: number[];
+    per_tier_value: number | string;
+  }>,
+): Talent[] {
+  const map = new Map(overrides.map((o) => [o.talent_code, o]));
+  return TALENTS.map((t) => {
+    const o = map.get(t.code);
+    if (!o) return t;
+    const per = Number(o.per_tier_value);
+    const effect: TalentEffect =
+      t.effect.kind === "xp_multiplier"
+        ? { kind: "xp_multiplier", perTier: per }
+        : t.effect.kind === "coin_multiplier"
+        ? { kind: "coin_multiplier", perTier: per }
+        : t.effect.kind === "streak_shield"
+        ? { kind: "streak_shield", perTier: per }
+        : { kind: "hint_orb", perTier: per };
+    return {
+      ...t,
+      maxTier: o.max_tier,
+      costPerTier: o.cost_per_tier,
+      effect,
+    };
+  });
 }
