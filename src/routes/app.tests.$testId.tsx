@@ -65,22 +65,25 @@ function TakeTestPage() {
 
   if (result) {
     return (
-      <div className="space-y-4 max-w-md mx-auto">
-        <Card>
-          <CardContent className="p-6 text-center space-y-4">
-            <CheckCircle2 className="h-16 w-16 mx-auto text-primary" />
-            <h2 className="text-2xl font-bold">Test submitted!</h2>
-            <div className="text-5xl font-bold text-primary">{result.percentage}%</div>
-            <div className="text-muted-foreground">
-              {result.score} / {result.total} marks
-            </div>
-            <div className="flex gap-2 justify-center pt-2">
-              <Button asChild variant="outline"><Link to="/app/tests">Back to tests</Link></Button>
-              <Button asChild><Link to="/app/results">View all results</Link></Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <RewardPopup reward={reward} onClose={() => setReward(null)} />
+        <div className="space-y-4 max-w-md mx-auto">
+          <Card>
+            <CardContent className="p-6 text-center space-y-4">
+              <CheckCircle2 className="h-16 w-16 mx-auto text-primary" />
+              <h2 className="text-2xl font-bold">Test submitted!</h2>
+              <div className="text-5xl font-bold text-primary">{result.percentage}%</div>
+              <div className="text-muted-foreground">
+                {result.score} / {result.total} marks
+              </div>
+              <div className="flex gap-2 justify-center pt-2">
+                <Button asChild variant="outline"><Link to="/app/tests">Back to tests</Link></Button>
+                <Button asChild><Link to="/app/results">View all results</Link></Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     );
   }
 
