@@ -182,7 +182,7 @@ export const getDuel = createServerFn({ method: "GET" })
       }>).map((q) => ({
         id: q.id,
         question_text: q.question_text,
-        options: q.options,
+        options: JSON.parse(JSON.stringify(q.options)) as string[],
         marks: q.marks,
         correct_option: showCorrect ? q.correct_option : null,
       })),
