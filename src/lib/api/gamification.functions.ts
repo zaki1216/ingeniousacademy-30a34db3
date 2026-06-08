@@ -225,6 +225,7 @@ export const completeVideo = createServerFn({ method: "POST" })
         xpAwarded: 0, coinsAwarded: 0, leveledUp: false,
         oldLevel: stats.level, newLevel: stats.level, newXp: stats.xp, newCoins: stats.coins,
         newAchievements: [],
+        weeklyStreakBonus: null,
       };
     }
     await supabaseAdmin.from("video_completions").insert({ user_id: userId, lecture_id: data.lectureId });
