@@ -20,7 +20,7 @@ export function ActiveBonusesCard({ variant = "full", title = "Active Hero Bonus
   });
 
   const talents = data?.talents ?? [];
-  const tierOf = (code: string) => talents.find((t) => t.code === code)?.tier ?? 0;
+  const tierOf = (code: string) => talents.find((t: { code: string; tier: number }) => t.code === code)?.tier ?? 0;
 
   const coinTier = tierOf("coin_multiplier");
   const xpTier = tierOf("xp_boost");
