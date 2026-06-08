@@ -13,6 +13,7 @@ type RewardSummary = {
   newXp: number;
   newCoins: number;
   newAchievements: { code: string; name: string; description: string; icon: string }[];
+  weeklyStreakBonus: { xp: number; coins: number; streakDays: number } | null;
 };
 
 async function ensureStatsRow(userId: string) {
