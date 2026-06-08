@@ -127,3 +127,75 @@ export const getMyAttendance = createServerFn({ method: "GET" })
       .limit(180);
     return { rows: data ?? [] };
   });
+
+export const getAttendanceLeaderboard = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const userId = context.userId;
+    const { data: me } = await supabaseAdmin
+      .from("profiles").select("standard_id").eq("id", userId).maybeSingle();
+    if (!me?.standard_id) return { rows: [], myRank: null };
+
+    const { data: classmates } = await supabaseAdmin
+      .from("profiles").select("id, name").eq("standard_id", me.standard_id).eq("is_active", true);
+    const ids = (classmates ?? []).map((c) => c.id);
+    if (ids.length === 0) return { rows: [], myRank: null };
+
+    const { data: attRows } = await supabaseAdmin
+      .from("attendance")
+      .select("student_id, date, status")
+      .in("student_id", ids)
+      .order("date", { ascending: false });
+
+    const byUser = new Map<string, { date: string; status: string }[]>();
+    for (const r of attRows ?? []) {
+      const arr = byUser.get(r.student_id) ?? [];
+      arr.push({ date: r.date, status: r.status });
+      byUser.set(r.student_id, arr);
+    }
+
+    const computeStreaks = (rows: { date: string; status: string }[]) => {
+      const ordered = [...rows].sort((a, b) => a.date.localeCompare(b.date));
+      let best = 0, run = 0;
+      for (const r of ordered) {
+        if (r.status === "present") { run++; if (run > best) best = run; }
+        else run = 0;
+      }
+      let current = 0;
+      for (const r of rows) {
+        if (r.status === "present") current++;
+        else break;
+      }
+      return { best, current };
+    };
+
+    const rows = (classmates ?? []).map((c) => {
+      const userRows = byUser.get(c.id) ?? [];
+      const present = userRows.filter((r) => r.status === "present").length;
+      const absent = userRows.filter((r) => r.status === "absent").length;
+      const total = present + absent;
+      const { best, current } = computeStreaks(userRows);
+      const pct = total > 0 ? Math.round((present / total) * 100) : 0;
+      return {
+        user_id: c.id,
+        name: c.name,
+        present,
+        absent,
+        total,
+        percentage: pct,
+        currentStreak: current,
+        bestStreak: best,
+      };
+    });
+
+    rows.sort((a, b) => {
+      if (b.present !== a.present) return b.present - a.present;
+      if (b.currentStreak !== a.currentStreak) return b.currentStreak - a.currentStreak;
+      if (b.bestStreak !== a.bestStreak) return b.bestStreak - a.bestStreak;
+      return b.percentage - a.percentage;
+    });
+
+    const ranked = rows.map((r, i) => ({ ...r, rank: i + 1, isMe: r.user_id === userId }));
+    const myRank = ranked.find((r) => r.isMe)?.rank ?? null;
+    return { rows: ranked.slice(0, 50), myRank };
+  });
