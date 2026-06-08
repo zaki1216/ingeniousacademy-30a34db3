@@ -3,6 +3,17 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { levelFromXp } from "@/lib/gamification/leveling";
+import { getMultipliers } from "@/lib/gamification/talents";
+
+async function loadUnlockedTalents(userId: string): Promise<Record<string, number>> {
+  const { data } = await supabaseAdmin
+    .from("user_talents")
+    .select("talent_code, tier")
+    .eq("user_id", userId);
+  const map: Record<string, number> = {};
+  for (const row of data ?? []) map[row.talent_code] = row.tier;
+  return map;
+}
 
 type RewardSummary = {
   xpAwarded: number;
@@ -48,11 +59,16 @@ async function applyStreak(
     return { streak_days: streak, max_streak: stats.max_streak ?? streak, weeklyBonus: null };
   }
   const prevStreak = streak;
+  const unlocked = await loadUnlockedTalents(userId);
+  const { streakShield } = getMultipliers(unlocked);
   if (last) {
     const lastDate = new Date(last + "T00:00:00Z");
     const todayDate = new Date(today + "T00:00:00Z");
     const diff = Math.round((todayDate.getTime() - lastDate.getTime()) / 86400000);
-    streak = diff === 1 ? streak + 1 : 1;
+    // Shield forgives up to `streakShield` missed days (diff 2..1+shield keeps streak).
+    if (diff === 1) streak = streak + 1;
+    else if (diff > 1 && diff <= 1 + streakShield) streak = streak + 1;
+    else streak = 1;
   } else {
     streak = 1;
   }
@@ -168,6 +184,11 @@ async function grantRewards(
     await awardWeeklyStreakBonus(userId, streakResult.weeklyBonus);
   }
   const before = await ensureStatsRow(userId);
+  // Apply talent multipliers to base rewards.
+  const unlockedTalents = await loadUnlockedTalents(userId);
+  const { xpMult, coinMult } = getMultipliers(unlockedTalents);
+  xpAmount = Math.round(xpAmount * xpMult);
+  coinAmount = Math.round(coinAmount * coinMult);
   const newXp = before.xp + xpAmount;
   const newCoins = before.coins + coinAmount;
   const newLevel = levelFromXp(newXp);

@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppWorldsRouteImport } from './routes/app.worlds'
 import { Route as AppTestsRouteImport } from './routes/app.tests'
+import { Route as AppTalentsRouteImport } from './routes/app.talents'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
 import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
@@ -76,6 +77,11 @@ const AppWorldsRoute = AppWorldsRouteImport.update({
 const AppTestsRoute = AppTestsRouteImport.update({
   id: '/tests',
   path: '/tests',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTalentsRoute = AppTalentsRouteImport.update({
+  id: '/talents',
+  path: '/talents',
   getParentRoute: () => AppRoute,
 } as any)
 const AppStudentsRoute = AppStudentsRouteImport.update({
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
   '/app/students': typeof AppStudentsRoute
+  '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
   '/app/students': typeof AppStudentsRoute
+  '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app': typeof AppIndexRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
   '/app/students': typeof AppStudentsRoute
+  '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/shop'
     | '/app/students'
+    | '/app/talents'
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/shop'
     | '/app/students'
+    | '/app/talents'
     | '/app/tests'
     | '/app/worlds'
     | '/app'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/shop'
     | '/app/students'
+    | '/app/talents'
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
@@ -373,6 +385,13 @@ declare module '@tanstack/react-router' {
       path: '/tests'
       fullPath: '/app/tests'
       preLoaderRoute: typeof AppTestsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/talents': {
+      id: '/app/talents'
+      path: '/talents'
+      fullPath: '/app/talents'
+      preLoaderRoute: typeof AppTalentsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/students': {
@@ -513,6 +532,7 @@ interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppShopRoute: typeof AppShopRoute
   AppStudentsRoute: typeof AppStudentsRoute
+  AppTalentsRoute: typeof AppTalentsRoute
   AppTestsRoute: typeof AppTestsRouteWithChildren
   AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -531,6 +551,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppShopRoute: AppShopRoute,
   AppStudentsRoute: AppStudentsRoute,
+  AppTalentsRoute: AppTalentsRoute,
   AppTestsRoute: AppTestsRouteWithChildren,
   AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
@@ -549,13 +570,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

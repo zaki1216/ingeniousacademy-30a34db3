@@ -148,6 +148,7 @@ export type Database = {
           level: number
           max_streak: number
           streak_days: number
+          talent_points_spent: number
           updated_at: string
           user_id: string
           xp: number
@@ -160,6 +161,7 @@ export type Database = {
           level?: number
           max_streak?: number
           streak_days?: number
+          talent_points_spent?: number
           updated_at?: string
           user_id: string
           xp?: number
@@ -172,6 +174,7 @@ export type Database = {
           level?: number
           max_streak?: number
           streak_days?: number
+          talent_points_spent?: number
           updated_at?: string
           user_id?: string
           xp?: number
@@ -579,6 +582,33 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_talents: {
+        Row: {
+          created_at: string
+          id: string
+          talent_code: string
+          tier: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          talent_code: string
+          tier?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          talent_code?: string
+          tier?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

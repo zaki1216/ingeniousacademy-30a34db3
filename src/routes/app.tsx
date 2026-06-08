@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, GraduationCap, LogOut, Menu, Settings, TrendingUp,
-  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User,
+  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,7 @@ const studentNav: NavItem[] = [
   { to: "/app/tests", label: "Battles", icon: Swords },
   { to: "/app/leaderboard", label: "Rank", icon: Trophy },
   { to: "/app/achievements", label: "Badges", icon: Award },
+  { to: "/app/talents", label: "Talents", icon: Sparkles },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
   { to: "/app/coins", label: "Coins", icon: Coins },
   { to: "/app/notes", label: "Scrolls", icon: FileText },

@@ -118,6 +118,7 @@ const QUICK_ACTIONS: { to: string; label: string; sub: string; icon: typeof Map;
   { to: "/app/shop", label: "Hero Shop", sub: "Spend coins", icon: ShoppingBag, gradient: "from-fuchsia-500 to-purple-600" },
   { to: "/app/achievements", label: "Badges", sub: "Collect them all", icon: Award, gradient: "from-emerald-400 to-teal-600" },
   { to: "/app/coins", label: "Treasury", sub: "Coin history", icon: Sparkles, gradient: "from-cyan-400 to-blue-500" },
+  { to: "/app/talents", label: "Talents", sub: "Skill tree", icon: Sparkles, gradient: "from-violet-500 to-fuchsia-600" },
 ];
 
 function StudentDashboard({ userId }: { userId?: string }) {
