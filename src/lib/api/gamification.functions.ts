@@ -273,6 +273,7 @@ export const awardQuizRewards = createServerFn({ method: "POST" })
         xpAwarded: 0, coinsAwarded: 0, leveledUp: false,
         oldLevel: stats.level, newLevel: stats.level, newXp: stats.xp, newCoins: stats.coins,
         newAchievements: [],
+        weeklyStreakBonus: null,
       };
     }
     const { data: test } = await supabaseAdmin
