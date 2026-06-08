@@ -39,82 +39,70 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
 }
 
+/* Maths Kingdom Adventure — dark fantasy gaming theme */
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.99 0.005 240);
-  --foreground: oklch(0.22 0.04 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.04 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.04 240);
+  --radius: 1rem;
 
-  /* Brand blue */
-  --primary: oklch(0.55 0.19 255);
+  --background: oklch(0.18 0.04 265);          /* #0F172A vibe */
+  --foreground: oklch(0.98 0.005 240);         /* white */
+
+  --card: oklch(0.27 0.04 265);                /* #1E293B */
+  --card-foreground: oklch(0.98 0.005 240);
+  --popover: oklch(0.24 0.04 265);
+  --popover-foreground: oklch(0.98 0.005 240);
+
+  /* Brand blue (#2563EB) */
+  --primary: oklch(0.58 0.22 265);
   --primary-foreground: oklch(0.99 0.005 240);
-  --primary-glow: oklch(0.68 0.16 255);
+  --primary-glow: oklch(0.66 0.20 290);        /* purple #7C3AED */
 
-  --secondary: oklch(0.96 0.015 240);
-  --secondary-foreground: oklch(0.22 0.04 240);
-  --muted: oklch(0.96 0.012 240);
-  --muted-foreground: oklch(0.48 0.03 240);
-  --accent: oklch(0.94 0.04 255);
-  --accent-foreground: oklch(0.30 0.12 255);
+  /* Purple as secondary */
+  --secondary: oklch(0.55 0.24 295);
+  --secondary-foreground: oklch(0.99 0.005 240);
 
-  --destructive: oklch(0.58 0.22 25);
+  --muted: oklch(0.28 0.03 260);
+  --muted-foreground: oklch(0.78 0.02 245);    /* #CBD5E1 */
+  --accent: oklch(0.32 0.10 280);
+  --accent-foreground: oklch(0.99 0.005 240);
+
+  --destructive: oklch(0.65 0.24 25);          /* #EF4444 */
   --destructive-foreground: oklch(0.99 0.005 240);
-  --success: oklch(0.62 0.16 150);
-  --success-foreground: oklch(0.99 0.005 240);
+  --success: oklch(0.72 0.18 150);             /* #22C55E */
+  --success-foreground: oklch(0.18 0.04 265);
 
-  --border: oklch(0.92 0.012 240);
-  --input: oklch(0.92 0.012 240);
-  --ring: oklch(0.55 0.19 255);
+  --gold: oklch(0.83 0.16 85);                 /* #FBBF24 */
+  --gold-foreground: oklch(0.20 0.05 80);
 
-  --sidebar: oklch(0.99 0.005 240);
-  --sidebar-foreground: oklch(0.30 0.04 240);
-  --sidebar-primary: oklch(0.55 0.19 255);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.66 0.20 290);
+
+  --sidebar: oklch(0.22 0.04 265);
+  --sidebar-foreground: oklch(0.95 0.005 240);
+  --sidebar-primary: oklch(0.58 0.22 265);
   --sidebar-primary-foreground: oklch(0.99 0.005 240);
-  --sidebar-accent: oklch(0.95 0.02 250);
-  --sidebar-accent-foreground: oklch(0.30 0.12 255);
-  --sidebar-border: oklch(0.92 0.012 240);
-  --sidebar-ring: oklch(0.55 0.19 255);
+  --sidebar-accent: oklch(0.32 0.10 280);
+  --sidebar-accent-foreground: oklch(0.99 0.005 240);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.66 0.20 290);
 
-  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
-  --shadow-card: 0 4px 16px -8px color-mix(in oklab, var(--primary) 20%, transparent);
+  --gradient-primary: linear-gradient(135deg, #2563EB, #7C3AED);
+  --gradient-gold: linear-gradient(135deg, #FBBF24, #F59E0B);
+  --gradient-epic: linear-gradient(135deg, #7C3AED, #EC4899);
+  --gradient-legendary: linear-gradient(135deg, #FBBF24, #EF4444, #7C3AED);
+  --gradient-success: linear-gradient(135deg, #22C55E, #10B981);
+  --gradient-bg: radial-gradient(ellipse at top, oklch(0.32 0.10 280) 0%, oklch(0.18 0.04 265) 55%);
+
+  --shadow-card: 0 8px 24px -12px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.04);
+  --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--primary-glow) 60%, transparent);
 }
 
 .dark {
-  --background: oklch(0.18 0.03 250);
-  --foreground: oklch(0.97 0.01 240);
-  --card: oklch(0.22 0.04 250);
-  --card-foreground: oklch(0.97 0.01 240);
-  --popover: oklch(0.22 0.04 250);
-  --popover-foreground: oklch(0.97 0.01 240);
-  --primary: oklch(0.68 0.16 255);
-  --primary-foreground: oklch(0.18 0.03 250);
-  --primary-glow: oklch(0.78 0.14 255);
-  --secondary: oklch(0.28 0.04 250);
-  --secondary-foreground: oklch(0.97 0.01 240);
-  --muted: oklch(0.28 0.04 250);
-  --muted-foreground: oklch(0.70 0.02 240);
-  --accent: oklch(0.32 0.08 255);
-  --accent-foreground: oklch(0.97 0.01 240);
-  --destructive: oklch(0.65 0.22 25);
-  --destructive-foreground: oklch(0.97 0.01 240);
-  --success: oklch(0.70 0.16 150);
-  --success-foreground: oklch(0.18 0.03 250);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.68 0.16 255);
-  --sidebar: oklch(0.22 0.04 250);
-  --sidebar-foreground: oklch(0.97 0.01 240);
-  --sidebar-primary: oklch(0.68 0.16 255);
-  --sidebar-primary-foreground: oklch(0.18 0.03 250);
-  --sidebar-accent: oklch(0.30 0.06 255);
-  --sidebar-accent-foreground: oklch(0.97 0.01 240);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.68 0.16 255);
+  /* same theme; app is always dark */
 }
 
 @layer base {
@@ -123,11 +111,54 @@
   }
   body {
     background-color: var(--color-background);
+    background-image: var(--gradient-bg);
+    background-attachment: fixed;
     color: var(--color-foreground);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Baloo 2", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4 {
+    font-family: "Baloo 2", "Inter", sans-serif;
+    font-weight: 800;
     letter-spacing: -0.01em;
   }
+}
+
+/* Gaming utilities */
+@utility glass-card {
+  background: color-mix(in oklab, var(--card) 75%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid color-mix(in oklab, white 10%, transparent);
+  box-shadow: var(--shadow-card);
+}
+
+@utility shimmer-gold {
+  background: linear-gradient(90deg, #FBBF24 0%, #FDE68A 50%, #FBBF24 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility glow-primary {
+  box-shadow: 0 0 24px -4px color-mix(in oklab, var(--primary-glow) 70%, transparent);
+}
+
+@utility glow-gold {
+  box-shadow: 0 0 26px -4px color-mix(in oklab, #FBBF24 70%, transparent);
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@utility animate-float {
+  animation: float-soft 3.5s ease-in-out infinite;
 }
