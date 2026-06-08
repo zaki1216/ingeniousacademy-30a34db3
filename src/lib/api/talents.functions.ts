@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { TALENTS, talentByCode, totalTalentPoints, costForNextTier } from "@/lib/gamification/talents";
+import { applyOverrides, totalTalentPoints, costForNextTier } from "@/lib/gamification/talents";
+
+async function loadEffectiveTalents() {
+  const { data } = await supabaseAdmin.from("talent_configs").select("*");
+  return applyOverrides((data ?? []) as never);
+}
 
 async function loadUnlocked(userId: string): Promise<Record<string, number>> {
   const { data } = await supabaseAdmin
