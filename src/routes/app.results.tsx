@@ -43,6 +43,8 @@ function ResultsPage() {
         <p className="text-sm text-muted-foreground">{data?.length ?? 0} attempts</p>
       </div>
 
+      {role === "student" && <ActiveBonusesCard title="XP & Coin Bonuses on this screen" />}
+
       <div className="space-y-2">
         {data?.map((r) => {
           const grade = r.percentage >= 75 ? "default" : r.percentage >= 40 ? "secondary" : "destructive";
