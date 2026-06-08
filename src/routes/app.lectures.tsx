@@ -1,22 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
-import { Search, PlayCircle } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useCallback, useMemo, useState } from "react";
+import { Search, PlayCircle, CheckCircle2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { toYouTubeEmbed } from "@/lib/utils/youtube";
+import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
+import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
+import { completeVideo } from "@/lib/api/gamification.functions";
 
 export const Route = createFileRoute("/app/lectures")({ component: LecturesPage });
 
 function LecturesPage() {
   const { user } = useAuth();
+  const qc = useQueryClient();
+  const completeFn = useServerFn(completeVideo);
+
   const [search, setSearch] = useState("");
   const [subjectId, setSubjectId] = useState("all");
-  const [activeLecture, setActiveLecture] = useState<{ url: string; title: string } | null>(null);
+  const [activeLecture, setActiveLecture] = useState<{ id: string; url: string; title: string } | null>(null);
+  const [reward, setReward] = useState<RewardPayload | null>(null);
 
   const profile = useQuery({
     queryKey: ["profile", user?.id],
@@ -30,6 +37,13 @@ function LecturesPage() {
     enabled: !!standardId,
     queryFn: async () => (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [],
   });
+
+  const completions = useQuery({
+    queryKey: ["video-completions", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => (await supabase.from("video_completions").select("lecture_id").eq("user_id", user!.id)).data ?? [],
+  });
+  const completedSet = useMemo(() => new Set((completions.data ?? []).map((c) => c.lecture_id)), [completions.data]);
 
   const lectures = useQuery({
     queryKey: ["lectures-flat", standardId],
@@ -57,6 +71,20 @@ function LecturesPage() {
     );
   }, [lectures.data, subjectId, search]);
 
+  const handleVideoEnded = useCallback(async () => {
+    if (!activeLecture) return;
+    try {
+      const r = await completeFn({ data: { lectureId: activeLecture.id } });
+      if (!r.alreadyCompleted) {
+        setReward({ ...r, title: "Lecture complete!" });
+        qc.invalidateQueries({ queryKey: ["video-completions"] });
+        qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
+      }
+    } catch {
+      /* silent */
+    }
+  }, [activeLecture, completeFn, qc]);
+
   if (!standardId) {
     return (
       <div className="space-y-2">
@@ -68,23 +96,16 @@ function LecturesPage() {
 
   return (
     <div className="space-y-4">
+      <RewardPopup reward={reward} onClose={() => setReward(null)} />
       <div>
         <h1 className="text-2xl font-bold">Lectures</h1>
-        <p className="text-sm text-muted-foreground">{filtered.length} videos</p>
+        <p className="text-sm text-muted-foreground">{filtered.length} videos · Watch fully to earn XP</p>
       </div>
 
       {activeLecture && (
         <Card>
           <CardContent className="p-3 space-y-2">
-            <div className="aspect-video w-full">
-              <iframe
-                src={toYouTubeEmbed(activeLecture.url)}
-                className="w-full h-full rounded-lg"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                title={activeLecture.title}
-              />
-            </div>
+            <YouTubePlayer url={activeLecture.url} title={activeLecture.title} onComplete={handleVideoEnded} />
             <div className="flex items-center justify-between">
               <div className="font-semibold">{activeLecture.title}</div>
               <button className="text-sm text-muted-foreground" onClick={() => setActiveLecture(null)}>Close</button>
@@ -108,21 +129,25 @@ function LecturesPage() {
       </div>
 
       <div className="space-y-2">
-        {filtered.map((l) => (
-          <Card key={l.id} className="cursor-pointer hover:bg-accent/30 transition" onClick={() => setActiveLecture({ url: l.youtube_url, title: l.lecture_title })}>
-            <CardContent className="p-3 flex items-center gap-3">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <PlayCircle className="h-6 w-6" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="font-medium truncate">L {l.lecture_number}. {l.lecture_title}</div>
-                <div className="text-xs text-muted-foreground truncate">
-                  {l.subject_name} · Ch {l.chapter_number}. {l.chapter_name}
+        {filtered.map((l) => {
+          const done = completedSet.has(l.id);
+          return (
+            <Card key={l.id} className="cursor-pointer hover:bg-accent/30 transition" onClick={() => setActiveLecture({ id: l.id, url: l.youtube_url, title: l.lecture_title })}>
+              <CardContent className="p-3 flex items-center gap-3">
+                <div className={`h-12 w-12 rounded-lg flex items-center justify-center shrink-0 ${done ? "bg-green-500/15 text-green-600" : "bg-primary/10 text-primary"}`}>
+                  {done ? <CheckCircle2 className="h-6 w-6" /> : <PlayCircle className="h-6 w-6" />}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium truncate">L {l.lecture_number}. {l.lecture_title}</div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    {l.subject_name} · Ch {l.chapter_number}. {l.chapter_name}
+                  </div>
+                </div>
+                {done && <span className="text-[10px] font-semibold text-green-600 uppercase">+50 XP</span>}
+              </CardContent>
+            </Card>
+          );
+        })}
         {filtered.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">No lectures found.</p>
         )}

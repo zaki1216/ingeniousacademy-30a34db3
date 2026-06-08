@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -9,17 +9,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { getTestForStudent, submitTest } from "@/lib/api/academy.functions";
+import { awardQuizRewards } from "@/lib/api/gamification.functions";
+import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 
 export const Route = createFileRoute("/app/tests/$testId")({ component: TakeTestPage });
 
 function TakeTestPage() {
   const { testId } = Route.useParams();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const getFn = useServerFn(getTestForStudent);
   const submitFn = useServerFn(submitTest);
+  const awardFn = useServerFn(awardQuizRewards);
 
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [result, setResult] = useState<{ score: number; total: number; percentage: number } | null>(null);
+  const [reward, setReward] = useState<RewardPayload | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -41,8 +46,15 @@ function TakeTestPage() {
     try {
       const r = await submitFn({ data: { testId, answers } });
       setResult({ score: r.score, total: r.total, percentage: r.percentage });
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to submit");
+      try {
+        const rw = await awardFn({ data: { testId, percentage: r.percentage } });
+        if (!rw.alreadyAwarded) {
+          setReward({ ...rw, title: "Quiz complete!" });
+          qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
+        }
+      } catch { /* ignore reward errors */ }
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Failed to submit");
     } finally {
       setSubmitting(false);
     }
@@ -53,22 +65,25 @@ function TakeTestPage() {
 
   if (result) {
     return (
-      <div className="space-y-4 max-w-md mx-auto">
-        <Card>
-          <CardContent className="p-6 text-center space-y-4">
-            <CheckCircle2 className="h-16 w-16 mx-auto text-primary" />
-            <h2 className="text-2xl font-bold">Test submitted!</h2>
-            <div className="text-5xl font-bold text-primary">{result.percentage}%</div>
-            <div className="text-muted-foreground">
-              {result.score} / {result.total} marks
-            </div>
-            <div className="flex gap-2 justify-center pt-2">
-              <Button asChild variant="outline"><Link to="/app/tests">Back to tests</Link></Button>
-              <Button asChild><Link to="/app/results">View all results</Link></Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <RewardPopup reward={reward} onClose={() => setReward(null)} />
+        <div className="space-y-4 max-w-md mx-auto">
+          <Card>
+            <CardContent className="p-6 text-center space-y-4">
+              <CheckCircle2 className="h-16 w-16 mx-auto text-primary" />
+              <h2 className="text-2xl font-bold">Test submitted!</h2>
+              <div className="text-5xl font-bold text-primary">{result.percentage}%</div>
+              <div className="text-muted-foreground">
+                {result.score} / {result.total} marks
+              </div>
+              <div className="flex gap-2 justify-center pt-2">
+                <Button asChild variant="outline"><Link to="/app/tests">Back to tests</Link></Button>
+                <Button asChild><Link to="/app/results">View all results</Link></Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     );
   }
 

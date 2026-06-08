@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, ClipboardList, ListChecks } from "lucide-react";
+import { Plus, Pencil, Trash2, ClipboardList, ListChecks, Sword, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -60,6 +60,33 @@ function TestsPage() {
     queryFn: async () => (await supabase.from("results").select("test_id, percentage").eq("student_id", user!.id)).data ?? [],
   });
 
+  const lecturesAll = useQuery({
+    queryKey: ["lectures-all-min"],
+    enabled: role === "student",
+    queryFn: async () => (await supabase.from("lectures").select("id, chapter_id")).data ?? [],
+  });
+  const myCompletions = useQuery({
+    queryKey: ["video-completions", user?.id],
+    enabled: !!user?.id && role === "student",
+    queryFn: async () => (await supabase.from("video_completions").select("lecture_id").eq("user_id", user!.id)).data ?? [],
+  });
+
+  const bossUnlocked = useMemo(() => {
+    const map = new Map<string, boolean>();
+    if (role !== "student") return map;
+    const doneSet = new Set((myCompletions.data ?? []).map((c) => c.lecture_id));
+    const byChapter = new Map<string, string[]>();
+    for (const l of lecturesAll.data ?? []) {
+      const arr = byChapter.get(l.chapter_id) ?? [];
+      arr.push(l.id);
+      byChapter.set(l.chapter_id, arr);
+    }
+    for (const [chId, lecIds] of byChapter) {
+      map.set(chId, lecIds.length > 0 && lecIds.every((id) => doneSet.has(id)));
+    }
+    return map;
+  }, [lecturesAll.data, myCompletions.data, role]);
+
   const visible = useMemo(() => {
     const list = tests.data ?? [];
     if (role === "admin") return list;
@@ -99,22 +126,36 @@ function TestsPage() {
       <div className="space-y-2">
         {visible.map((t) => {
           const r = myResult(t.id);
+          const isBoss = t.is_boss;
+          const unlocked = !isBoss || role === "admin" || (bossUnlocked.get(t.chapter_id) ?? false);
           return (
-            <Card key={t.id}>
+            <Card key={t.id} className={isBoss ? "border-amber-500/50 bg-gradient-to-br from-amber-500/5 to-transparent" : ""}>
               <CardContent className="p-3 flex items-center gap-3">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <ClipboardList className="h-6 w-6" />
+                <div className={`h-12 w-12 rounded-lg flex items-center justify-center shrink-0 ${isBoss ? "bg-amber-500/15 text-amber-600" : "bg-primary/10 text-primary"}`}>
+                  {isBoss ? <Sword className="h-6 w-6" /> : <ClipboardList className="h-6 w-6" />}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-medium truncate">{t.title}</div>
+                  <div className="font-medium truncate flex items-center gap-2">
+                    {t.title}
+                    {isBoss && <Badge className="bg-amber-500 text-white hover:bg-amber-500">BOSS</Badge>}
+                  </div>
                   <div className="text-xs text-muted-foreground truncate">{chLabel(t.chapter_id)} · {t.total_marks} marks</div>
                   {r && <Badge variant="secondary" className="mt-1">Last score: {r.percentage}%</Badge>}
+                  {isBoss && role === "student" && !unlocked && (
+                    <div className="text-[11px] text-amber-700 dark:text-amber-400 mt-1 flex items-center gap-1">
+                      <Lock className="h-3 w-3" /> Watch every lecture in this chapter to unlock
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-1 flex-wrap justify-end">
                   {role === "student" && (
-                    <Button asChild size="sm">
-                      <Link to="/app/tests/$testId" params={{ testId: t.id }}>{r ? "Retake" : "Start"}</Link>
-                    </Button>
+                    unlocked ? (
+                      <Button asChild size="sm" className={isBoss ? "bg-amber-500 hover:bg-amber-600 text-white" : ""}>
+                        <Link to="/app/tests/$testId" params={{ testId: t.id }}>{r ? "Retake" : isBoss ? "Battle" : "Start"}</Link>
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" disabled><Lock className="h-4 w-4 mr-1" />Locked</Button>
+                    )
                   )}
                   {role === "admin" && (
                     <>
@@ -185,12 +226,13 @@ function TestDialog({
   const [title, setTitle] = useState(initial?.title ?? "");
   const [chapterId, setChapterId] = useState(initial?.chapter_id ?? "");
   const [totalMarks, setTotalMarks] = useState(initial?.total_marks ?? 0);
+  const [isBoss, setIsBoss] = useState<boolean>(initial?.is_boss ?? false);
   const [saving, setSaving] = useState(false);
 
   async function submit() {
     setSaving(true);
     try {
-      await onSubmit({ title, chapter_id: chapterId, total_marks: Number(totalMarks) });
+      await onSubmit({ title, chapter_id: chapterId, total_marks: Number(totalMarks), is_boss: isBoss });
       setOpen(false);
       toast.success("Saved");
     } catch (e: any) {
@@ -217,6 +259,10 @@ function TestDialog({
             </Select>
           </div>
           <div><Label>Total marks (auto-calculated from questions)</Label><Input type="number" value={totalMarks} onChange={(e) => setTotalMarks(Number(e.target.value))} /></div>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={isBoss} onChange={(e) => setIsBoss(e.target.checked)} />
+            Boss quiz (unlocks after all chapter lectures are watched; bonus +100 XP / +50 coins)
+          </label>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>

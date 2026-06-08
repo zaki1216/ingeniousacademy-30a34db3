@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, GraduationCap, LogOut, Menu, Settings, TrendingUp,
+  Trophy, Coins, Award,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,9 @@ const studentNav: NavItem[] = [
   { to: "/app/lectures", label: "Lectures", icon: BookOpen },
   { to: "/app/notes", label: "Notes", icon: FileText },
   { to: "/app/tests", label: "Tests", icon: ClipboardList },
+  { to: "/app/leaderboard", label: "Leaderboard", icon: Trophy },
+  { to: "/app/achievements", label: "Achievements", icon: Award },
+  { to: "/app/coins", label: "Coins", icon: Coins },
   { to: "/app/results", label: "My Results", icon: BarChart3 },
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
 ];
