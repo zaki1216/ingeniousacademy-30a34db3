@@ -61,8 +61,10 @@ export const unlockTalentTier = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ code: z.string().min(1).max(64) }).parse(d))
   .handler(async ({ data, context }) => {
     const userId = context.userId;
-    const talent = talentByCode(data.code);
+    const effective = await loadEffectiveTalents();
+    const talent = effective.find((t) => t.code === data.code);
     if (!talent) throw new Error("Unknown talent");
+
 
     const { data: stats } = await supabaseAdmin
       .from("gamification_stats")
