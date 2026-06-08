@@ -57,8 +57,8 @@ function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-accent via-background to-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-[var(--shadow-card)]">
         <CardHeader className="text-center">
-          <div className="mx-auto h-14 w-14 rounded-2xl bg-[image:var(--gradient-primary)] text-primary-foreground flex items-center justify-center mb-2">
-            <GraduationCap className="h-7 w-7" />
+          <div className="mx-auto h-16 w-16 rounded-2xl bg-white flex items-center justify-center overflow-hidden mb-2 shadow-[var(--shadow-card)]">
+            <img src={(await import("@/assets/ingenious-logo.jpg.asset.json")).default?.url ?? ""} alt="Ingenious Academy" className="h-14 w-14 object-contain" />
           </div>
           <CardTitle className="text-2xl">Ingenious Academy</CardTitle>
           <CardDescription>Learn Smart. Understand Better. Score Higher.</CardDescription>

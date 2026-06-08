@@ -1,8 +1,9 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
-  Megaphone, BarChart3, GraduationCap, LogOut, Menu, Settings, TrendingUp,
+  Megaphone, BarChart3, LogOut, Menu, Settings, TrendingUp,
   Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck,
 } from "lucide-react";
 
@@ -97,12 +98,12 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 function Brand() {
   return (
     <div className="flex items-center gap-2 px-2 py-3">
-      <div className="h-10 w-10 rounded-2xl bg-[image:var(--gradient-primary)] text-primary-foreground flex items-center justify-center glow-primary">
-        <GraduationCap className="h-5 w-5" />
+      <div className="h-10 w-10 rounded-2xl bg-white/90 flex items-center justify-center overflow-hidden glow-primary">
+        <img src={logoAsset.url} alt="Ingenious Academy" className="h-9 w-9 object-contain" />
       </div>
       <div>
-        <div className="text-sm font-extrabold leading-tight">Maths Kingdom</div>
-        <div className="text-[11px] text-muted-foreground leading-tight">Adventure Awaits</div>
+        <div className="text-sm font-extrabold leading-tight">Ingenious Academy</div>
+        <div className="text-[11px] text-muted-foreground leading-tight">Learn Smart. Score Higher.</div>
       </div>
     </div>
   );
@@ -217,10 +218,10 @@ function AppLayout() {
             </SheetContent>
           </Sheet>
           <div className="md:hidden flex items-center gap-2">
-            <div className="h-8 w-8 rounded-xl bg-[image:var(--gradient-primary)] text-primary-foreground flex items-center justify-center glow-primary">
-              <GraduationCap className="h-4 w-4" />
+            <div className="h-8 w-8 rounded-xl bg-white/90 flex items-center justify-center overflow-hidden glow-primary">
+              <img src={logoAsset.url} alt="Ingenious Academy" className="h-7 w-7 object-contain" />
             </div>
-            <span className="font-extrabold tracking-tight">Maths Kingdom</span>
+            <span className="font-extrabold tracking-tight">Ingenious Academy</span>
           </div>
           <div className="ml-auto md:hidden">
             {isStudent && (
