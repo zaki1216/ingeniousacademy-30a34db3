@@ -235,11 +235,15 @@ export const completeVideo = createServerFn({ method: "POST" })
     const userId = context.userId;
     const { data: existing } = await supabaseAdmin
       .from("video_completions")
-      .select("id")
+      .select("id, watch_count")
       .eq("user_id", userId)
       .eq("lecture_id", data.lectureId)
       .maybeSingle();
     if (existing) {
+      await supabaseAdmin
+        .from("video_completions")
+        .update({ watch_count: (existing.watch_count ?? 1) + 1, last_watched_at: new Date().toISOString() })
+        .eq("id", existing.id);
       const stats = await ensureStatsRow(userId);
       return {
         alreadyCompleted: true,
@@ -249,7 +253,7 @@ export const completeVideo = createServerFn({ method: "POST" })
         weeklyStreakBonus: null,
       };
     }
-    await supabaseAdmin.from("video_completions").insert({ user_id: userId, lecture_id: data.lectureId });
+    await supabaseAdmin.from("video_completions").insert({ user_id: userId, lecture_id: data.lectureId, watch_count: 1, last_watched_at: new Date().toISOString() });
 
     // Check chapter completion bonus
     const { data: lec } = await supabaseAdmin
