@@ -44,6 +44,7 @@ const adminNav: NavItem[] = [
 const studentNav: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
   { to: "/app/worlds", label: "Worlds", icon: Map },
+  { to: "/app/quests", label: "Quests", icon: Target },
   { to: "/app/lectures", label: "Missions", icon: BookOpen },
   { to: "/app/tests", label: "Battles", icon: Swords },
   { to: "/app/pvp", label: "Arena", icon: Swords },
