@@ -101,10 +101,31 @@ function Page() {
         </TabsList>
 
         <TabsContent value="mark" className="space-y-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <label className="text-sm font-medium">Date</label>
             <Input type="date" value={date} max={today} onChange={(e) => setDate(e.target.value)} className="w-48" />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant="outline" className="ml-auto" disabled={stats.present + stats.absent === 0}>
+                  <RotateCcw className="h-4 w-4 mr-1" /> Reset day
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset attendance for {date}?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This deletes all attendance records for this date and reverts the coins
+                    given or deducted for every affected student.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => reset()}>Reset all</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
+
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <StatCard label="Total" value={stats.total} />
