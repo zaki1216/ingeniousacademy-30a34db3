@@ -90,7 +90,7 @@ function Page() {
           <CalendarDays className="h-6 w-6 text-primary" /> Attendance
         </h1>
         <p className="text-sm text-muted-foreground">
-          Present = +4 coins • Absent = −2 coins
+          Present = +2 coins • Absent = −1 coin
         </p>
       </div>
 

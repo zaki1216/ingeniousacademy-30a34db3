@@ -3,8 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const PRESENT_REWARD = 4;
-const ABSENT_PENALTY = -2;
+const PRESENT_REWARD = 2;
+const ABSENT_PENALTY = -1;
 
 async function assertAdmin(userId: string) {
   const { data } = await supabaseAdmin
