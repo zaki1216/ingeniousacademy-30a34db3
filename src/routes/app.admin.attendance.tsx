@@ -165,6 +165,17 @@ function Page() {
                   >
                     <XCircle className="h-4 w-4 mr-1" /> A
                   </Button>
+                  {s.status && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      title="Reset this student's attendance for this date"
+                      onClick={() => reset(s.id)}
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
+                  )}
+
                 </CardContent>
               </Card>
             ))}
