@@ -66,6 +66,47 @@ export const markAttendance = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const resetAttendance = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({
+    studentId: z.string().uuid().optional(),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    let q = supabaseAdmin.from("attendance").select("id, student_id, coins_delta").eq("date", data.date);
+    if (data.studentId) q = q.eq("student_id", data.studentId);
+    const { data: rows } = await q;
+    if (!rows || rows.length === 0) return { ok: true, cleared: 0 };
+
+    for (const r of rows) {
+      const revert = -(r.coins_delta ?? 0);
+      if (revert !== 0) {
+        const { data: stats } = await supabaseAdmin
+          .from("gamification_stats").select("coins").eq("user_id", r.student_id).maybeSingle();
+        if (stats) {
+          await supabaseAdmin.from("gamification_stats").update({
+            coins: Math.max(0, stats.coins + revert), updated_at: new Date().toISOString(),
+          }).eq("user_id", r.student_id);
+        } else if (revert > 0) {
+          await supabaseAdmin.from("gamification_stats").insert({ user_id: r.student_id, coins: revert });
+        }
+        await supabaseAdmin.from("coin_transactions").insert({
+          user_id: r.student_id,
+          amount: revert,
+          reason: "attendance_reset",
+          metadata: { date: data.date, reverted_delta: r.coins_delta },
+        });
+      }
+      await supabaseAdmin.from("attendance").delete().eq("id", r.id);
+    }
+
+    return { ok: true, cleared: rows.length };
+  });
+
+
+
 export const getAttendanceForDate = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({

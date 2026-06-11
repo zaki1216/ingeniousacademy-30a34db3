@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { CheckCircle2, XCircle, CalendarDays, History } from "lucide-react";
+import { CheckCircle2, XCircle, CalendarDays, History, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,10 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/auth/AuthContext";
 import {
-  getAttendanceForDate, markAttendance, getAttendanceHistory,
+  getAttendanceForDate, markAttendance, getAttendanceHistory, resetAttendance,
 } from "@/lib/api/attendance.functions";
+
 
 export const Route = createFileRoute("/app/admin/attendance")({ component: Page });
 
@@ -26,6 +31,8 @@ function Page() {
   const listFn = useServerFn(getAttendanceForDate);
   const markFn = useServerFn(markAttendance);
   const histFn = useServerFn(getAttendanceHistory);
+  const resetFn = useServerFn(resetAttendance);
+
 
   const list = useQuery({
     queryKey: ["att-list", date],
@@ -64,6 +71,18 @@ function Page() {
     }
   }
 
+  async function reset(studentId?: string) {
+    try {
+      const res = await resetFn({ data: { date, ...(studentId ? { studentId } : {}) } });
+      toast.success(`Reset ${res.cleared ?? 0} record${res.cleared === 1 ? "" : "s"} • coins reverted`);
+      qc.invalidateQueries({ queryKey: ["att-list", date] });
+      qc.invalidateQueries({ queryKey: ["att-hist"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  }
+
+
   return (
     <div className="space-y-4">
       <div>
@@ -82,10 +101,31 @@ function Page() {
         </TabsList>
 
         <TabsContent value="mark" className="space-y-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <label className="text-sm font-medium">Date</label>
             <Input type="date" value={date} max={today} onChange={(e) => setDate(e.target.value)} className="w-48" />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant="outline" className="ml-auto" disabled={stats.present + stats.absent === 0}>
+                  <RotateCcw className="h-4 w-4 mr-1" /> Reset day
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset attendance for {date}?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This deletes all attendance records for this date and reverts the coins
+                    given or deducted for every affected student.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => reset()}>Reset all</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
+
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <StatCard label="Total" value={stats.total} />
@@ -125,6 +165,17 @@ function Page() {
                   >
                     <XCircle className="h-4 w-4 mr-1" /> A
                   </Button>
+                  {s.status && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      title="Reset this student's attendance for this date"
+                      onClick={() => reset(s.id)}
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
+                  )}
+
                 </CardContent>
               </Card>
             ))}
