@@ -26,6 +26,7 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: 
 
 const adminNav: NavItem[] = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/app/admin/dashboard", label: "Analytics Hub", icon: Gauge },
   { to: "/app/students", label: "Students", icon: Users },
   { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/content", label: "Content", icon: BookOpen },
@@ -34,7 +35,7 @@ const adminNav: NavItem[] = [
   { to: "/app/tests", label: "Tests", icon: ClipboardList },
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
   { to: "/app/results", label: "Results", icon: BarChart3 },
-  { to: "/app/analytics", label: "Analytics", icon: TrendingUp },
+  { to: "/app/analytics", label: "Test Analytics", icon: TrendingUp },
   { to: "/app/admin/talents", label: "Talents", icon: Sparkles },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
