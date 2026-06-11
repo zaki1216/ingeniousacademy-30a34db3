@@ -4,7 +4,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, LogOut, Menu, Settings, TrendingUp,
-  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye,
+  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye, Gauge, Target,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: 
 
 const adminNav: NavItem[] = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/app/admin/dashboard", label: "Analytics Hub", icon: Gauge },
   { to: "/app/students", label: "Students", icon: Users },
   { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/content", label: "Content", icon: BookOpen },
@@ -34,7 +35,7 @@ const adminNav: NavItem[] = [
   { to: "/app/tests", label: "Tests", icon: ClipboardList },
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
   { to: "/app/results", label: "Results", icon: BarChart3 },
-  { to: "/app/analytics", label: "Analytics", icon: TrendingUp },
+  { to: "/app/analytics", label: "Test Analytics", icon: TrendingUp },
   { to: "/app/admin/talents", label: "Talents", icon: Sparkles },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
@@ -43,6 +44,7 @@ const adminNav: NavItem[] = [
 const studentNav: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
   { to: "/app/worlds", label: "Worlds", icon: Map },
+  { to: "/app/quests", label: "Quests", icon: Target },
   { to: "/app/lectures", label: "Missions", icon: BookOpen },
   { to: "/app/tests", label: "Battles", icon: Swords },
   { to: "/app/pvp", label: "Arena", icon: Swords },
