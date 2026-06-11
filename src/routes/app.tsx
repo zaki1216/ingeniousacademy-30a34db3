@@ -4,7 +4,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, LogOut, Menu, Settings, TrendingUp,
-  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck,
+  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ const adminNav: NavItem[] = [
   { to: "/app/students", label: "Students", icon: Users },
   { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/content", label: "Content", icon: BookOpen },
+  { to: "/app/admin/lecture-views", label: "Lecture Views", icon: Eye },
   { to: "/app/notes", label: "Notes", icon: FileText },
   { to: "/app/tests", label: "Tests", icon: ClipboardList },
   { to: "/app/announcements", label: "Announcements", icon: Megaphone },
