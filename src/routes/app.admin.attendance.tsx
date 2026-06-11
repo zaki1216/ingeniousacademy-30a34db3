@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { CheckCircle2, XCircle, CalendarDays, History } from "lucide-react";
+import { CheckCircle2, XCircle, CalendarDays, History, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,10 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/auth/AuthContext";
 import {
-  getAttendanceForDate, markAttendance, getAttendanceHistory,
+  getAttendanceForDate, markAttendance, getAttendanceHistory, resetAttendance,
 } from "@/lib/api/attendance.functions";
+
 
 export const Route = createFileRoute("/app/admin/attendance")({ component: Page });
 
