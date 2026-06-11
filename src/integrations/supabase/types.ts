@@ -925,20 +925,26 @@ export type Database = {
         Row: {
           completed_at: string
           id: string
+          last_watched_at: string
           lecture_id: string
           user_id: string
+          watch_count: number
         }
         Insert: {
           completed_at?: string
           id?: string
+          last_watched_at?: string
           lecture_id: string
           user_id: string
+          watch_count?: number
         }
         Update: {
           completed_at?: string
           id?: string
+          last_watched_at?: string
           lecture_id?: string
           user_id?: string
+          watch_count?: number
         }
         Relationships: [
           {
