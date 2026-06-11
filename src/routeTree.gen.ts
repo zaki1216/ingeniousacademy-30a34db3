@@ -37,6 +37,7 @@ import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
+import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
 import { Route as AppAdminAttendanceRouteImport } from './routes/app.admin.attendance'
 import { Route as AppPvpDuelIdRouteImport } from './routes/app.pvp.duel.$id'
 import { Route as AppPvpBrIdRouteImport } from './routes/app.pvp.br.$id'
@@ -181,6 +182,11 @@ const AppAdminTalentsRoute = AppAdminTalentsRouteImport.update({
   path: '/admin/talents',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
+  id: '/admin/lecture-views',
+  path: '/admin/lecture-views',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminAttendanceRoute = AppAdminAttendanceRouteImport.update({
   id: '/admin/attendance',
   path: '/admin/attendance',
@@ -223,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -254,6 +261,7 @@ export interface FileRoutesByTo {
   '/app/worlds': typeof AppWorldsRoute
   '/app': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -288,6 +296,7 @@ export interface FileRoutesById {
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -323,6 +332,7 @@ export interface FileRouteTypes {
     | '/app/worlds'
     | '/app/'
     | '/app/admin/attendance'
+    | '/app/admin/lecture-views'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
     | '/app/worlds'
     | '/app'
     | '/app/admin/attendance'
+    | '/app/admin/lecture-views'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -387,6 +398,7 @@ export interface FileRouteTypes {
     | '/app/worlds'
     | '/app/'
     | '/app/admin/attendance'
+    | '/app/admin/lecture-views'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -602,6 +614,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminTalentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/lecture-views': {
+      id: '/app/admin/lecture-views'
+      path: '/admin/lecture-views'
+      fullPath: '/app/admin/lecture-views'
+      preLoaderRoute: typeof AppAdminLectureViewsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/attendance': {
       id: '/app/admin/attendance'
       path: '/admin/attendance'
@@ -685,6 +704,7 @@ interface AppRouteChildren {
   AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
+  AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
 }
 
@@ -708,6 +728,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminAttendanceRoute: AppAdminAttendanceRoute,
+  AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
 }
 
