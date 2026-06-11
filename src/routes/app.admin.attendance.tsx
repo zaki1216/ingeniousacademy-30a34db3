@@ -31,6 +31,8 @@ function Page() {
   const listFn = useServerFn(getAttendanceForDate);
   const markFn = useServerFn(markAttendance);
   const histFn = useServerFn(getAttendanceHistory);
+  const resetFn = useServerFn(resetAttendance);
+
 
   const list = useQuery({
     queryKey: ["att-list", date],
