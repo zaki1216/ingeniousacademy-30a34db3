@@ -178,9 +178,9 @@ function ProfilePage() {
 
       {/* Quick links */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <QuickLink to="/app/collection" icon={<Sparkles className="h-4 w-4" />} label="Collection" />
         <QuickLink to="/app/achievements" icon={<Award className="h-4 w-4" />} label="Badges" />
         <QuickLink to="/app/talents" icon={<Sparkles className="h-4 w-4" />} label="Skill Tree" />
-        <QuickLink to="/app/shop" icon={<Coins className="h-4 w-4" />} label="Cosmetics" />
         <QuickLink to="/app/leaderboard" icon={<Trophy className="h-4 w-4" />} label="Ranking" />
       </div>
     </div>
