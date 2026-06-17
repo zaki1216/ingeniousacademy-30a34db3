@@ -43,6 +43,30 @@ function PvpHub() {
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-3">
+        <Link to="/app/leaderboard" className="rounded-2xl glass-card p-3 flex items-center gap-2 hover:scale-[1.02] transition-transform">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-600 grid place-items-center">
+            <Trophy className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-extrabold text-sm">Rankings</div>
+            <div className="text-[10px] text-muted-foreground">Leaderboards</div>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </Link>
+        <Link to="/app/profile" className="rounded-2xl glass-card p-3 flex items-center gap-2 hover:scale-[1.02] transition-transform">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-600 grid place-items-center">
+            <BarChart3 className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-extrabold text-sm">Arena Statistics</div>
+            <div className="text-[10px] text-muted-foreground">Wins · streaks · rank</div>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </Link>
+      </div>
+
+
       <Tabs defaultValue="duels">
         <TabsList className="grid grid-cols-2 w-full">
           <TabsTrigger value="duels">
