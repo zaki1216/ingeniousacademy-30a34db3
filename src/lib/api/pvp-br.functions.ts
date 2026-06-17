@@ -176,7 +176,6 @@ export const getBrRoom = createServerFn({ method: "GET" })
         user_id: p.user_id,
         name:
           profs?.find((x) => x.id === p.user_id)?.name ||
-          profs?.find((x) => x.id === p.user_id)?.email ||
           "Player",
         eliminated: p.eliminated,
         eliminated_at_index: p.eliminated_at_index,
