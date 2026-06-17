@@ -129,7 +129,7 @@ export const getBrRoom = createServerFn({ method: "GET" })
 
     const ids = (players ?? []).map((p) => p.user_id);
     const { data: profs } = ids.length
-      ? await supabaseAdmin.from("profiles").select("id, name, email").in("id", ids)
+      ? await supabaseAdmin.from("profiles").select("id, name").in("id", ids)
       : { data: [] };
 
     let currentQuestion = null as null | {
