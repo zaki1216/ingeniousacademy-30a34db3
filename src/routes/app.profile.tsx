@@ -4,7 +4,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import {
   Award, BookOpen, CalendarCheck, Coins, Flame, Sparkles, Swords, Trophy, Zap, ChevronRight,
+  PawPrint, Backpack, FileText, Settings, Target, Megaphone,
 } from "lucide-react";
+
 
 import { useAuth } from "@/lib/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -176,13 +178,25 @@ function ProfilePage() {
         <StatTile icon={<CalendarCheck className="h-5 w-5 text-green-300" />} label="Attendance" value={`${counts.data?.attendancePct ?? 0}%`} />
       </div>
 
-      {/* Quick links */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <QuickLink to="/app/collection" icon={<Sparkles className="h-4 w-4" />} label="Collection" />
-        <QuickLink to="/app/achievements" icon={<Award className="h-4 w-4" />} label="Badges" />
-        <QuickLink to="/app/talents" icon={<Sparkles className="h-4 w-4" />} label="Skill Tree" />
-        <QuickLink to="/app/leaderboard" icon={<Trophy className="h-4 w-4" />} label="Ranking" />
+      {/* Quick links — everything under Profile */}
+      <div>
+        <h2 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground mb-2 px-1">
+          Hunter Menu
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <QuickLink to="/app/collection" icon={<Sparkles className="h-4 w-4" />} label="Collection" />
+          <QuickLink to="/app/achievements" icon={<Award className="h-4 w-4" />} label="Badges & Achievements" />
+          <QuickLink to="/app/talents" icon={<Target className="h-4 w-4" />} label="Talents" />
+          <QuickLink to="/app/pets" icon={<PawPrint className="h-4 w-4" />} label="Pets" />
+          <QuickLink to="/app/inventory" icon={<Backpack className="h-4 w-4" />} label="Inventory" />
+          <QuickLink to="/app/notes" icon={<FileText className="h-4 w-4" />} label="Scrolls" />
+          <QuickLink to="/app/attendance" icon={<CalendarCheck className="h-4 w-4" />} label="Attendance" />
+          <QuickLink to="/app/leaderboard" icon={<Trophy className="h-4 w-4" />} label="Rankings" />
+          <QuickLink to="/app/announcements" icon={<Megaphone className="h-4 w-4" />} label="News" />
+          <QuickLink to="/app/settings" icon={<Settings className="h-4 w-4" />} label="Settings" />
+        </div>
       </div>
+
     </div>
   );
 }
