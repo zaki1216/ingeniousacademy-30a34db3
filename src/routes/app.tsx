@@ -274,6 +274,11 @@ function AppLayout() {
           </div>
         </header>
         <main className={cn("flex-1 p-4 md:p-6 max-w-6xl w-full mx-auto", isStudent && "pb-24 md:pb-6")}>
+          {isStudent && (
+            <div className="mb-4 sticky top-14 z-10">
+              <PlayerStatusBar />
+            </div>
+          )}
           <Outlet />
         </main>
         {isStudent && <BottomTabs />}
