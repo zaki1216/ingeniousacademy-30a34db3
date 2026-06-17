@@ -120,7 +120,31 @@ function ShopPage() {
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-3">
+        <Link to="/app/passes" className="rounded-2xl glass-card p-3 flex items-center gap-2 hover:scale-[1.02] transition-transform">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 grid place-items-center">
+            <Ticket className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-extrabold text-sm">Passes</div>
+            <div className="text-[10px] text-muted-foreground">Battle & season passes</div>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </Link>
+        <Link to="/app/spin" className="rounded-2xl glass-card p-3 flex items-center gap-2 hover:scale-[1.02] transition-transform">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center">
+            <Gift className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-extrabold text-sm">Daily Spin Wheel</div>
+            <div className="text-[10px] text-muted-foreground">Free spin every day</div>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </Link>
+      </div>
+
       <Tabs defaultValue="avatar">
+
         <TabsList className="w-full flex overflow-x-auto no-scrollbar gap-1 justify-start">
           {CATEGORIES.map((c) => (
             <TabsTrigger key={c.key} value={c.key} className="text-xs shrink-0">
