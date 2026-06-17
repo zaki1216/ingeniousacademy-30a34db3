@@ -2,9 +2,8 @@ import { createFileRoute, Link, Outlet, redirect, useNavigate, useRouterState } 
 import { useEffect, useState } from "react";
 import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
-  LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
-  Megaphone, BarChart3, LogOut, Menu, Settings, TrendingUp,
-  Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye, Gauge, Ticket, Gift,
+  LayoutDashboard, Users, BookOpen, ClipboardList,
+  LogOut, Menu, Settings, Map, Swords, ShoppingBag, Home, User, Sparkles,
 } from "lucide-react";
 
 
@@ -26,27 +25,17 @@ export const Route = createFileRoute("/app")({
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean };
 
+// Admin primary nav — 6 hubs only
 const adminNav: NavItem[] = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/app/admin/dashboard", label: "Analytics Hub", icon: Gauge },
   { to: "/app/students", label: "Students", icon: Users },
-  { to: "/app/content", label: "Content", icon: BookOpen },
-  { to: "/app/admin/lecture-views", label: "Lecture Views", icon: Eye },
-  { to: "/app/notes", label: "Notes", icon: FileText },
-  { to: "/app/tests", label: "Tests", icon: ClipboardList },
-  { to: "/app/results", label: "Results", icon: BarChart3 },
-  { to: "/app/analytics", label: "Test Analytics", icon: TrendingUp },
-  { to: "/app/admin/talents", label: "Talents", icon: Sparkles },
-  { to: "/app/admin/passes", label: "Pass Approvals", icon: Ticket },
-  { to: "/app/admin/spin", label: "Spin Wheel", icon: Gift },
+  { to: "/app/admin/content", label: "Content", icon: BookOpen },
+  { to: "/app/admin/assessment", label: "Assessment", icon: ClipboardList },
+  { to: "/app/admin/gamification", label: "Gamification", icon: Sparkles },
+  { to: "/app/admin/settings", label: "Settings", icon: Settings },
 ];
 
-// Admin secondary — less-used screens, decluttered from primary nav
-const adminSecondaryNav: NavItem[] = [
-  { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
-  { to: "/app/announcements", label: "News", icon: Megaphone },
-  { to: "/app/settings", label: "System Settings", icon: Settings },
-];
+const adminSecondaryNav: NavItem[] = [];
 
 // Student primary nav — 5 hero actions only
 const studentNav: NavItem[] = [
