@@ -20,6 +20,7 @@ export type ShadowRow = {
   icon: string | null;
 };
 
+export type SeasonReward = { type: string; code: string };
 export type SeasonRow = {
   id: string;
   code: string;
@@ -27,7 +28,7 @@ export type SeasonRow = {
   theme: string | null;
   starts_at: string;
   ends_at: string;
-  rewards: unknown;
+  rewards: SeasonReward[];
 };
 
 export const getCollection = createServerFn({ method: "GET" })
