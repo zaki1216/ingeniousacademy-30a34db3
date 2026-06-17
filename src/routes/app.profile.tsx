@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import {
   Award, BookOpen, CalendarCheck, Coins, Flame, Sparkles, Swords, Trophy, Zap, ChevronRight,
-  PawPrint, Backpack, FileText, Settings, Target, Megaphone,
+  PawPrint, Backpack, FileText, Settings, Target, Megaphone, GraduationCap,
 } from "lucide-react";
 
 
@@ -184,6 +184,7 @@ function ProfilePage() {
           Hunter Menu
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <QuickLink to="/app/report-card" icon={<GraduationCap className="h-4 w-4" />} label="Academic Report Card" />
           <QuickLink to="/app/collection" icon={<Sparkles className="h-4 w-4" />} label="Collection" />
           <QuickLink to="/app/achievements" icon={<Award className="h-4 w-4" />} label="Badges & Achievements" />
           <QuickLink to="/app/talents" icon={<Target className="h-4 w-4" />} label="Talents" />

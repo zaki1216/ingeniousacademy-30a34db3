@@ -24,6 +24,7 @@ import { Route as AppSpinRouteImport } from './routes/app.spin'
 import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppResultsRouteImport } from './routes/app.results'
+import { Route as AppReportCardRouteImport } from './routes/app.report-card'
 import { Route as AppQuestsRouteImport } from './routes/app.quests'
 import { Route as AppPvpRouteImport } from './routes/app.pvp'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
@@ -48,6 +49,7 @@ import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
 import { Route as AppAdminSpinRouteImport } from './routes/app.admin.spin'
 import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.settings'
 import { Route as AppAdminPassesRouteImport } from './routes/app.admin.passes'
+import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
 import { Route as AppAdminGamificationRouteImport } from './routes/app.admin.gamification'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
@@ -131,6 +133,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
 const AppResultsRoute = AppResultsRouteImport.update({
   id: '/results',
   path: '/results',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportCardRoute = AppReportCardRouteImport.update({
+  id: '/report-card',
+  path: '/report-card',
   getParentRoute: () => AppRoute,
 } as any)
 const AppQuestsRoute = AppQuestsRouteImport.update({
@@ -253,6 +260,11 @@ const AppAdminPassesRoute = AppAdminPassesRouteImport.update({
   path: '/admin/passes',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminOfflineTestsRoute = AppAdminOfflineTestsRouteImport.update({
+  id: '/admin/offline-tests',
+  path: '/admin/offline-tests',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
   id: '/admin/lecture-views',
   path: '/admin/lecture-views',
@@ -323,6 +335,7 @@ export interface FileRoutesByFullPath {
   '/app/profile': typeof AppProfileRoute
   '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/quests': typeof AppQuestsRoute
+  '/app/report-card': typeof AppReportCardRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
@@ -338,6 +351,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
@@ -371,6 +385,7 @@ export interface FileRoutesByTo {
   '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/quests': typeof AppQuestsRoute
+  '/app/report-card': typeof AppReportCardRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
@@ -386,6 +401,7 @@ export interface FileRoutesByTo {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
@@ -422,6 +438,7 @@ export interface FileRoutesById {
   '/app/profile': typeof AppProfileRoute
   '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/quests': typeof AppQuestsRoute
+  '/app/report-card': typeof AppReportCardRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
@@ -437,6 +454,7 @@ export interface FileRoutesById {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
@@ -474,6 +492,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/app/pvp'
     | '/app/quests'
+    | '/app/report-card'
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
@@ -489,6 +508,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
     | '/app/admin/lecture-views'
+    | '/app/admin/offline-tests'
     | '/app/admin/passes'
     | '/app/admin/settings'
     | '/app/admin/spin'
@@ -522,6 +542,7 @@ export interface FileRouteTypes {
     | '/app/pets'
     | '/app/profile'
     | '/app/quests'
+    | '/app/report-card'
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
@@ -537,6 +558,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
     | '/app/admin/lecture-views'
+    | '/app/admin/offline-tests'
     | '/app/admin/passes'
     | '/app/admin/settings'
     | '/app/admin/spin'
@@ -572,6 +594,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/app/pvp'
     | '/app/quests'
+    | '/app/report-card'
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
@@ -587,6 +610,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
     | '/app/admin/lecture-views'
+    | '/app/admin/offline-tests'
     | '/app/admin/passes'
     | '/app/admin/settings'
     | '/app/admin/spin'
@@ -713,6 +737,13 @@ declare module '@tanstack/react-router' {
       path: '/results'
       fullPath: '/app/results'
       preLoaderRoute: typeof AppResultsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/report-card': {
+      id: '/app/report-card'
+      path: '/report-card'
+      fullPath: '/app/report-card'
+      preLoaderRoute: typeof AppReportCardRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/quests': {
@@ -883,6 +914,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminPassesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/offline-tests': {
+      id: '/app/admin/offline-tests'
+      path: '/admin/offline-tests'
+      fullPath: '/app/admin/offline-tests'
+      preLoaderRoute: typeof AppAdminOfflineTestsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/lecture-views': {
       id: '/app/admin/lecture-views'
       path: '/admin/lecture-views'
@@ -1006,6 +1044,7 @@ interface AppRouteChildren {
   AppProfileRoute: typeof AppProfileRoute
   AppPvpRoute: typeof AppPvpRouteWithChildren
   AppQuestsRoute: typeof AppQuestsRoute
+  AppReportCardRoute: typeof AppReportCardRoute
   AppResultsRoute: typeof AppResultsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppShopRoute: typeof AppShopRoute
@@ -1021,6 +1060,7 @@ interface AppRouteChildren {
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminGamificationRoute: typeof AppAdminGamificationRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
+  AppAdminOfflineTestsRoute: typeof AppAdminOfflineTestsRoute
   AppAdminPassesRoute: typeof AppAdminPassesRoute
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppAdminSpinRoute: typeof AppAdminSpinRoute
@@ -1046,6 +1086,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppProfileRoute: AppProfileRoute,
   AppPvpRoute: AppPvpRouteWithChildren,
   AppQuestsRoute: AppQuestsRoute,
+  AppReportCardRoute: AppReportCardRoute,
   AppResultsRoute: AppResultsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppShopRoute: AppShopRoute,
@@ -1061,6 +1102,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminGamificationRoute: AppAdminGamificationRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
+  AppAdminOfflineTestsRoute: AppAdminOfflineTestsRoute,
   AppAdminPassesRoute: AppAdminPassesRoute,
   AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppAdminSpinRoute: AppAdminSpinRoute,
