@@ -148,6 +148,9 @@ function StudentsPage() {
                 )}
               </div>
               <div className="flex gap-2 flex-wrap">
+                <Link to="/app/admin/students/$id" params={{ id: s.id }}>
+                  <Button size="sm" variant="default">Command Center</Button>
+                </Link>
                 <StudentDialog
                   mode="edit"
                   initial={s}
