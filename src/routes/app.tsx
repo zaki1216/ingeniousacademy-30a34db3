@@ -91,7 +91,6 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const items = role === "admin" ? adminNav : studentNav;
   const secondary = role === "admin" ? adminSecondaryNav : studentSecondaryNav;
   const showSecondary = role === "admin" || role === "student";
-  const isStudent = role === "student";
   return (
     <nav className="space-y-1">
       {items.map((it) => {
