@@ -1,36 +1,49 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
-import { motion } from "framer-motion";
-import { Lock, Map as MapIcon, Trophy, Sparkles, ChevronRight, Star } from "lucide-react";
+import { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Lock, Map as MapIcon, Trophy, Sparkles, ChevronRight, Star, Shield, Swords, Skull, Ghost } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { cn } from "@/lib/utils";
+import { dungeonMeta, DIFFICULTY_TONE } from "@/lib/rpg/dungeons";
+import { rankFromLevel } from "@/lib/rpg/ranks";
 
 export const Route = createFileRoute("/app/worlds")({ component: WorldsPage });
 
-// Visual theme pool — assigned to subjects in load order so it's stable
+// Visual realm pool — assigned to subjects in load order so it's stable.
 const WORLD_THEMES = [
-  { emoji: "🌲", name: "Forest", grad: "from-emerald-500 to-green-700", ring: "ring-emerald-300/50" },
-  { emoji: "🏰", name: "Castle", grad: "from-indigo-500 to-purple-700", ring: "ring-indigo-300/50" },
-  { emoji: "⚔️", name: "Kingdom", grad: "from-rose-500 to-red-700", ring: "ring-rose-300/50" },
-  { emoji: "⛰️", name: "Mountain", grad: "from-slate-500 to-stone-700", ring: "ring-slate-300/50" },
-  { emoji: "🌌", name: "Galaxy", grad: "from-fuchsia-500 to-purple-800", ring: "ring-fuchsia-300/50" },
-  { emoji: "🏝️", name: "Island", grad: "from-cyan-400 to-blue-700", ring: "ring-cyan-300/50" },
-  { emoji: "🔥", name: "Volcano", grad: "from-orange-500 to-red-700", ring: "ring-orange-300/50" },
-  { emoji: "❄️", name: "Tundra", grad: "from-sky-400 to-indigo-600", ring: "ring-sky-300/50" },
+  { emoji: "🌲", name: "Verdant Realm",     grad: "from-emerald-500 to-green-800",  ring: "ring-emerald-300/50" },
+  { emoji: "🏰", name: "Crimson Citadel",   grad: "from-indigo-500 to-purple-800",  ring: "ring-indigo-300/50" },
+  { emoji: "⚔️", name: "Shattered Kingdom", grad: "from-rose-500 to-red-800",       ring: "ring-rose-300/50" },
+  { emoji: "⛰️", name: "Ironpeak Highlands", grad: "from-slate-500 to-stone-800",   ring: "ring-slate-300/50" },
+  { emoji: "🌌", name: "Astral Void",       grad: "from-fuchsia-500 to-purple-900", ring: "ring-fuchsia-300/50" },
+  { emoji: "🏝️", name: "Aether Isles",     grad: "from-cyan-400 to-blue-800",      ring: "ring-cyan-300/50" },
+  { emoji: "🔥", name: "Emberforge",        grad: "from-orange-500 to-red-800",     ring: "ring-orange-300/50" },
+  { emoji: "❄️", name: "Frostbound Tundra", grad: "from-sky-400 to-indigo-700",     ring: "ring-sky-300/50" },
 ];
 
 function WorldsPage() {
   const { user } = useAuth();
+  const [openWorld, setOpenWorld] = useState<string | null>(null);
 
   const profile = useQuery({
     queryKey: ["profile-standard", user?.id],
     enabled: !!user?.id,
-    queryFn: async () => (await supabase.from("profiles").select("standard_id").eq("id", user!.id).maybeSingle()).data,
+    queryFn: async () =>
+      (await supabase.from("profiles").select("standard_id").eq("id", user!.id).maybeSingle()).data,
   });
   const standardId = profile.data?.standard_id;
+
+  const stats = useQuery({
+    queryKey: ["gam-level", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () =>
+      (await supabase.from("gamification_stats").select("level").eq("user_id", user!.id).maybeSingle()).data,
+  });
+  const playerLevel = stats.data?.level ?? 1;
+  const playerRank = rankFromLevel(playerLevel);
 
   const data = useQuery({
     queryKey: ["worlds-data", standardId, user?.id],
@@ -59,26 +72,35 @@ function WorldsPage() {
       const watched = subLectures.filter((l) => doneSet.has(l.id)).length;
       const total = subLectures.length;
       const pct = total > 0 ? Math.round((watched / total) * 100) : 0;
+      const recommendedLevel = Math.max(1, i * 5 + 1);
       return {
         id: s.id,
         name: s.subject_name,
         theme,
+        recommendedLevel,
         chapters: subChapters.map((c) => {
           const cLec = lecs.filter((l) => l.chapter_id === c.id);
           const cDone = cLec.filter((l) => doneSet.has(l.id)).length;
-          return { ...c, total: cLec.length, done: cDone };
+          return {
+            id: c.id,
+            chapter_name: c.chapter_name,
+            chapter_number: c.chapter_number,
+            total: cLec.length,
+            done: cDone,
+            meta: dungeonMeta(c.chapter_name, c.chapter_number, cLec.length, cDone, playerLevel),
+          };
         }),
         watched,
         total,
         pct,
       };
     });
-  }, [data.data]);
+  }, [data.data, playerLevel]);
 
   if (!standardId) {
     return (
       <div className="space-y-2">
-        <h1 className="text-2xl font-extrabold flex items-center gap-2"><MapIcon className="h-6 w-6" /> World Map</h1>
+        <h1 className="text-2xl font-extrabold flex items-center gap-2 font-orbitron"><MapIcon className="h-6 w-6" /> World Map</h1>
         <p className="text-muted-foreground text-sm">Your standard is not set yet. Please contact your admin.</p>
       </div>
     );
@@ -87,92 +109,191 @@ function WorldsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <div className="text-[10px] uppercase tracking-widest text-amber-300 font-bold">Choose your destiny</div>
-        <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2">
-          <MapIcon className="h-6 w-6 text-primary-glow" /> World Map
+        <div className="text-[10px] uppercase tracking-widest text-amber-300 font-orbitron font-bold">Choose your destiny</div>
+        <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2 font-orbitron">
+          <MapIcon className="h-6 w-6 text-primary" /> World Map
         </h1>
-        <p className="text-sm text-muted-foreground">Conquer each world to earn legendary rewards.</p>
+        <p className="text-sm text-muted-foreground">
+          You are <span className="font-bold text-foreground">{playerRank.label}</span> · Level {playerLevel}. Conquer realms to claim sovereignty.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {worlds.map((w, i) => {
-          const unlocked = i === 0 || worlds[i - 1].pct >= 50 || worlds[i - 1].total === 0;
-          const conquered = w.total > 0 && w.pct === 100;
-          return (
-            <motion.div
-              key={w.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-            >
-              <Link
-                to="/app/lectures"
-                className={cn(
-                  "block relative overflow-hidden rounded-3xl glass-card p-0",
-                  !unlocked && "pointer-events-none opacity-60",
-                )}
+      {/* Visual progression spine — connects each realm in order */}
+      <div className="relative">
+        <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-primary/60 via-primary/20 to-transparent pointer-events-none hidden sm:block" />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {worlds.map((w, i) => {
+            const unlocked = i === 0 || worlds[i - 1].pct >= 50 || worlds[i - 1].total === 0;
+            const levelGate = playerLevel >= w.recommendedLevel;
+            const conquered = w.total > 0 && w.pct === 100;
+            const isOpen = openWorld === w.id;
+            return (
+              <motion.div
+                key={w.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="relative"
               >
-                <div className={cn("relative h-32 bg-gradient-to-br", w.theme.grad)}>
-                  <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_60%,white_0%,transparent_45%)]" />
-                  <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                    {conquered && (
-                      <span className="bg-amber-400 text-amber-950 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <Trophy className="h-3 w-3" /> Conquered
-                      </span>
-                    )}
-                    <div className="flex">
-                      {Array.from({ length: 3 }).map((_, k) => (
-                        <Star key={k} className={cn(
-                          "h-4 w-4",
-                          w.pct >= (k + 1) * 33 ? "fill-amber-300 text-amber-300" : "text-white/30",
-                        )} />
-                      ))}
-                    </div>
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center text-7xl drop-shadow-2xl animate-float">
-                    {w.theme.emoji}
-                  </div>
-                  {!unlocked && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                      <div className="text-center">
-                        <Lock className="h-7 w-7 mx-auto text-white/80" />
-                        <div className="text-[10px] uppercase font-bold text-white/80 mt-1">Locked</div>
-                      </div>
-                    </div>
+                <button
+                  onClick={() => unlocked && setOpenWorld(isOpen ? null : w.id)}
+                  className={cn(
+                    "block w-full text-left relative overflow-hidden rounded-3xl glass-card p-0",
+                    !unlocked && "pointer-events-none opacity-60",
                   )}
-                </div>
-                <div className="p-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                        {w.theme.name} World
+                >
+                  <div className={cn("relative h-32 bg-gradient-to-br", w.theme.grad)}>
+                    <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_60%,white_0%,transparent_45%)]" />
+                    <div className="absolute top-3 left-3 flex flex-col items-start gap-1">
+                      <span className="bg-black/40 text-white text-[10px] font-orbitron uppercase px-2 py-0.5 rounded-full backdrop-blur">
+                        Realm {i + 1}
+                      </span>
+                      <span className={cn(
+                        "text-[10px] font-orbitron uppercase px-2 py-0.5 rounded-full backdrop-blur flex items-center gap-1",
+                        levelGate ? "bg-emerald-500/30 text-emerald-50" : "bg-rose-500/30 text-rose-50",
+                      )}>
+                        <Shield className="h-3 w-3" /> Lv {w.recommendedLevel}+
+                      </span>
+                    </div>
+                    <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+                      {conquered && (
+                        <span className="bg-amber-400 text-amber-950 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <Trophy className="h-3 w-3" /> Conquered
+                        </span>
+                      )}
+                      <div className="flex">
+                        {Array.from({ length: 3 }).map((_, k) => (
+                          <Star key={k} className={cn(
+                            "h-4 w-4",
+                            w.pct >= (k + 1) * 33 ? "fill-amber-300 text-amber-300" : "text-white/30",
+                          )} />
+                        ))}
                       </div>
-                      <div className="font-extrabold leading-tight truncate">{w.name}</div>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
-                  </div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
-                      <motion.div
-                        className="h-full bg-[image:var(--gradient-primary)]"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${w.pct}%` }}
-                        transition={{ duration: 0.7 }}
-                      />
+                    <div className="absolute inset-0 flex items-center justify-center text-7xl drop-shadow-2xl animate-float">
+                      {w.theme.emoji}
                     </div>
-                    <span className="text-xs font-bold text-muted-foreground tabular-nums">{w.pct}%</span>
+                    {!unlocked && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <div className="text-center">
+                          <Lock className="h-7 w-7 mx-auto text-white/80" />
+                          <div className="text-[10px] uppercase font-bold text-white/80 mt-1 font-orbitron">Sealed</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span>{w.chapters.length} zones · {w.total} missions</span>
-                    <span className="flex items-center gap-1 text-amber-300 font-bold">
-                      <Sparkles className="h-3 w-3" /> +500 XP
-                    </span>
+                  <div className="p-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-orbitron font-bold">
+                          {w.theme.name}
+                        </div>
+                        <div className="font-extrabold leading-tight truncate">{w.name}</div>
+                      </div>
+                      <ChevronRight className={cn("h-4 w-4 text-muted-foreground shrink-0 mt-1 transition-transform", isOpen && "rotate-90")} />
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
+                        <motion.div
+                          className="h-full bg-[image:var(--gradient-primary)]"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${w.pct}%` }}
+                          transition={{ duration: 0.7 }}
+                        />
+                      </div>
+                      <span className="text-xs font-bold text-muted-foreground tabular-nums font-orbitron">{w.pct}%</span>
+                    </div>
+                    <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
+                      <span>{w.chapters.length} dungeons · {w.total} missions</span>
+                      <span className="flex items-center gap-1 text-amber-300 font-bold font-orbitron">
+                        <Sparkles className="h-3 w-3" /> +500 XP
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          );
-        })}
+                </button>
+
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden mt-2 space-y-2"
+                    >
+                      {w.chapters.map((c) => {
+                        const tone = DIFFICULTY_TONE[c.meta.difficulty];
+                        const cPct = c.total > 0 ? Math.round((c.done / c.total) * 100) : 0;
+                        return (
+                          <Link
+                            key={c.id}
+                            to="/app/lectures"
+                            className="block rounded-2xl border border-border/60 bg-card/70 p-3 hover:border-primary/50 transition"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div
+                                className="h-12 w-12 rounded-xl grid place-items-center text-2xl shrink-0"
+                                style={{ background: tone.bg, boxShadow: `inset 0 0 0 1px ${tone.color}55` }}
+                              >
+                                {c.meta.emoji}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <div className="text-[10px] font-orbitron uppercase tracking-wider text-muted-foreground">
+                                    Ch {c.chapter_number}
+                                  </div>
+                                  <span
+                                    className="text-[10px] font-orbitron uppercase px-1.5 py-0.5 rounded"
+                                    style={{ background: tone.bg, color: tone.color }}
+                                  >
+                                    {c.meta.difficulty}
+                                  </span>
+                                  {c.meta.bossAvailable && (
+                                    <span className="text-[10px] font-orbitron uppercase px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-400 flex items-center gap-1">
+                                      <Skull className="h-3 w-3" /> Boss
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="font-bold truncate">{c.meta.name}</div>
+                                <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
+                                  <span className="flex items-center gap-1 font-orbitron">
+                                    <Swords className="h-3 w-3" /> Lv {c.meta.recommendedLevel}+
+                                  </span>
+                                  <span className="flex items-center gap-1 text-amber-400 font-orbitron">
+                                    <Sparkles className="h-3 w-3" /> +{c.meta.rewardXp} XP
+                                  </span>
+                                  <span className="font-orbitron text-yellow-300">🪙 +{c.meta.rewardCoins}</span>
+                                </div>
+                                <div className="mt-2 flex items-center gap-2">
+                                  <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                                    <div className="h-full bg-primary" style={{ width: `${cPct}%` }} />
+                                  </div>
+                                  <span className="text-[10px] text-muted-foreground tabular-nums font-orbitron">
+                                    {c.done}/{c.total}
+                                  </span>
+                                </div>
+                                {c.meta.shadowUnlock && (
+                                  <div className="mt-2 text-[10px] flex items-center gap-1 text-fuchsia-300 font-orbitron uppercase tracking-wider">
+                                    <Ghost className="h-3 w-3" /> {c.meta.shadowUnlock}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                      {w.chapters.length === 0 && (
+                        <div className="rounded-xl border border-dashed border-border/60 p-4 text-center text-xs text-muted-foreground">
+                          No dungeons forged here yet.
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
 
       {worlds.length === 0 && (

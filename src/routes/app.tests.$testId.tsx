@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { getTestForStudent, submitTest } from "@/lib/api/academy.functions";
 import { awardQuizRewards } from "@/lib/api/gamification.functions";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
+import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 
 export const Route = createFileRoute("/app/tests/$testId")({ component: TakeTestPage });
 
@@ -25,6 +26,7 @@ function TakeTestPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [result, setResult] = useState<{ score: number; total: number; percentage: number } | null>(null);
   const [reward, setReward] = useState<RewardPayload | null>(null);
+  const [floating, setFloating] = useState<FloatingRewardPayload | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -49,6 +51,7 @@ function TakeTestPage() {
       try {
         const rw = await awardFn({ data: { testId } });
         if (!rw.alreadyAwarded) {
+          setFloating({ xp: rw.xpAwarded, coins: rw.coinsAwarded, label: "Battle won", key: Date.now() });
           setReward({ ...rw, title: "Quiz complete!" });
           qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
         }
@@ -67,6 +70,7 @@ function TakeTestPage() {
     return (
       <>
         <RewardPopup reward={reward} onClose={() => setReward(null)} />
+        <FloatingReward reward={floating} />
         <div className="space-y-4 max-w-md mx-auto">
           <Card>
             <CardContent className="p-6 text-center space-y-4">
