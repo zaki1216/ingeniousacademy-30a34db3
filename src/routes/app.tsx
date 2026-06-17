@@ -56,26 +56,6 @@ const studentNav: NavItem[] = [
   { to: "/app/profile", label: "Profile", icon: User },
 ];
 
-// Secondary "More" menu — everything else lives here, nothing is deleted
-const studentSecondaryNav: NavItem[] = [
-  { to: "/app/collection", label: "Collection", icon: Sparkles },
-  { to: "/app/leaderboard", label: "Rankings", icon: Trophy },
-  { to: "/app/achievements", label: "Badges & Achievements", icon: Award },
-  { to: "/app/quests", label: "Quests", icon: Target },
-  { to: "/app/lectures", label: "Lectures", icon: BookOpen },
-  { to: "/app/tests", label: "Boss Battles", icon: Swords },
-  { to: "/app/worlds", label: "Worlds", icon: Map },
-  { to: "/app/passes", label: "Passes", icon: Ticket },
-  { to: "/app/spin", label: "Spin Wheel", icon: Gift },
-  { to: "/app/talents", label: "Talents", icon: Sparkles },
-  { to: "/app/pets", label: "Pets", icon: PawPrint },
-  { to: "/app/inventory", label: "Inventory", icon: Backpack },
-  { to: "/app/notes", label: "Scrolls", icon: FileText },
-  { to: "/app/attendance", label: "Attendance", icon: CalendarCheck },
-  { to: "/app/announcements", label: "News", icon: Megaphone },
-  { to: "/app/settings", label: "Settings", icon: Settings },
-];
-
 // Mobile bottom tabs — same 5 primary actions
 const studentBottomTabs: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
@@ -90,8 +70,9 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { role } = useAuth();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const items = role === "admin" ? adminNav : studentNav;
-  const secondary = role === "admin" ? adminSecondaryNav : studentSecondaryNav;
-  const showSecondary = role === "admin" || role === "student";
+  const secondary = role === "admin" ? adminSecondaryNav : [];
+  const showSecondary = role === "admin";
+
   return (
     <nav className="space-y-1">
       {items.map((it) => {
