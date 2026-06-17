@@ -4,7 +4,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, LogOut, Menu, Settings, TrendingUp,
-  Coins, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye, Gauge, Ticket, Gift,
+  Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye, Gauge, Ticket, Gift,
 } from "lucide-react";
 
 
