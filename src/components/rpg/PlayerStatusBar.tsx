@@ -10,6 +10,7 @@ import { getGamificationDashboard } from "@/lib/api/gamification.functions";
 import { levelProgress } from "@/lib/gamification/leveling";
 import { rankFromLevel } from "@/lib/rpg/ranks";
 import { RankBadge } from "./RankBadge";
+import { PetCompanion } from "./PetCompanion";
 import { cn } from "@/lib/utils";
 
 export function PlayerStatusBar() {
@@ -73,7 +74,8 @@ export function PlayerStatusBar() {
               style={{ background: rank.gradient, boxShadow: `0 0 10px ${rank.glow}` }}
             >
               {stats.level}
-            </div>
+          </div>
+          <PetCompanion size="sm" className="-ml-1.5 -mb-1 self-end" />
           </div>
           <div className="hidden sm:block min-w-0">
             <div
