@@ -58,7 +58,7 @@ function StudentCommandCenter() {
             <div className="text-xs text-muted-foreground">{d.profile?.email}</div>
             <div className="flex gap-2 flex-wrap mt-2">
               <Badge>Lv {d.stats?.level ?? 1}</Badge>
-              <Badge variant="secondary">{rank?.name ?? "—"} Rank</Badge>
+              <Badge variant="secondary">{rank?.label ?? "—"}</Badge>
               <Badge variant="secondary">💰 {d.stats?.coins ?? 0}</Badge>
               <Badge variant="secondary">🔥 {d.stats?.streak_days ?? 0}d</Badge>
               <Badge variant="outline">
