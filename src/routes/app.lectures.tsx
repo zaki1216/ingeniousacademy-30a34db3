@@ -2,18 +2,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useMemo, useState } from "react";
-import { Search, PlayCircle, CheckCircle2, Gift, Loader2 } from "lucide-react";
+import { Search, PlayCircle, CheckCircle2, Gift, Loader2, BrainCircuit, Coins } from "lucide-react";
+import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 import { completeVideo } from "@/lib/api/gamification.functions";
+import { getQuizForLecture, submitLectureQuiz } from "@/lib/api/lecture-quiz.functions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/lectures")({ component: LecturesPage });
@@ -161,6 +164,7 @@ function LecturesPage() {
                 )}
               </Button>
             )}
+            <LectureQuizPanel lectureId={activeLecture.id} />
           </CardContent>
         </Card>
       )}
@@ -204,5 +208,133 @@ function LecturesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function LectureQuizPanel({ lectureId }: { lectureId: string }) {
+  const qc = useQueryClient();
+  const getQuiz = useServerFn(getQuizForLecture);
+  const submit = useServerFn(submitLectureQuiz);
+
+  const quiz = useQuery({
+    queryKey: ["lecture-quiz", lectureId],
+    queryFn: () => getQuiz({ data: { lectureId } }),
+  });
+
+  const [open, setOpen] = useState(false);
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [result, setResult] = useState<{ correct: number; total: number; coinsAwarded: number } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const test = quiz.data?.test;
+  const questions = quiz.data?.questions ?? [];
+
+  function start() {
+    setAnswers({});
+    setResult(null);
+    setOpen(true);
+  }
+
+  async function send() {
+    if (!test) return;
+    setBusy(true);
+    try {
+      const r = await submit({ data: { testId: test.id, answers } });
+      setResult(r);
+      if (r.coinsAwarded > 0) {
+        toast.success(`+${r.coinsAwarded} coins · ${r.correct}/${r.total} correct`);
+        qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
+      } else {
+        toast.message(`${r.correct}/${r.total} correct · try again for coins`);
+      }
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!test) return null;
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        className="w-full border-cyan-500/40 hover:bg-cyan-500/10"
+        onClick={start}
+      >
+        <BrainCircuit className="h-4 w-4 mr-2 text-cyan-400" />
+        Revision Quiz · Earn 1 coin per correct answer
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BrainCircuit className="h-5 w-5 text-cyan-400" /> {test.title}
+            </DialogTitle>
+            <p className="text-xs text-muted-foreground">
+              Revision only · {questions.length} questions · Does not affect your report card
+            </p>
+          </DialogHeader>
+
+          {result ? (
+            <div className="space-y-3 py-4 text-center">
+              <div className="text-4xl font-extrabold font-orbitron">
+                {result.correct}/{result.total}
+              </div>
+              <div className="flex items-center justify-center gap-2 text-amber-400 font-bold">
+                <Coins className="h-5 w-5" /> +{result.coinsAwarded} coins earned
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Replay anytime to earn more coins.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {questions.map((q, i) => (
+                <div key={q.id} className="space-y-2">
+                  <div className="text-sm font-medium">
+                    {i + 1}. {q.question_text}
+                  </div>
+                  <div className="space-y-1">
+                    {q.options.map((opt, idx) => (
+                      <label
+                        key={idx}
+                        className={cn(
+                          "flex items-center gap-2 p-2 rounded border cursor-pointer text-sm",
+                          answers[q.id] === idx ? "border-primary bg-primary/10" : "border-border",
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name={q.id}
+                          checked={answers[q.id] === idx}
+                          onChange={() => setAnswers((s) => ({ ...s, [q.id]: idx }))}
+                        />
+                        <span>{String.fromCharCode(65 + idx)}. {opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <DialogFooter>
+            {result ? (
+              <Button onClick={() => { setResult(null); setAnswers({}); }} variant="outline">Replay</Button>
+            ) : (
+              <Button
+                onClick={send}
+                disabled={busy || Object.keys(answers).length !== questions.length}
+              >
+                {busy ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : "Submit quiz"}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

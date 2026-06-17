@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getLeaderboard } from "@/lib/api/gamification.functions";
 import { getAttendanceLeaderboard } from "@/lib/api/attendance.functions";
+import { getScholarLeaderboard } from "@/lib/api/academic.functions";
 import { cn } from "@/lib/utils";
 import { rankFromLevel } from "@/lib/rpg/ranks";
 import { RankBadge } from "@/components/rpg/RankBadge";
@@ -28,11 +29,12 @@ const BRACKET_HELP = {
 } as const;
 
 function LeaderboardPage() {
-  const [mode, setMode] = useState<"xp" | "attendance">("xp");
+  const [mode, setMode] = useState<"xp" | "attendance" | "scholar">("xp");
   const [period, setPeriod] = useState<"weekly" | "monthly" | "all">("weekly");
 
   const xpFn = useServerFn(getLeaderboard);
   const attFn = useServerFn(getAttendanceLeaderboard);
+  const scholarFn = useServerFn(getScholarLeaderboard);
 
   const xpQ = useQuery({
     queryKey: ["leaderboard", "xp", period],
@@ -46,7 +48,13 @@ function LeaderboardPage() {
     enabled: mode === "attendance",
   });
 
-  const q = mode === "xp" ? xpQ : attQ;
+  const scholarQ = useQuery({
+    queryKey: ["leaderboard", "scholar"],
+    queryFn: () => scholarFn(),
+    enabled: mode === "scholar",
+  });
+
+  const q = mode === "xp" ? xpQ : mode === "attendance" ? attQ : scholarQ;
   const rows = q.data?.rows ?? [];
   const myRank = q.data?.myRank ?? null;
 
@@ -85,7 +93,9 @@ function LeaderboardPage() {
         <p className="text-sm text-muted-foreground flex items-center gap-1.5">
           {mode === "xp"
             ? (period === "all" ? "Hunters of your class — all-time XP." : `Hunters of your class — ${period === "weekly" ? "weekly" : "monthly"} XP.`)
-            : "Hunters of your class — attendance honor roll."}
+            : mode === "attendance"
+            ? "Hunters of your class — attendance honor roll."
+            : "Scholars of your class — academic performance (offline tests only)."}
           {mode === "xp" && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -100,9 +110,10 @@ function LeaderboardPage() {
       </div>
 
       <Tabs value={mode} onValueChange={(v) => setMode(v as typeof mode)}>
-        <TabsList className="grid grid-cols-2 w-full">
-          <TabsTrigger value="xp">XP Rank</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance Rank</TabsTrigger>
+        <TabsList className="grid grid-cols-3 w-full">
+          <TabsTrigger value="xp">Hunter Rank</TabsTrigger>
+          <TabsTrigger value="attendance">Attendance</TabsTrigger>
+          <TabsTrigger value="scholar">Scholar Rank</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -204,7 +215,7 @@ function LeaderboardPage() {
             );
           })}
         </div>
-      ) : (
+      ) : mode === "attendance" ? (
         <div className="space-y-2">
           {rows.map((r: any) => (
             <Card key={r.user_id} className={cn(r.isMe && "border-primary ring-1 ring-primary")}>
@@ -238,6 +249,37 @@ function LeaderboardPage() {
                 <div className="text-right">
                   <div className="font-bold font-orbitron">{r.present}</div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Present</div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {rows.map((r: any) => (
+            <Card key={r.user_id} className={cn(r.isMe && "border-primary ring-1 ring-primary")}>
+              <CardContent className="p-3 flex items-center gap-3">
+                <div className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center font-bold font-orbitron shrink-0",
+                  r.rank === 1 && "bg-amber-500/15 text-amber-500",
+                  r.rank === 2 && "bg-slate-400/20 text-slate-300",
+                  r.rank === 3 && "bg-orange-500/15 text-orange-500",
+                  r.rank > 3 && "bg-muted text-muted-foreground",
+                )}>
+                  {r.rank === 1 ? <Crown className="h-5 w-5" /> : `#${r.rank}`}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold truncate flex items-center gap-2">
+                    {r.name}
+                    {r.isMe && <span className="text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded">YOU</span>}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground truncate">
+                    Scholar · {r.obtained}/{r.max} marks
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold font-orbitron">{r.percentage}%</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Academic</div>
                 </div>
               </CardContent>
             </Card>

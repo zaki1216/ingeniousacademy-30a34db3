@@ -331,6 +331,98 @@ export type Database = {
           },
         ]
       }
+      offline_marks: {
+        Row: {
+          created_at: string
+          entered_by: string | null
+          id: string
+          marks_obtained: number
+          offline_test_id: string
+          remarks: string | null
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entered_by?: string | null
+          id?: string
+          marks_obtained: number
+          offline_test_id: string
+          remarks?: string | null
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entered_by?: string | null
+          id?: string
+          marks_obtained?: number
+          offline_test_id?: string
+          remarks?: string | null
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offline_marks_offline_test_id_fkey"
+            columns: ["offline_test_id"]
+            isOneToOne: false
+            referencedRelation: "offline_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offline_tests: {
+        Row: {
+          chapter_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          max_marks: number
+          subject_id: string
+          test_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          chapter_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          max_marks: number
+          subject_id: string
+          test_date?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          chapter_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          max_marks?: number
+          subject_id?: string
+          test_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offline_tests_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offline_tests_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pass_audit_log: {
         Row: {
           action: string
@@ -672,6 +764,84 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      quiz_attempts: {
+        Row: {
+          coins_awarded: number
+          correct_count: number
+          created_at: string
+          id: string
+          lecture_id: string | null
+          student_id: string
+          test_id: string
+          total_questions: number
+        }
+        Insert: {
+          coins_awarded?: number
+          correct_count?: number
+          created_at?: string
+          id?: string
+          lecture_id?: string | null
+          student_id: string
+          test_id: string
+          total_questions?: number
+        }
+        Update: {
+          coins_awarded?: number
+          correct_count?: number
+          created_at?: string
+          id?: string
+          lecture_id?: string | null
+          student_id?: string
+          test_id?: string
+          total_questions?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_lecture_id_fkey"
+            columns: ["lecture_id"]
+            isOneToOne: false
+            referencedRelation: "lectures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_attempts_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_card_remarks: {
+        Row: {
+          created_at: string
+          id: string
+          remarks: string
+          student_id: string
+          term: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          remarks: string
+          student_id: string
+          term?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          remarks?: string
+          student_id?: string
+          term?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       results: {
         Row: {
@@ -1021,6 +1191,8 @@ export type Database = {
           created_at: string
           id: string
           is_boss: boolean
+          kind: string
+          lecture_id: string | null
           title: string
           total_marks: number
         }
@@ -1029,6 +1201,8 @@ export type Database = {
           created_at?: string
           id?: string
           is_boss?: boolean
+          kind?: string
+          lecture_id?: string | null
           title: string
           total_marks?: number
         }
@@ -1037,6 +1211,8 @@ export type Database = {
           created_at?: string
           id?: string
           is_boss?: boolean
+          kind?: string
+          lecture_id?: string | null
           title?: string
           total_marks?: number
         }
@@ -1046,6 +1222,13 @@ export type Database = {
             columns: ["chapter_id"]
             isOneToOne: false
             referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tests_lecture_id_fkey"
+            columns: ["lecture_id"]
+            isOneToOne: false
+            referencedRelation: "lectures"
             referencedColumns: ["id"]
           },
         ]

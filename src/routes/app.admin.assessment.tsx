@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ClipboardList, BarChart3, TrendingUp } from "lucide-react";
+import { ClipboardList, BarChart3, TrendingUp, GraduationCap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 export const Route = createFileRoute("/app/admin/assessment")({ component: AssessmentHub });
 
 const tiles = [
-  { to: "/app/tests", label: "Tests", desc: "Build & manage quizzes", icon: ClipboardList },
-  { to: "/app/results", label: "Results", desc: "Review student attempts", icon: BarChart3 },
+  { to: "/app/admin/offline-tests", label: "Offline Tests (Academic)", desc: "Teacher-entered marks for the Report Card", icon: GraduationCap },
+  { to: "/app/tests", label: "Lecture & Boss Quizzes", desc: "In-app quizzes (game economy)", icon: ClipboardList },
+  { to: "/app/results", label: "Quiz Results", desc: "Review in-app quiz attempts", icon: BarChart3 },
   { to: "/app/analytics", label: "Test Analytics", desc: "Question & test insights", icon: TrendingUp },
 ];
 

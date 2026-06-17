@@ -1,114 +1,87 @@
+## Goal
 
-# Learning RPG Upgrade Plan
+Cleanly split the app into two parallel tracks:
 
-Goal: simplify navigation, surface progression, and re-skin existing systems as an RPG. **No existing logic, table, or server function will be deleted** — only re-organized and re-presented.
+- **Hunter track (game)** — attendance, lecture watches, lecture quizzes, XP, coins, quests, arena, badges, titles. Never affects academics.
+- **Scholar track (academics)** — only teacher-entered offline test marks. Drives the Report Card and Scholar leaderboard.
 
-## 1. Navigation Restructure
+Existing in-app tests (`tests` / `questions` / `results`) become **Lecture Quizzes** in the game track — coins-per-correct-answer, no academic impact. Boss tests stay as a game feature.
 
-Reduce primary nav (both desktop sidebar and mobile bottom tabs) to:
+No new top-level pages. Everything slots into the 5 existing primary hubs.
 
-```
-Home  |  Journey  |  Arena  |  Shop  |  Profile
-```
+---
 
-Everything else moves into a "More" overflow menu or becomes a subsection of one of the five primary screens:
+## 1. Database (one migration)
 
-| Old item | New location |
-|---|---|
-| Quests, Missions | Journey → Quests tab |
-| Worlds, Lectures, Content, Chapters | Journey → Worlds / Dungeons |
-| Tests, Results | Journey → Quests (Chapter Quests) |
-| PvP, Battles | Arena |
-| Achievements, Badges, Pets, Inventory, Talents | Profile (tabbed) |
-| Coins, Spin, Passes | Shop (tabs) |
-| Attendance | Profile → Stats |
-| Announcements (News) | Home cards |
-| Settings, Admin pages | "More" menu (unchanged) |
+### Lecture quizzes (repurpose existing schema, no destructive change)
+- Add `tests.lecture_id uuid null` referencing `lectures(id)`. A quiz is "attached" to a lecture when set. Keep `chapter_id` for boss/chapter-wide quizzes.
+- Add `tests.kind text` enum-ish: `'lecture_quiz' | 'boss'`. Default `'lecture_quiz'`.
+- New table `quiz_attempts` (separate from `results` to avoid the unique `(student, test)` constraint — students can replay for revision):
+  - `student_id`, `test_id`, `lecture_id`, `correct_count`, `total_questions`, `coins_awarded`, `created_at`.
+  - RLS: student reads/inserts own; admin reads all.
 
-Admin nav is left as-is (admin needs all tools).
+### Academic (offline) tests — brand new tables, fully separate from `tests`
+- `offline_tests`: `subject_id`, `chapter_id` (nullable for cross-chapter), `title`, `max_marks`, `test_date`, `created_by`, timestamps.
+- `offline_marks`: `offline_test_id`, `student_id`, `marks_obtained`, `remarks` text. Unique `(offline_test_id, student_id)`.
+- `report_card_remarks`: `student_id`, `term` text, `remarks` text, `updated_by`, timestamps. (Teacher remarks for the report card.)
+- RLS: admin full CRUD; students SELECT only their own rows. GRANTs to `authenticated` + `service_role`.
 
-## 2. Home Screen — Game Lobby
+### Existing `results` table
+- Leave intact (data preserved) but stop writing to it from new lecture-quiz flow. New quiz attempts go to `quiz_attempts`. Old `results` rows remain readable for legacy boss test history.
 
-Rebuild `app.index.tsx` as a lobby with three sections:
+---
 
-**a) Hero Player Card** — avatar, name + equipped title, Level, XP bar, Rank tier badge, Coin balance, 🔥 streak, attendance %, "Next Unlock" line (next title/shadow/rank).
+## 2. Server functions (`src/lib/api/`)
 
-**b) Today's Quests** — daily checklist with progress bars:
-- Attend Class (+2 Coins)
-- Watch 1 Lecture (+50 XP)
-- Complete 1 Quiz (+100 XP)
-- Revise 15 min (+25 XP)
+- `lecture-quiz.functions.ts`
+  - `submitLectureQuiz({ testId, answers })` — grades on server, awards `correctCount` coins via `coin_transactions`, inserts `quiz_attempts`. No XP, no `results` write.
+  - `getQuizForLecture({ lectureId })` — fetches the lecture's quiz + questions (no answers).
+- `academic.functions.ts`
+  - Admin: `createOfflineTest`, `updateOfflineTest`, `deleteOfflineTest`, `listOfflineTests`, `bulkUpsertMarks({ offlineTestId, marks: [{studentId, marks_obtained}] })`, `setReportCardRemarks`.
+  - Student: `getMyReportCard()` returns subject-wise totals/percentages, chapter-wise breakdown, academic rank within standard, remarks.
+- `leaderboard-scholar.functions.ts` — `getScholarLeaderboard({ period })` aggregates `offline_marks` percentages per student in caller's standard. Hunter leaderboard reuses existing `getLeaderboard`.
 
-Derives progress from existing tables (`attendance`, `video_completions`, `results`, `xp_transactions`).
+All server-side, `requireSupabaseAuth`, admin-only paths assert `has_role`.
 
-**c) Announcement Cards** — reads from existing `announcements` table; replaces the standalone News page. (Route file kept but de-linked.)
+---
 
-## 3. Journey Page (new `app.journey.tsx`)
+## 3. Routes (no new primary nav)
 
-Single progression hub with tabs:
-- **Worlds** — Math Kingdom, Science Realm, Language Empire, Reasoning Citadel. Each card shows completion %, recommended level, bosses/quests remaining.
-- **Dungeons** — chapters re-skinned (Algebra Dungeon, Geometry Fortress, …) with XP/Coin/Shadow rewards.
-- **Quests** — merged Daily / Weekly / Chapter / Special tabs.
-- **Boss Battles** — chapter-end tests.
-- **Progress Map** — visual rail of completed → current → locked nodes.
+### Journey hub — game lectures + quizzes
+- `app.lectures.tsx`: after a student claims lecture XP, surface a **"Start Quiz"** button if the lecture has a quiz. Quiz renders in a dialog/modal; on submit shows `+N coins earned`. Quiz is replayable.
+- Existing `app.tests.tsx` (boss tests) stays under Journey, renamed UI label "Boss Quizzes" — still game track, still awards coins/XP, no academic effect.
 
-Reuses existing `subjects`, `chapters`, `tests`, `quests` server fns.
+### Profile hub — Scholar / Report Card
+- New route `app.report-card.tsx` linked from Profile menu ("Academic Report Card"). Shows subject-wise marks, chapter-wise breakdown, percentage, academic rank, teacher remarks.
 
-## 4. Profile Page Overhaul
+### Arena hub — dual leaderboards
+- `app.leaderboard.tsx` gets a third tab: **Hunter** (XP — existing), **Attendance** (existing), **Scholar** (offline marks). Already linked from Arena, no new route.
 
-Tabbed RPG profile:
-- **Overview** — avatar, level, rank, coins, streak, attendance %, arena wins, lectures, quests completed, collection %.
-- **Achievements** (merged) — Badges | Titles | Achievements | Collection Progress.
-- **Collection** — Shadows | Pets | Titles | Badges | Special Rewards with % bars.
-- **Stats** — attendance breakdown + XP/coin history.
-- **Talents** — link to existing talents page.
+### Admin — under existing Assessment hub
+- `app.admin.offline-tests.tsx` — list/create/edit offline tests, open a marks-entry sheet that lists all students in the standard with an input per student. Linked from `app.admin.assessment.tsx` alongside existing Tests/Results.
+- Existing admin Tests page renamed in UI to "Lecture & Boss Quizzes" (game).
 
-## 5. New Systems (light, data-driven)
+---
 
-**Titles** — `titles` table (key, name, description, requirement_type, requirement_value, rarity) + `user_titles` (unlocked, equipped). Seed with: Rookie Hunter, Dungeon Explorer, Homework Slayer, Quiz Assassin, Algebra Warrior, Science Mage, Rank Climber, Elite Scholar, S-Rank Hunter, Monarch Candidate. Equipped title shows under player name everywhere (PlayerStatusBar, HeroCard, Profile).
+## 4. UI copy & framing
 
-**Shadows** — `shadows` table (key, name, subject, rarity, description, unlock_rule) + `user_shadows`. Seed Algebra Knight, Geometry Archer, Motion Warrior, Grammar Sage, Atom Mage. Awarded on chapter completion.
+- Lecture quiz dialog: "Revision Quiz · Earn 1 coin per correct answer · Does not affect your report card."
+- Report Card page header: "Academic Report Card — based on teacher-entered offline tests only."
+- Leaderboard tabs labeled **Hunter Rank**, **Attendance**, **Scholar Rank**.
 
-**Seasons** — `seasons` table (key, name, starts_at, ends_at, theme) + `season_progress` (user_id, season_id, points). Attendance/lectures/quizzes/quests contribute points via existing XP hooks (additive trigger). Rewards listed in season config: badges, titles, frames, shadows.
+---
 
-All new tables: GRANT + RLS + `has_role` admin policies per project standards.
+## 5. Out of scope (intentionally)
 
-## 6. Rank Tier Visuals
+- No migration of existing `results` rows into `quiz_attempts` (kept as historical boss data).
+- No changes to attendance/coins/XP economy beyond adding the quiz-coin path.
+- No new top-level navigation items.
 
-New `<RankTier>` component renders E → D → C → B → A → S → National → Monarch with distinct colors/icons. **No change to rank calculation** — only visual. Used in Home hero, Profile, Leaderboard.
+---
 
-## 7. Rankings
+## Technical notes
 
-Existing `app.leaderboard.tsx` stays as the "Rankings" destination, linked from Profile and Home. Adds: Current Position card, Rank Progress bar to next tier, Top 10 list. Logic untouched.
-
-## 8. Cleanup (no deletions)
-
-- Remove sidebar/bottom-tab links to: Coins, Attendance, News, Inventory, Pets, Talents, Achievements, Quests, Lectures, Tests, Worlds, Content (still reachable via Journey/Profile or direct URL).
-- Spin & Passes accessible from Shop tabs.
-- All old routes remain functional and unbroken.
-
-## Technical Section
-
-**New files**
-- `src/routes/app.journey.tsx` (tabs: Worlds, Dungeons, Quests, Bosses, Map)
-- `src/routes/app.collection.tsx` (linked from Profile)
-- `src/components/rpg/RankTier.tsx`, `HeroLobbyCard.tsx`, `DailyObjectives.tsx`, `AnnouncementsFeed.tsx`, `WorldCard.tsx`, `DungeonCard.tsx`, `TitleChip.tsx`, `ShadowCard.tsx`, `SeasonProgress.tsx`
-- `src/lib/api/journey.functions.ts`, `titles.functions.ts`, `shadows.functions.ts`, `seasons.functions.ts`, `home.functions.ts` (daily-objective aggregator)
-- `src/lib/rpg/titles.ts`, `shadows.ts`, `seasons.ts`, `tiers.ts`
-
-**Edited files**
-- `src/routes/app.tsx` — slim primary nav to 5 items + "More" overflow; mobile bottom tabs to same 5.
-- `src/routes/app.index.tsx` — replace with lobby layout.
-- `src/routes/app.profile.tsx` — tabbed RPG profile with Collection.
-- `src/routes/app.shop.tsx` — add Passes + Spin tabs.
-- `src/components/rpg/PlayerStatusBar.tsx` — show equipped title.
-
-**Migrations (one combined)**
-- `titles`, `user_titles`, `shadows`, `user_shadows`, `seasons`, `season_progress` tables
-- GRANTs to authenticated + service_role; RLS: users read all catalog rows, read/write own progress rows; admins manage catalog via `has_role`.
-- Seed rows for titles, shadows, current month season.
-
-**Preserved**
-- All existing tables, server fns, rank/XP/coin/streak logic, attendance rewards, talent tree, PvP, lectures, achievements, badges, spin, passes — untouched. Only re-organized in the UI.
-
-Risks: file scope is wide; will land in two passes — (1) DB migration + nav/home/profile shell, (2) Journey + Collection + Titles/Shadows/Seasons wiring.
+- `quiz_attempts` is intentionally separate from `results` so unique `(student_id, test_id)` doesn't block replays, and so academic vs game data never share a table.
+- Coin awards funnel through the same `coin_transactions` insert pattern used elsewhere (see `gamification.functions.ts`) so balances stay consistent.
+- Academic rank = dense rank by total percentage across all offline tests within the student's `standard_id`.
+- All new public-schema tables ship with `GRANT SELECT, INSERT, UPDATE, DELETE ... TO authenticated; GRANT ALL ... TO service_role;` per project rules. RLS enabled, policies scoped to `auth.uid()` or `has_role(..., 'admin')`.
