@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
+import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 import { completeVideo } from "@/lib/api/gamification.functions";
 
 export const Route = createFileRoute("/app/lectures")({ component: LecturesPage });
@@ -24,6 +25,7 @@ function LecturesPage() {
   const [subjectId, setSubjectId] = useState("all");
   const [activeLecture, setActiveLecture] = useState<{ id: string; url: string; title: string } | null>(null);
   const [reward, setReward] = useState<RewardPayload | null>(null);
+  const [floating, setFloating] = useState<FloatingRewardPayload | null>(null);
 
   const profile = useQuery({
     queryKey: ["profile", user?.id],
@@ -76,6 +78,7 @@ function LecturesPage() {
     try {
       const r = await completeFn({ data: { lectureId: activeLecture.id } });
       if (!r.alreadyCompleted) {
+        setFloating({ xp: r.xpAwarded, coins: r.coinsAwarded, label: "Lecture", key: Date.now() });
         setReward({ ...r, title: "Lecture complete!" });
         qc.invalidateQueries({ queryKey: ["video-completions"] });
         qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
@@ -97,6 +100,7 @@ function LecturesPage() {
   return (
     <div className="space-y-4">
       <RewardPopup reward={reward} onClose={() => setReward(null)} />
+      <FloatingReward reward={floating} />
       <div>
         <h1 className="text-2xl font-bold">Lectures</h1>
         <p className="text-sm text-muted-foreground">{filtered.length} videos · Watch fully to earn XP</p>
