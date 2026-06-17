@@ -25,6 +25,7 @@ import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppResultsRouteImport } from './routes/app.results'
 import { Route as AppQuestsRouteImport } from './routes/app.quests'
 import { Route as AppPvpRouteImport } from './routes/app.pvp'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
@@ -122,6 +123,11 @@ const AppQuestsRoute = AppQuestsRouteImport.update({
 const AppPvpRoute = AppPvpRouteImport.update({
   id: '/pvp',
   path: '/pvp',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNotesRoute = AppNotesRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
+  '/app/profile': typeof AppProfileRoute
   '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/quests': typeof AppQuestsRoute
   '/app/results': typeof AppResultsRoute
@@ -266,6 +273,7 @@ export interface FileRoutesByTo {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
+  '/app/profile': typeof AppProfileRoute
   '/app/quests': typeof AppQuestsRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
+  '/app/profile': typeof AppProfileRoute
   '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/quests': typeof AppQuestsRoute
   '/app/results': typeof AppResultsRoute
@@ -340,6 +349,7 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
+    | '/app/profile'
     | '/app/pvp'
     | '/app/quests'
     | '/app/results'
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
+    | '/app/profile'
     | '/app/quests'
     | '/app/results'
     | '/app/settings'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
+    | '/app/profile'
     | '/app/pvp'
     | '/app/quests'
     | '/app/results'
@@ -552,6 +564,13 @@ declare module '@tanstack/react-router' {
       path: '/pvp'
       fullPath: '/app/pvp'
       preLoaderRoute: typeof AppPvpRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/notes': {
@@ -732,6 +751,7 @@ interface AppRouteChildren {
   AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppLecturesRoute: typeof AppLecturesRoute
   AppNotesRoute: typeof AppNotesRoute
+  AppProfileRoute: typeof AppProfileRoute
   AppPvpRoute: typeof AppPvpRouteWithChildren
   AppQuestsRoute: typeof AppQuestsRoute
   AppResultsRoute: typeof AppResultsRoute
@@ -758,6 +778,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppLeaderboardRoute: AppLeaderboardRoute,
   AppLecturesRoute: AppLecturesRoute,
   AppNotesRoute: AppNotesRoute,
+  AppProfileRoute: AppProfileRoute,
   AppPvpRoute: AppPvpRouteWithChildren,
   AppQuestsRoute: AppQuestsRoute,
   AppResultsRoute: AppResultsRoute,
