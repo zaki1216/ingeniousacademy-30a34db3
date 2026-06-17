@@ -180,6 +180,42 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_spins: {
+        Row: {
+          created_at: string
+          id: string
+          prize_label: string
+          rarity: string
+          reward_amount: number
+          reward_type: string
+          reward_value: string
+          streak: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prize_label: string
+          rarity?: string
+          reward_amount?: number
+          reward_type: string
+          reward_value: string
+          streak?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prize_label?: string
+          rarity?: string
+          reward_amount?: number
+          reward_type?: string
+          reward_value?: string
+          streak?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       gamification_stats: {
         Row: {
           chest_cycle_day: number
