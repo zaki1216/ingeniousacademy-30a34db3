@@ -99,6 +99,23 @@
 
   --shadow-card: 0 8px 24px -12px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.04);
   --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--primary-glow) 60%, transparent);
+
+  /* === MONARCH RPG SYSTEM (Solo Leveling inspired) === */
+  --bg-void: #06060a;
+  --bg-rift: #0f1226;
+  --monarch: #6d4cff;
+  --monarch-glow: #a78bfa;
+  --rune: #22d3ee;
+  --rune-glow: #67e8f9;
+  --ember: #ff3b6b;
+  --gold-rpg: #fbbf24;
+
+  --gradient-xp: linear-gradient(90deg, #22d3ee 0%, #6d4cff 50%, #a78bfa 100%);
+  --gradient-rank: linear-gradient(135deg, #6d4cff, #22d3ee);
+  --gradient-monarch: linear-gradient(135deg, #6d4cff 0%, #a855f7 35%, #fbbf24 65%, #ff3b6b 100%);
+
+  --shadow-monarch: 0 0 40px -6px color-mix(in oklab, #6d4cff 70%, transparent);
+  --shadow-rune: 0 0 30px -4px color-mix(in oklab, #22d3ee 60%, transparent);
 }
 
 .dark {
