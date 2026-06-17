@@ -183,7 +183,7 @@ function LecturesPage() {
         {filtered.map((l) => {
           const done = completedSet.has(l.id);
           return (
-            <Card key={l.id} className="cursor-pointer hover:bg-accent/30 transition" onClick={() => setActiveLecture({ id: l.id, url: l.youtube_url, title: l.lecture_title })}>
+            <Card key={l.id} className="cursor-pointer hover:bg-accent/30 transition" onClick={() => openLecture({ id: l.id, url: l.youtube_url, title: l.lecture_title })}>
               <CardContent className="p-3 flex items-center gap-3">
                 <div className={`h-12 w-12 rounded-lg flex items-center justify-center shrink-0 ${done ? "bg-green-500/15 text-green-600" : "bg-primary/10 text-primary"}`}>
                   {done ? <CheckCircle2 className="h-6 w-6" /> : <PlayCircle className="h-6 w-6" />}
