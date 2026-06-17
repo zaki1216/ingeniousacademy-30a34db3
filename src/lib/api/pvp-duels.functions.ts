@@ -108,11 +108,11 @@ export const listMyDuels = createServerFn({ method: "GET" })
       ),
     ) as string[];
     const { data: profs } = userIds.length
-      ? await supabaseAdmin.from("profiles").select("id, name, email").in("id", userIds)
+      ? await supabaseAdmin.from("profiles").select("id, name").in("id", userIds)
       : { data: [] };
     const nameOf = (id: string | null) => {
       const p = profs?.find((x) => x.id === id);
-      return p?.name || p?.email || "Player";
+      return p?.name || "Player";
     };
     return (data ?? []).map((d) => ({
       id: d.id,
