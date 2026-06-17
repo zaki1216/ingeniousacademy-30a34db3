@@ -79,6 +79,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { role } = useAuth();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const items = role === "admin" ? adminNav : studentNav;
+  const isStudent = role === "student";
   return (
     <nav className="space-y-1">
       {items.map((it) => {
@@ -101,6 +102,33 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           </Link>
         );
       })}
+      {isStudent && (
+        <>
+          <div className="pt-3 pb-1 px-3 text-[10px] font-orbitron font-bold tracking-widest text-muted-foreground uppercase">
+            More
+          </div>
+          {studentSecondaryNav.map((it) => {
+            const active = path === it.to || path.startsWith(it.to + "/");
+            const Icon = it.icon;
+            return (
+              <Link
+                key={it.to}
+                to={it.to}
+                onClick={onNavigate}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all",
+                  active
+                    ? "bg-white/10 text-foreground"
+                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/40 hover:text-sidebar-accent-foreground",
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {it.label}
+              </Link>
+            );
+          })}
+        </>
+      )}
     </nav>
   );
 }
