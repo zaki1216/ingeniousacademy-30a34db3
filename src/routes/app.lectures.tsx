@@ -137,10 +137,30 @@ function LecturesPage() {
         <Card>
           <CardContent className="p-3 space-y-2">
             <YouTubePlayer url={activeLecture.url} title={activeLecture.title} onComplete={handleVideoEnded} />
-            <div className="flex items-center justify-between">
-              <div className="font-semibold">{activeLecture.title}</div>
-              <button className="text-sm text-muted-foreground" onClick={() => setActiveLecture(null)}>Close</button>
+            <div className="flex items-center justify-between gap-2">
+              <div className="font-semibold truncate">{activeLecture.title}</div>
+              <button className="text-sm text-muted-foreground shrink-0" onClick={() => setActiveLecture(null)}>Close</button>
             </div>
+            {(claimReady || claimDone) && (
+              <Button
+                onClick={handleClaim}
+                disabled={claiming || claimDone}
+                className={cn(
+                  "w-full font-orbitron uppercase tracking-wider",
+                  claimDone
+                    ? "bg-emerald-600 hover:bg-emerald-600 text-white"
+                    : "bg-amber-500 hover:bg-amber-400 text-amber-950 animate-pulse",
+                )}
+              >
+                {claiming ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Claiming…</>
+                ) : claimDone ? (
+                  <><CheckCircle2 className="h-4 w-4 mr-2" /> Reward Claimed</>
+                ) : (
+                  <><Gift className="h-4 w-4 mr-2" /> Claim +50 XP &amp; coins</>
+                )}
+              </Button>
+            )}
           </CardContent>
         </Card>
       )}
