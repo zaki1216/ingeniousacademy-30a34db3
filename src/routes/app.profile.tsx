@@ -45,7 +45,7 @@ function ProfilePage() {
         supabase.from("results").select("id, percentage, test:tests(is_boss)").eq("student_id", user!.id),
         supabase.from("user_achievements").select("id", { count: "exact", head: true }).eq("user_id", user!.id),
         supabase.from("attendance").select("status").eq("student_id", user!.id),
-        supabase.from("pvp_duels").select("id, winner_id").or(`player1_id.eq.${user!.id},player2_id.eq.${user!.id}`),
+        supabase.from("pvp_duels").select("id, winner_id").or(`challenger_id.eq.${user!.id},opponent_id.eq.${user!.id}`),
       ]);
       const resultRows = (results.data ?? []) as { percentage: number; test: { is_boss: boolean } | null }[];
       const attRows = (att.data ?? []) as { status: string }[];
