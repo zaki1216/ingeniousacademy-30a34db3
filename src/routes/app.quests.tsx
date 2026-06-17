@@ -29,6 +29,14 @@ function QuestsPage() {
   const fn = useServerFn(getDailyQuestsAndStreak);
   const { data, isLoading } = useQuery({ queryKey: ["daily-quests"], queryFn: () => fn() });
   const [tab, setTab] = useState<Category>("daily");
+  const [claimed, setClaimed] = useState<Record<string, true>>({});
+  const [floating, setFloating] = useState<FloatingRewardPayload | null>(null);
+
+  function handleClaim(q: { id: string; reward_xp: number; reward_coins: number; title: string }) {
+    if (claimed[q.id]) return;
+    setClaimed((prev) => ({ ...prev, [q.id]: true }));
+    setFloating({ xp: q.reward_xp, coins: q.reward_coins, label: q.title, key: Date.now() });
+  }
 
   // Derive a Weekly view from the existing days array (no API change).
   const weekly = useMemo(() => {
