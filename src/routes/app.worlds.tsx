@@ -272,11 +272,26 @@ function WorldsPage() {
                                     {c.done}/{c.total}
                                   </span>
                                 </div>
-                                {c.meta.shadowUnlock && (
-                                  <div className="mt-2 text-[10px] flex items-center gap-1 text-fuchsia-300 font-orbitron uppercase tracking-wider">
-                                    <Ghost className="h-3 w-3" /> {c.meta.shadowUnlock}
-                                  </div>
-                                )}
+                                <div
+                                  className={cn(
+                                    "mt-2 rounded-lg px-2 py-1.5 flex items-center gap-2 text-[10px] font-orbitron uppercase tracking-wider transition-colors",
+                                    c.meta.shadow.unlocked
+                                      ? "bg-fuchsia-500/20 text-fuchsia-200 ring-1 ring-fuchsia-400/60 animate-pulse"
+                                      : "bg-muted/40 text-muted-foreground"
+                                  )}
+                                  aria-live="polite"
+                                >
+                                  <Ghost className="h-3 w-3 shrink-0" />
+                                  <span className="flex-1 min-w-0 truncate normal-case tracking-normal">
+                                    <b className="mr-1">{c.meta.shadow.name}:</b>
+                                    {c.meta.shadow.requirement}
+                                  </span>
+                                  {c.meta.shadow.unlocked ? (
+                                    <span className="text-[9px] font-bold bg-fuchsia-400 text-fuchsia-950 px-1.5 py-0.5 rounded">READY</span>
+                                  ) : (
+                                    <span className="text-[9px] tabular-nums">{Math.round(c.meta.shadow.progress * 100)}%</span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </Link>
