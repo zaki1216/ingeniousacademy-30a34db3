@@ -239,7 +239,7 @@ function StudentDashboard({ userId }: { userId?: string }) {
       <DailyChestCard />
 
       {/* Continue Adventure / World map preview */}
-      <Link to="/app/worlds" className="block">
+      <Link to="/app/journey" className="block">
         <motion.div
           whileTap={{ scale: 0.98 }}
           className="relative overflow-hidden rounded-2xl p-5 glass-card glow-primary"
