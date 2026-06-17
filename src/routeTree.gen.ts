@@ -35,6 +35,7 @@ import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
 import { Route as AppJourneyRouteImport } from './routes/app.journey'
 import { Route as AppInventoryRouteImport } from './routes/app.inventory'
 import { Route as AppContentRouteImport } from './routes/app.content'
+import { Route as AppCollectionRouteImport } from './routes/app.collection'
 import { Route as AppCoinsRouteImport } from './routes/app.coins'
 import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
@@ -182,6 +183,11 @@ const AppContentRoute = AppContentRouteImport.update({
   path: '/content',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollectionRoute = AppCollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCoinsRoute = AppCoinsRouteImport.update({
   id: '/coins',
   path: '/coins',
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
+  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRoute
@@ -318,6 +325,7 @@ export interface FileRoutesByTo {
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
+  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRoute
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
+  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRoute
@@ -408,6 +417,7 @@ export interface FileRouteTypes {
     | '/app/announcements'
     | '/app/attendance'
     | '/app/coins'
+    | '/app/collection'
     | '/app/content'
     | '/app/inventory'
     | '/app/journey'
@@ -451,6 +461,7 @@ export interface FileRouteTypes {
     | '/app/announcements'
     | '/app/attendance'
     | '/app/coins'
+    | '/app/collection'
     | '/app/content'
     | '/app/inventory'
     | '/app/journey'
@@ -494,6 +505,7 @@ export interface FileRouteTypes {
     | '/app/announcements'
     | '/app/attendance'
     | '/app/coins'
+    | '/app/collection'
     | '/app/content'
     | '/app/inventory'
     | '/app/journey'
@@ -720,6 +732,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppContentRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/collection': {
+      id: '/app/collection'
+      path: '/collection'
+      fullPath: '/app/collection'
+      preLoaderRoute: typeof AppCollectionRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/coins': {
       id: '/app/coins'
       path: '/coins'
@@ -880,6 +899,7 @@ interface AppRouteChildren {
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
   AppAttendanceRoute: typeof AppAttendanceRoute
   AppCoinsRoute: typeof AppCoinsRoute
+  AppCollectionRoute: typeof AppCollectionRoute
   AppContentRoute: typeof AppContentRoute
   AppInventoryRoute: typeof AppInventoryRoute
   AppJourneyRoute: typeof AppJourneyRoute
@@ -914,6 +934,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAnnouncementsRoute: AppAnnouncementsRoute,
   AppAttendanceRoute: AppAttendanceRoute,
   AppCoinsRoute: AppCoinsRoute,
+  AppCollectionRoute: AppCollectionRoute,
   AppContentRoute: AppContentRoute,
   AppInventoryRoute: AppInventoryRoute,
   AppJourneyRoute: AppJourneyRoute,
