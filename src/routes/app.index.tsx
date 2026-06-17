@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
 import {
   Users, BookOpen, FileText, ClipboardList, Megaphone, GraduationCap,
-  Map, Swords, Trophy, ShoppingBag, Award, ChevronRight, Sparkles,
+  Map, Swords, Trophy, ShoppingBag, Award, ChevronRight, Sparkles, Target, CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -15,6 +15,8 @@ import { HeroCard } from "@/components/gamification/HeroCard";
 import { DailyChestCard } from "@/components/gamification/DailyChestCard";
 import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
 import { getGamificationDashboard, dailyCheckIn } from "@/lib/api/gamification.functions";
+import { getDailyObjectives } from "@/lib/api/rpg-collection.functions";
+import { nextRank } from "@/lib/rpg/ranks";
 import { getIcon } from "@/lib/gamification/icons";
 
 export const Route = createFileRoute("/app/")({
