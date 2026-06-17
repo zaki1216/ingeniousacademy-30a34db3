@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useMemo, useState } from "react";
-import { Search, PlayCircle, CheckCircle2 } from "lucide-react";
+import { Search, PlayCircle, CheckCircle2, Gift, Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +14,7 @@ import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 import { completeVideo } from "@/lib/api/gamification.functions";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/lectures")({ component: LecturesPage });
 
@@ -26,6 +28,9 @@ function LecturesPage() {
   const [activeLecture, setActiveLecture] = useState<{ id: string; url: string; title: string } | null>(null);
   const [reward, setReward] = useState<RewardPayload | null>(null);
   const [floating, setFloating] = useState<FloatingRewardPayload | null>(null);
+  const [claimReady, setClaimReady] = useState(false);
+  const [claiming, setClaiming] = useState(false);
+  const [claimDone, setClaimDone] = useState(false);
 
   const profile = useQuery({
     queryKey: ["profile", user?.id],
@@ -73,10 +78,23 @@ function LecturesPage() {
     );
   }, [lectures.data, subjectId, search]);
 
-  const handleVideoEnded = useCallback(async () => {
+  const handleVideoEnded = useCallback(() => {
+    // Video finished — surface an explicit Claim button. Don't auto-award.
     if (!activeLecture) return;
+    if (completedSet.has(activeLecture.id)) {
+      setClaimDone(true);
+    } else {
+      setClaimReady(true);
+    }
+  }, [activeLecture, completedSet]);
+
+  const handleClaim = useCallback(async () => {
+    if (!activeLecture || claiming || claimDone) return;
+    setClaiming(true);
     try {
       const r = await completeFn({ data: { lectureId: activeLecture.id } });
+      setClaimDone(true);
+      setClaimReady(false);
       if (!r.alreadyCompleted) {
         setFloating({ xp: r.xpAwarded, coins: r.coinsAwarded, label: "Lecture", key: Date.now() });
         setReward({ ...r, title: "Lecture complete!" });
@@ -85,8 +103,17 @@ function LecturesPage() {
       }
     } catch {
       /* silent */
+    } finally {
+      setClaiming(false);
     }
-  }, [activeLecture, completeFn, qc]);
+  }, [activeLecture, claiming, claimDone, completeFn, qc]);
+
+  const openLecture = useCallback((l: { id: string; url: string; title: string }) => {
+    setActiveLecture(l);
+    setClaimReady(false);
+    setClaiming(false);
+    setClaimDone(completedSet.has(l.id));
+  }, [completedSet]);
 
   if (!standardId) {
     return (
@@ -110,10 +137,30 @@ function LecturesPage() {
         <Card>
           <CardContent className="p-3 space-y-2">
             <YouTubePlayer url={activeLecture.url} title={activeLecture.title} onComplete={handleVideoEnded} />
-            <div className="flex items-center justify-between">
-              <div className="font-semibold">{activeLecture.title}</div>
-              <button className="text-sm text-muted-foreground" onClick={() => setActiveLecture(null)}>Close</button>
+            <div className="flex items-center justify-between gap-2">
+              <div className="font-semibold truncate">{activeLecture.title}</div>
+              <button className="text-sm text-muted-foreground shrink-0" onClick={() => setActiveLecture(null)}>Close</button>
             </div>
+            {(claimReady || claimDone) && (
+              <Button
+                onClick={handleClaim}
+                disabled={claiming || claimDone}
+                className={cn(
+                  "w-full font-orbitron uppercase tracking-wider",
+                  claimDone
+                    ? "bg-emerald-600 hover:bg-emerald-600 text-white"
+                    : "bg-amber-500 hover:bg-amber-400 text-amber-950 animate-pulse",
+                )}
+              >
+                {claiming ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Claiming…</>
+                ) : claimDone ? (
+                  <><CheckCircle2 className="h-4 w-4 mr-2" /> Reward Claimed</>
+                ) : (
+                  <><Gift className="h-4 w-4 mr-2" /> Claim +50 XP &amp; coins</>
+                )}
+              </Button>
+            )}
           </CardContent>
         </Card>
       )}
@@ -136,7 +183,7 @@ function LecturesPage() {
         {filtered.map((l) => {
           const done = completedSet.has(l.id);
           return (
-            <Card key={l.id} className="cursor-pointer hover:bg-accent/30 transition" onClick={() => setActiveLecture({ id: l.id, url: l.youtube_url, title: l.lecture_title })}>
+            <Card key={l.id} className="cursor-pointer hover:bg-accent/30 transition" onClick={() => openLecture({ id: l.id, url: l.youtube_url, title: l.lecture_title })}>
               <CardContent className="p-3 flex items-center gap-3">
                 <div className={`h-12 w-12 rounded-lg flex items-center justify-center shrink-0 ${done ? "bg-green-500/15 text-green-600" : "bg-primary/10 text-primary"}`}>
                   {done ? <CheckCircle2 className="h-6 w-6" /> : <PlayCircle className="h-6 w-6" />}

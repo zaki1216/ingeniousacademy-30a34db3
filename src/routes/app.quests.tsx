@@ -2,15 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { Flame, Sparkles, Trophy, Zap, CalendarDays, BookOpen, Crown, Lock } from "lucide-react";
+import { Flame, Sparkles, Trophy, Zap, CalendarDays, BookOpen, Crown, Lock, Coins, Check } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { getDailyQuestsAndStreak } from "@/lib/api/quests.functions";
 import { cn } from "@/lib/utils";
+import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 
 export const Route = createFileRoute("/app/quests")({ component: QuestsPage });
 
@@ -27,6 +29,14 @@ function QuestsPage() {
   const fn = useServerFn(getDailyQuestsAndStreak);
   const { data, isLoading } = useQuery({ queryKey: ["daily-quests"], queryFn: () => fn() });
   const [tab, setTab] = useState<Category>("daily");
+  const [claimed, setClaimed] = useState<Record<string, true>>({});
+  const [floating, setFloating] = useState<FloatingRewardPayload | null>(null);
+
+  function handleClaim(q: { id: string; reward_xp: number; reward_coins: number; title: string }) {
+    if (claimed[q.id]) return;
+    setClaimed((prev) => ({ ...prev, [q.id]: true }));
+    setFloating({ xp: q.reward_xp, coins: q.reward_coins, label: q.title, key: Date.now() });
+  }
 
   // Derive a Weekly view from the existing days array (no API change).
   const weekly = useMemo(() => {
@@ -66,6 +76,7 @@ function QuestsPage() {
 
   return (
     <div className="space-y-4">
+      <FloatingReward reward={floating} />
       <div>
         <h1 className="text-2xl font-bold font-orbitron flex items-center gap-2">
           <Sparkles className="h-6 w-6 text-amber-400" />Quests &amp; Missions
@@ -101,31 +112,56 @@ function QuestsPage() {
         <>
           {list.length > 0 ? (
             <div className="grid gap-2">
-              {list.map((q) => (
-                <Card key={q.id} className={cn(q.done && "border-emerald-500/60 bg-emerald-500/5 monarch-glow")}>
-                  <CardContent className="p-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="font-semibold flex items-center gap-2">
-                          {q.done && <Trophy className="h-4 w-4 text-emerald-400" />}
-                          {q.title}
+              {list.map((q) => {
+                const isClaimed = !!claimed[q.id];
+                const ready = q.done && !isClaimed;
+                return (
+                  <Card key={q.id} className={cn(
+                    "transition-all",
+                    q.done && "border-emerald-500/60 bg-emerald-500/5",
+                    ready && "monarch-glow ring-1 ring-amber-400/60",
+                  )}>
+                    <CardContent className="p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="font-semibold flex items-center gap-2">
+                            {q.done && <Trophy className="h-4 w-4 text-emerald-400" />}
+                            {q.title}
+                          </div>
+                          <div className="text-xs text-muted-foreground">{q.description}</div>
                         </div>
-                        <div className="text-xs text-muted-foreground">{q.description}</div>
                       </div>
-                      <div className="flex gap-1 shrink-0">
-                        <Badge variant="secondary" className="text-amber-400 font-orbitron">
-                          <Zap className="h-3 w-3 mr-1" />+{q.reward_xp}
-                        </Badge>
-                        <Badge variant="secondary" className="font-orbitron">🪙 +{q.reward_coins}</Badge>
+                      <div className="flex items-center gap-2">
+                        <Progress value={(q.progress / q.goal) * 100} className="h-2 flex-1" />
+                        <span className="text-xs text-muted-foreground tabular-nums shrink-0 font-orbitron">{q.progress}/{q.goal}</span>
                       </div>
-                    </div>
-                    <div className="mt-2 flex items-center gap-2">
-                      <Progress value={(q.progress / q.goal) * 100} className="h-2 flex-1" />
-                      <span className="text-xs text-muted-foreground tabular-nums shrink-0 font-orbitron">{q.progress}/{q.goal}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      {/* Reward breakdown row + claim CTA */}
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/40">
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="secondary" className="text-amber-400 font-orbitron">
+                            <Zap className="h-3 w-3 mr-1" />+{q.reward_xp} XP
+                          </Badge>
+                          <Badge variant="secondary" className="text-yellow-300 font-orbitron">
+                            <Coins className="h-3 w-3 mr-1" />+{q.reward_coins}
+                          </Badge>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant={isClaimed ? "secondary" : ready ? "default" : "outline"}
+                          disabled={!ready}
+                          onClick={() => handleClaim(q)}
+                          className={cn(
+                            "h-7 px-3 text-xs font-orbitron uppercase tracking-wider",
+                            ready && "bg-amber-500 hover:bg-amber-400 text-amber-950 animate-pulse",
+                          )}
+                        >
+                          {isClaimed ? (<><Check className="h-3 w-3 mr-1" /> Claimed</>) : ready ? "Claim" : q.done ? "Done" : "Locked"}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             <Card>

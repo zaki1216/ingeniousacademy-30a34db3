@@ -118,6 +118,44 @@ function WorldsPage() {
         </p>
       </div>
 
+      {/* Interactive mini progression map — tap a node to jump to that realm */}
+      {worlds.length > 0 && (
+        <div className="relative rounded-2xl border border-border/60 bg-card/40 p-3 overflow-x-auto">
+          <div className="flex items-center gap-2 min-w-max">
+            {worlds.map((w, i) => {
+              const unlocked = i === 0 || worlds[i - 1].pct >= 50 || worlds[i - 1].total === 0;
+              const isActive = openWorld === w.id;
+              return (
+                <div key={w.id} className="flex items-center gap-2">
+                  <button
+                    onClick={() => unlocked && setOpenWorld(isActive ? null : w.id)}
+                    disabled={!unlocked}
+                    title={`${w.theme.name} · ${w.pct}% · Lv ${w.recommendedLevel}+`}
+                    className={cn(
+                      "relative h-14 w-14 rounded-full grid place-items-center text-2xl shrink-0 transition-transform",
+                      "bg-gradient-to-br", w.theme.grad,
+                      unlocked ? "hover:scale-110" : "opacity-40 grayscale cursor-not-allowed",
+                      isActive && "ring-2 ring-primary scale-110 monarch-glow",
+                    )}
+                  >
+                    {unlocked ? w.theme.emoji : <Lock className="h-5 w-5 text-white/80" />}
+                    <span className="absolute -bottom-1 -right-1 text-[9px] font-orbitron font-bold bg-background/90 text-foreground rounded-full px-1.5 py-px border border-border">
+                      {w.pct}%
+                    </span>
+                  </button>
+                  {i < worlds.length - 1 && (
+                    <div className={cn("h-px w-6 sm:w-10", worlds[i].pct >= 50 ? "bg-primary" : "bg-border")} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-2 text-[10px] text-muted-foreground text-center font-orbitron uppercase tracking-widest">
+            Tap a realm to view its dungeons
+          </div>
+        </div>
+      )}
+
       {/* Visual progression spine — connects each realm in order */}
       <div className="relative">
         <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-primary/60 via-primary/20 to-transparent pointer-events-none hidden sm:block" />
@@ -272,11 +310,26 @@ function WorldsPage() {
                                     {c.done}/{c.total}
                                   </span>
                                 </div>
-                                {c.meta.shadowUnlock && (
-                                  <div className="mt-2 text-[10px] flex items-center gap-1 text-fuchsia-300 font-orbitron uppercase tracking-wider">
-                                    <Ghost className="h-3 w-3" /> {c.meta.shadowUnlock}
-                                  </div>
-                                )}
+                                <div
+                                  className={cn(
+                                    "mt-2 rounded-lg px-2 py-1.5 flex items-center gap-2 text-[10px] font-orbitron uppercase tracking-wider transition-colors",
+                                    c.meta.shadow.unlocked
+                                      ? "bg-fuchsia-500/20 text-fuchsia-200 ring-1 ring-fuchsia-400/60 animate-pulse"
+                                      : "bg-muted/40 text-muted-foreground"
+                                  )}
+                                  aria-live="polite"
+                                >
+                                  <Ghost className="h-3 w-3 shrink-0" />
+                                  <span className="flex-1 min-w-0 truncate normal-case tracking-normal">
+                                    <b className="mr-1">{c.meta.shadow.name}:</b>
+                                    {c.meta.shadow.requirement}
+                                  </span>
+                                  {c.meta.shadow.unlocked ? (
+                                    <span className="text-[9px] font-bold bg-fuchsia-400 text-fuchsia-950 px-1.5 py-0.5 rounded">READY</span>
+                                  ) : (
+                                    <span className="text-[9px] tabular-nums">{Math.round(c.meta.shadow.progress * 100)}%</span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </Link>

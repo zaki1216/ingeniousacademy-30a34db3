@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { Trophy, Crown, CalendarCheck, Flame, Medal, ArrowUp, ArrowDown, Sparkles } from "lucide-react";
+import { Trophy, Crown, CalendarCheck, Flame, Medal, ArrowUp, ArrowDown, Sparkles, Info, TrendingUp } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getLeaderboard } from "@/lib/api/gamification.functions";
 import { getAttendanceLeaderboard } from "@/lib/api/attendance.functions";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,18 @@ import { rankFromLevel } from "@/lib/rpg/ranks";
 import { RankBadge } from "@/components/rpg/RankBadge";
 
 export const Route = createFileRoute("/app/leaderboard")({ component: LeaderboardPage });
+
+const PERIOD_HELP: Record<"weekly" | "monthly" | "all", string> = {
+  weekly: "Weekly XP = sum of all XP transactions in the last 7 days. Resets each Monday at midnight.",
+  monthly: "Monthly XP = sum of all XP transactions in the current calendar month.",
+  all: "All-time XP = the total XP you have ever earned across every activity.",
+};
+
+const BRACKET_HELP = {
+  ABOVE: "The hunter one rank above you in this period. Their XP minus yours is the gap you need to close.",
+  YOU: "Your current standing in this period — your rank number and XP earned.",
+  BELOW: "The hunter one rank below you. If your XP drops or theirs grows past you, they take your spot.",
+} as const;
 
 function LeaderboardPage() {
   const [mode, setMode] = useState<"xp" | "attendance">("xp");
@@ -63,15 +76,26 @@ function LeaderboardPage() {
   }, [rows, mode, period]);
 
   return (
+    <TooltipProvider delayDuration={150}>
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold font-orbitron flex items-center gap-2">
           <Trophy className="h-6 w-6 text-amber-500" /> Leaderboard
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground flex items-center gap-1.5">
           {mode === "xp"
             ? (period === "all" ? "Hunters of your class — all-time XP." : `Hunters of your class — ${period === "weekly" ? "weekly" : "monthly"} XP.`)
             : "Hunters of your class — attendance honor roll."}
+          {mode === "xp" && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button aria-label="How this is computed" className="inline-flex">
+                  <Info className="h-3.5 w-3.5 text-muted-foreground/70 hover:text-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs text-xs leading-relaxed">{PERIOD_HELP[period]}</TooltipContent>
+            </Tooltip>
+          )}
         </p>
       </div>
 
@@ -96,15 +120,43 @@ function LeaderboardPage() {
       {mode === "xp" && me && (
         <Card className="rune-border bg-[image:radial-gradient(circle_at_top,hsl(var(--primary)/0.18),transparent_60%)]">
           <CardContent className="p-4 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-orbitron uppercase tracking-widest text-primary">
-              <Sparkles className="h-3.5 w-3.5" /> Your bracket
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-orbitron uppercase tracking-widest text-primary">
+                <Sparkles className="h-3.5 w-3.5" /> Your bracket
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button aria-label="How your bracket works" className="inline-flex">
+                    <Info className="h-3.5 w-3.5 text-muted-foreground/70 hover:text-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-xs leading-relaxed">
+                  Shows the hunter directly above and below you in this period's ranking, so you can see exactly who to overtake — or who's chasing you.
+                </TooltipContent>
+              </Tooltip>
             </div>
-            <NeighborRow label="ABOVE" row={above} icon={<ArrowUp className="h-3 w-3" />} tone="up" />
-            <NeighborRow label="YOU"   row={me}    highlight />
-            <NeighborRow label="BELOW" row={below} icon={<ArrowDown className="h-3 w-3" />} tone="down" />
+            <NeighborRow label="ABOVE" tip={BRACKET_HELP.ABOVE} row={above} icon={<ArrowUp className="h-3 w-3" />} tone="up" />
+            <NeighborRow label="YOU"   tip={BRACKET_HELP.YOU}   row={me}    highlight />
+            <NeighborRow label="BELOW" tip={BRACKET_HELP.BELOW} row={below} icon={<ArrowDown className="h-3 w-3" />} tone="down" />
             {growthMsg && (
-              <div className="text-xs text-muted-foreground border-t pt-2 leading-relaxed">
-                {growthMsg}
+              <div className="text-xs text-muted-foreground border-t pt-2 leading-relaxed flex items-start gap-1.5">
+                <TrendingUp className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <span className="flex-1">
+                  <b className="text-foreground font-orbitron uppercase tracking-wider text-[10px] mr-1">
+                    {period === "weekly" ? "This week:" : period === "monthly" ? "This month:" : "All-time:"}
+                  </b>
+                  {growthMsg}
+                </span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button aria-label="How growth is computed" className="inline-flex shrink-0">
+                      <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs text-xs leading-relaxed">
+                    Growth is the XP gap between you and the hunter above. Earning that much more {period === "weekly" ? "before the week resets on Monday" : period === "monthly" ? "before the month ends" : "any time"} bumps you up one rank.
+                  </TooltipContent>
+                </Tooltip>
               </div>
             )}
           </CardContent>
@@ -197,26 +249,47 @@ function LeaderboardPage() {
         <p className="text-xs text-center text-muted-foreground">Your rank: #{myRank}</p>
       )}
     </div>
+    </TooltipProvider>
   );
 }
 
 function NeighborRow({
   label,
+  tip,
   row,
   icon,
   tone,
   highlight,
 }: {
   label: string;
+  tip?: string;
   row: any;
   icon?: React.ReactNode;
   tone?: "up" | "down";
   highlight?: boolean;
 }) {
+  const LabelEl = (
+    <span className={cn(
+      "w-12 text-[10px] font-orbitron tracking-wider flex items-center gap-1 cursor-help",
+      tone === "up" && "text-emerald-400",
+      tone === "down" && "text-rose-400",
+      highlight && "text-primary",
+      !row && "text-muted-foreground/70",
+    )}>
+      {icon}{label}
+    </span>
+  );
+  const Labeled = tip ? (
+    <Tooltip>
+      <TooltipTrigger asChild>{LabelEl}</TooltipTrigger>
+      <TooltipContent className="max-w-xs text-xs leading-relaxed">{tip}</TooltipContent>
+    </Tooltip>
+  ) : LabelEl;
+
   if (!row) {
     return (
       <div className="flex items-center gap-3 text-xs text-muted-foreground/70">
-        <span className="w-12 font-orbitron tracking-wider">{label}</span>
+        {Labeled}
         <span>— none —</span>
       </div>
     );
@@ -227,14 +300,7 @@ function NeighborRow({
       "flex items-center gap-3 rounded-lg p-2",
       highlight && "bg-primary/10 ring-1 ring-primary/40",
     )}>
-      <span className={cn(
-        "w-12 text-[10px] font-orbitron tracking-wider flex items-center gap-1",
-        tone === "up" && "text-emerald-400",
-        tone === "down" && "text-rose-400",
-        highlight && "text-primary",
-      )}>
-        {icon}{label}
-      </span>
+      {Labeled}
       <span className="font-orbitron text-sm text-muted-foreground w-8">#{row.rank}</span>
       <RankBadge tier={tier.tier} size="sm" />
       <span className="flex-1 min-w-0 truncate text-sm font-semibold">{row.name}</span>

@@ -5,6 +5,17 @@ import { rankFromLevel } from "./ranks";
 
 export type DungeonDifficulty = "Trivial" | "Normal" | "Hard" | "Elite" | "Nightmare";
 
+export type ShadowStatus = {
+  /** True when the shadow is currently available to be awakened by the player. */
+  unlocked: boolean;
+  /** Short label e.g. "Dungeon Shadow". */
+  name: string;
+  /** Plain-English unlock requirement, always present so cards can show progress. */
+  requirement: string;
+  /** Progress toward unlock 0–1, useful for progress bars on the card. */
+  progress: number;
+};
+
 export type DungeonMeta = {
   name: string;            // "Algebra Dungeon", "Geometry Fortress"
   suffix: string;          // "Dungeon" | "Fortress" | ...
@@ -14,7 +25,7 @@ export type DungeonMeta = {
   rewardXp: number;
   rewardCoins: number;
   bossAvailable: boolean;
-  shadowUnlock: string | null;
+  shadow: ShadowStatus;
 };
 
 const SUFFIX_POOL: { keys: string[]; suffix: string; emoji: string }[] = [
@@ -69,10 +80,19 @@ export function dungeonMeta(
   const bossAvailable = totalLectures > 0 && watchedLectures >= Math.max(1, totalLectures - 1);
 
   const rank = rankFromLevel(playerLevel);
-  const shadowUnlock =
-    chapterNumber >= 6 && watchedLectures === totalLectures && totalLectures > 0
-      ? `Awaken ${suffix} Shadow at ${rank.shortLabel}+`
-      : null;
+  const eligible = chapterNumber >= 6 && totalLectures > 0;
+  const allCleared = totalLectures > 0 && watchedLectures >= totalLectures;
+  const unlocked = eligible && allCleared;
+  const shadow: ShadowStatus = {
+    unlocked,
+    name: `${suffix} Shadow`,
+    requirement: !eligible
+      ? `Reach a Tier-${chapterNumber >= 6 ? "" : "6+ "}dungeon to attempt the shadow`
+      : unlocked
+        ? `Awakened — bind this shadow as ${rank.shortLabel}+`
+        : `Clear all ${totalLectures} missions to awaken (${watchedLectures}/${totalLectures})`,
+    progress: totalLectures > 0 ? Math.min(1, watchedLectures / totalLectures) : 0,
+  };
 
   return {
     name,
@@ -83,7 +103,7 @@ export function dungeonMeta(
     rewardXp,
     rewardCoins,
     bossAvailable,
-    shadowUnlock,
+    shadow,
   };
 }
 

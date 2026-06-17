@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Gift, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,8 @@ function TakeTestPage() {
   const [reward, setReward] = useState<RewardPayload | null>(null);
   const [floating, setFloating] = useState<FloatingRewardPayload | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [claiming, setClaiming] = useState(false);
+  const [claimDone, setClaimDone] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["take-test", testId],
@@ -48,18 +50,31 @@ function TakeTestPage() {
     try {
       const r = await submitFn({ data: { testId, answers } });
       setResult({ score: r.score, total: r.total, percentage: r.percentage });
-      try {
-        const rw = await awardFn({ data: { testId } });
-        if (!rw.alreadyAwarded) {
-          setFloating({ xp: rw.xpAwarded, coins: rw.coinsAwarded, label: "Battle won", key: Date.now() });
-          setReward({ ...rw, title: "Quiz complete!" });
-          qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
-        }
-      } catch { /* ignore reward errors */ }
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Failed to submit");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleClaim() {
+    if (claiming || claimDone) return;
+    setClaiming(true);
+    try {
+      const rw = await awardFn({ data: { testId } });
+      setClaimDone(true);
+      if (!rw.alreadyAwarded) {
+        setFloating({ xp: rw.xpAwarded, coins: rw.coinsAwarded, label: "Battle won", key: Date.now() });
+        setReward({ ...rw, title: "Quiz complete!" });
+        qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
+      } else {
+        toast.info("You already claimed this reward.");
+      }
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Failed to claim reward");
+      setClaimDone(false);
+    } finally {
+      setClaiming(false);
     }
   }
 
@@ -80,6 +95,24 @@ function TakeTestPage() {
               <div className="text-muted-foreground">
                 {result.score} / {result.total} marks
               </div>
+              <Button
+                onClick={handleClaim}
+                disabled={claiming || claimDone}
+                size="lg"
+                className={
+                  claimDone
+                    ? "w-full bg-emerald-600 hover:bg-emerald-600 text-white font-orbitron uppercase tracking-wider"
+                    : "w-full bg-amber-500 hover:bg-amber-400 text-amber-950 font-orbitron uppercase tracking-wider animate-pulse"
+                }
+              >
+                {claiming ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Claiming…</>
+                ) : claimDone ? (
+                  <><CheckCircle2 className="h-4 w-4 mr-2" /> Reward Claimed</>
+                ) : (
+                  <><Gift className="h-4 w-4 mr-2" /> Claim Battle Rewards</>
+                )}
+              </Button>
               <div className="flex gap-2 justify-center pt-2">
                 <Button asChild variant="outline"><Link to="/app/tests">Back to tests</Link></Button>
                 <Button asChild><Link to="/app/results">View all results</Link></Button>
