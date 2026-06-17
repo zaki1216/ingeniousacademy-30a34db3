@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useMemo, useState } from "react";
-import { Search, PlayCircle, CheckCircle2 } from "lucide-react";
+import { Search, PlayCircle, CheckCircle2, Gift, Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +14,7 @@ import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 import { completeVideo } from "@/lib/api/gamification.functions";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/lectures")({ component: LecturesPage });
 
