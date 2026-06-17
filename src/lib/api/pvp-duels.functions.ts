@@ -52,7 +52,7 @@ export const listPvpOpponents = createServerFn({ method: "GET" })
     if (ids.length === 0) return [];
     const { data: profiles } = await supabaseAdmin
       .from("profiles")
-      .select("id, name, email")
+      .select("id, name")
       .in("id", ids)
       .limit(50);
     const { data: stats } = await supabaseAdmin
@@ -62,7 +62,7 @@ export const listPvpOpponents = createServerFn({ method: "GET" })
     const levelOf = new Map((stats ?? []).map((s) => [s.user_id, s.level]));
     return (profiles ?? []).map((p) => ({
       id: p.id,
-      name: p.name || p.email,
+      name: p.name || "Player",
       level: levelOf.get(p.id) ?? 1,
     }));
   });
