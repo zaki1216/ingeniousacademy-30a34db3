@@ -201,8 +201,6 @@
 @utility rune-border {
   position: relative;
   border-radius: 14px;
-}
-@utility rune-border {
   &::before {
     content: "";
     position: absolute;
