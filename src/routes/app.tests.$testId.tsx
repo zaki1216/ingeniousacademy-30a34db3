@@ -28,6 +28,8 @@ function TakeTestPage() {
   const [reward, setReward] = useState<RewardPayload | null>(null);
   const [floating, setFloating] = useState<FloatingRewardPayload | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [claiming, setClaiming] = useState(false);
+  const [claimDone, setClaimDone] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["take-test", testId],
@@ -48,18 +50,31 @@ function TakeTestPage() {
     try {
       const r = await submitFn({ data: { testId, answers } });
       setResult({ score: r.score, total: r.total, percentage: r.percentage });
-      try {
-        const rw = await awardFn({ data: { testId } });
-        if (!rw.alreadyAwarded) {
-          setFloating({ xp: rw.xpAwarded, coins: rw.coinsAwarded, label: "Battle won", key: Date.now() });
-          setReward({ ...rw, title: "Quiz complete!" });
-          qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
-        }
-      } catch { /* ignore reward errors */ }
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Failed to submit");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleClaim() {
+    if (claiming || claimDone) return;
+    setClaiming(true);
+    try {
+      const rw = await awardFn({ data: { testId } });
+      setClaimDone(true);
+      if (!rw.alreadyAwarded) {
+        setFloating({ xp: rw.xpAwarded, coins: rw.coinsAwarded, label: "Battle won", key: Date.now() });
+        setReward({ ...rw, title: "Quiz complete!" });
+        qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
+      } else {
+        toast.info("You already claimed this reward.");
+      }
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Failed to claim reward");
+      setClaimDone(false);
+    } finally {
+      setClaiming(false);
     }
   }
 
