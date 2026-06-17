@@ -80,10 +80,19 @@ export function dungeonMeta(
   const bossAvailable = totalLectures > 0 && watchedLectures >= Math.max(1, totalLectures - 1);
 
   const rank = rankFromLevel(playerLevel);
-  const shadowUnlock =
-    chapterNumber >= 6 && watchedLectures === totalLectures && totalLectures > 0
-      ? `Awaken ${suffix} Shadow at ${rank.shortLabel}+`
-      : null;
+  const eligible = chapterNumber >= 6 && totalLectures > 0;
+  const allCleared = totalLectures > 0 && watchedLectures >= totalLectures;
+  const unlocked = eligible && allCleared;
+  const shadow: ShadowStatus = {
+    unlocked,
+    name: `${suffix} Shadow`,
+    requirement: !eligible
+      ? `Reach a Tier-${chapterNumber >= 6 ? "" : "6+ "}dungeon to attempt the shadow`
+      : unlocked
+        ? `Awakened — bind this shadow as ${rank.shortLabel}+`
+        : `Clear all ${totalLectures} missions to awaken (${watchedLectures}/${totalLectures})`,
+    progress: totalLectures > 0 ? Math.min(1, watchedLectures / totalLectures) : 0,
+  };
 
   return {
     name,
@@ -94,7 +103,7 @@ export function dungeonMeta(
     rewardXp,
     rewardCoins,
     bossAvailable,
-    shadowUnlock,
+    shadow,
   };
 }
 
