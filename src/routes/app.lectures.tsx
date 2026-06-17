@@ -28,6 +28,9 @@ function LecturesPage() {
   const [activeLecture, setActiveLecture] = useState<{ id: string; url: string; title: string } | null>(null);
   const [reward, setReward] = useState<RewardPayload | null>(null);
   const [floating, setFloating] = useState<FloatingRewardPayload | null>(null);
+  const [claimReady, setClaimReady] = useState(false);
+  const [claiming, setClaiming] = useState(false);
+  const [claimDone, setClaimDone] = useState(false);
 
   const profile = useQuery({
     queryKey: ["profile", user?.id],
