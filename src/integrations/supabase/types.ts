@@ -714,6 +714,107 @@ export type Database = {
           },
         ]
       }
+      season_progress: {
+        Row: {
+          id: string
+          points: number
+          season_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          points?: number
+          season_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          points?: number
+          season_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "season_progress_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seasons: {
+        Row: {
+          code: string
+          created_at: string
+          ends_at: string
+          id: string
+          name: string
+          rewards: Json
+          starts_at: string
+          theme: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          ends_at: string
+          id?: string
+          name: string
+          rewards?: Json
+          starts_at: string
+          theme?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          ends_at?: string
+          id?: string
+          name?: string
+          rewards?: Json
+          starts_at?: string
+          theme?: string | null
+        }
+        Relationships: []
+      }
+      shadows: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          rarity: string
+          subject: string | null
+          unlock_rule: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          rarity?: string
+          subject?: string | null
+          unlock_rule?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          rarity?: string
+          subject?: string | null
+          unlock_rule?: string | null
+        }
+        Relationships: []
+      }
       shop_items: {
         Row: {
           code: string
@@ -949,6 +1050,39 @@ export type Database = {
           },
         ]
       }
+      titles: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          rarity: string
+          requirement_type: string | null
+          requirement_value: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          rarity?: string
+          requirement_type?: string | null
+          requirement_value?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          rarity?: string
+          requirement_type?: string | null
+          requirement_value?: number | null
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -1070,6 +1204,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_shadows: {
+        Row: {
+          id: string
+          shadow_code: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          shadow_code: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          shadow_code?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_shadows_shadow_code_fkey"
+            columns: ["shadow_code"]
+            isOneToOne: false
+            referencedRelation: "shadows"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       user_talents: {
         Row: {
           created_at: string
@@ -1096,6 +1259,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_titles: {
+        Row: {
+          id: string
+          title_code: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          title_code: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          title_code?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_titles_title_code_fkey"
+            columns: ["title_code"]
+            isOneToOne: false
+            referencedRelation: "titles"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       video_completions: {
         Row: {
