@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { Trophy, Crown, CalendarCheck, Flame, Medal, ArrowUp, ArrowDown, Sparkles } from "lucide-react";
+import { Trophy, Crown, CalendarCheck, Flame, Medal, ArrowUp, ArrowDown, Sparkles, Info, TrendingUp } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getLeaderboard } from "@/lib/api/gamification.functions";
 import { getAttendanceLeaderboard } from "@/lib/api/attendance.functions";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,18 @@ import { rankFromLevel } from "@/lib/rpg/ranks";
 import { RankBadge } from "@/components/rpg/RankBadge";
 
 export const Route = createFileRoute("/app/leaderboard")({ component: LeaderboardPage });
+
+const PERIOD_HELP: Record<"weekly" | "monthly" | "all", string> = {
+  weekly: "Weekly XP = sum of all XP transactions in the last 7 days. Resets each Monday at midnight.",
+  monthly: "Monthly XP = sum of all XP transactions in the current calendar month.",
+  all: "All-time XP = the total XP you have ever earned across every activity.",
+};
+
+const BRACKET_HELP = {
+  ABOVE: "The hunter one rank above you in this period. Their XP minus yours is the gap you need to close.",
+  YOU: "Your current standing in this period — your rank number and XP earned.",
+  BELOW: "The hunter one rank below you. If your XP drops or theirs grows past you, they take your spot.",
+} as const;
 
 function LeaderboardPage() {
   const [mode, setMode] = useState<"xp" | "attendance">("xp");
