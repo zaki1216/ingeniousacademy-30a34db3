@@ -128,7 +128,7 @@ function StudentDashboard({ userId }: { userId?: string }) {
 
   useEffect(() => {
     if (!userId) return;
-    checkIn().catch(() => {});
+    checkIn({ data: {} }).catch(() => {});
   }, [userId, checkIn]);
 
   const dash = useQuery({
