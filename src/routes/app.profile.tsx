@@ -4,7 +4,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import {
   Award, BookOpen, CalendarCheck, Coins, Flame, Sparkles, Swords, Trophy, Zap, ChevronRight,
+  PawPrint, Backpack, FileText, Settings, Target, Megaphone,
 } from "lucide-react";
+
 
 import { useAuth } from "@/lib/auth/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
