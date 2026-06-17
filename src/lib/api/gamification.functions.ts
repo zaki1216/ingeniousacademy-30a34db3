@@ -326,6 +326,7 @@ export const awardQuizRewards = createServerFn({ method: "POST" })
 // ---------- Daily check-in (no rewards, just streak + weekly bonus) ----------
 export const dailyCheckIn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => (d ?? {}) as Record<string, never>)
   .handler(async ({ context }) => {
     await ensureStatsRow(context.userId);
     const streak = await applyStreak(context.userId);
