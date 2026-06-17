@@ -1,100 +1,127 @@
-# Ingenious Academy — Final Build Plan
 
-Mobile-first private coaching platform. No public signup. Admin-managed students.
+# Phase 1 — RPG Shell: "Solo Leveling Monarch" Edition
 
-## Decisions locked in
-1. **Super Admin**: First-run setup screen. App detects "no admin exists" → shows setup page to create the first admin account. Once one admin exists, setup route redirects to login.
-2. **Standards**: Stored in a `standards` table (seeded with 4th–10th) so new standards can be added by admin without code changes.
-3. **PDFs**: External URLs only (Google Drive shareable links). Auto-convert Drive `/view` URLs to `/preview` for embedding.
+Pure presentation upgrade. Zero data changes. Zero removed functionality. All existing routes, server functions, attendance/coin logic, leaderboard calculation, and admin tools stay exactly as they are.
+
+Aesthetic: dark cosmic (#06060a / #0f1226) with monarch purple (#6d4cff) and rune cyan (#22d3ee). Glowing edges, animated gradients, particle accents, glassy cards.
 
 ---
 
-## Backend (Lovable Cloud)
+## 1. Design system (`src/styles.css`)
 
-### Schema (migration)
-- `standards` (id, name, display_order) — seeded 4th–10th
-- `profiles` (id PK → auth.users, name, email, phone, parent_phone, standard_id FK, is_active, created_at)
-- `app_role` enum: `admin`, `student`
-- `user_roles` (id, user_id, role) + `has_role(uuid, app_role)` security definer
-- `subjects` (id, subject_name, standard_id FK, description)
-- `chapters` (id, chapter_name, chapter_number, subject_id FK, description)
-- `lectures` (id, lecture_title, lecture_number, youtube_url, chapter_id FK, description)
-- `notes` (id, title, pdf_url, chapter_id FK, description)
-- `announcements` (id, title, message, created_at)
-- `tests` (id, title, chapter_id FK, total_marks)
-- `questions` (id, test_id FK, question_text, options jsonb, correct_option int, marks)
-- `results` (id, student_id, test_id, score, percentage, attempt_date, answers jsonb)
+- Add Monarch palette tokens: `--bg-void`, `--bg-rift`, `--monarch`, `--monarch-glow`, `--rune`, `--rune-glow`, `--rank-e/d/c/b/a/s/national/monarch` color tokens, `--gradient-xp`, `--gradient-rank`, `--shadow-monarch`, `--shadow-rune`.
+- Add display font **Orbitron** (HUD/ranks) + body **Rajdhani** via `<link>` in `__root.tsx`; register in `@theme`.
+- New `@utility` classes: `rune-border`, `monarch-glow`, `holo-card`, `xp-bar-glow`, `rank-badge-{tier}`.
+- New keyframes: `pulse-glow`, `shimmer-sweep`, `rune-rotate`, `float-up`, `particle-rise`, `level-up-flash`.
 
-### RLS
-- Admin full CRUD via `has_role(auth.uid(),'admin')`.
-- Students: SELECT on standards/subjects/chapters/lectures/notes/announcements/tests; SELECT questions WITHOUT `correct_option` (exposed via server fn only).
-- `results`: students INSERT/SELECT own rows; admins SELECT all.
-- `profiles`: students SELECT/UPDATE own; admins all.
+## 2. Global Player HUD (new component, mounted in `src/routes/app.tsx`)
 
-### Server functions (createServerFn)
-- `checkSetupNeeded()` — returns whether any admin exists (public).
-- `createSuperAdmin(email, password, name)` — only runs if no admin exists; creates auth user + admin role via `supabaseAdmin`.
-- `createStudent`, `updateStudent`, `disableStudent`, `deleteStudent`, `resetStudentPassword` — admin only.
-- `getTestForStudent(testId)` — returns questions without correct_option.
-- `submitTest(testId, answers)` — grades server-side, writes `results`.
+`<PlayerStatusBar />` fixed-top on every `/app/*` route:
+- Avatar (with equipped frame) + pet thumbnail beside it
+- Level + animated XP bar (current/next from existing `gamification_stats`)
+- Rank tier badge (derived from existing leaderboard score → E/D/C/B/A/S/National/Monarch)
+- Coin counter (existing `coins`)
+- Streak flame 🔥 (existing streak from quests data)
+- Active title pill under name
+- Reuses existing data — no new queries
 
----
+Mobile: compact single-row HUD; Desktop: expanded with labels.
 
-## Frontend
+## 3. Home Screen redesign (`src/routes/app.index.tsx`)
 
-### Routes
-```
-/setup                          (first-run super admin creation)
-/login
-/forgot-password
-/reset-password
-/_authenticated/                (role-aware redirect)
-/_authenticated/_student/dashboard
-/_authenticated/_student/lectures
-/_authenticated/_student/lectures/$lectureId
-/_authenticated/_student/notes
-/_authenticated/_student/tests
-/_authenticated/_student/tests/$testId
-/_authenticated/_student/results
-/_authenticated/_student/announcements
-/_authenticated/_admin/dashboard
-/_authenticated/_admin/students
-/_authenticated/_admin/standards
-/_authenticated/_admin/subjects
-/_authenticated/_admin/chapters
-/_authenticated/_admin/lectures
-/_authenticated/_admin/notes
-/_authenticated/_admin/tests
-/_authenticated/_admin/announcements
-/_authenticated/_admin/results
-/_authenticated/_admin/settings
-```
+Rebuild presentation, keep existing data hooks:
+- **Player Card hero** — large monarch-themed card with avatar, level, XP bar, rank, coins, streak, "Next Unlock" teaser (computed from next level milestone)
+- **Today's Quests** — pulls existing `getDailyQuestsAndStreak`; rendered as glowing RPG quest cards with reward chips (+XP, +Coins) and progress bars
+- **Continue Journey** — new card that finds last incomplete lecture from existing `video_completions` and links into it
+- **Quick Tiles** — Worlds, Dungeons, Arena, Leaderboard, Shop entrances styled as RPG portals
 
-### Access control
-- Root `/`: if not authed → `/login`; if authed → role-based dashboard.
-- `_admin` layout: redirects students away.
-- `_student` layout: redirects admins to admin dashboard.
-- `/login` checks setup state first; if no admin exists → redirect to `/setup`.
+## 4. Worlds → RPG Worlds (`src/routes/app.worlds.tsx`)
 
-### UI
-- Mobile-first, sidebar collapses to sheet drawer on mobile.
-- Blue primary + white surfaces; shadcn cards; clean typography.
-- YouTube: `<iframe src="https://youtube.com/embed/{id}">`.
-- PDF: convert Google Drive URL → `/preview` and embed in `<iframe>`; also show "Open in Drive" + "Download" buttons.
-- Student dashboard: welcome message + 5 nav cards + recent announcements.
-- Search bar on student lectures page filters subjects/chapters/lectures by title.
+Reskin existing subjects as worlds:
+- Math Kingdom ⚔, Science Realm ⚡, Language Empire 📜, Reasoning Citadel 🧠 (auto-mapped from existing subject names with fallback)
+- Each card: completion %, recommended level, quests done, "boss remaining" badge (derived from chapter count vs completed tests)
+- Full-bleed gradient cards with particle backgrounds
 
-### Test taking
-- Student starts test → server fn returns questions sans answers → answers in local state → submit → server grades and stores result → results page.
+## 5. Chapters → Dungeons (presentation in `src/routes/app.content.tsx` + lectures)
 
----
+- Chapter name shown as "{Chapter} Dungeon/Fortress/Citadel" (rotating suffix)
+- Each shows difficulty stars, XP/coin rewards, lock state, boss-battle button (links to existing chapter test)
+- No data change — purely label + visual
 
-## Seed data (migration)
-- Standards 4th–10th
-- Sample: 10th Standard → Mathematics → Real Numbers → "Introduction to Real Numbers" (placeholder YouTube URL)
-- One welcome announcement
-- One sample test with 2 MCQs
+## 6. Lectures (`src/routes/app.lectures.tsx`, `app.tests.$testId.tsx`)
+
+- Each lecture row shows XP reward, coin reward, est. time, difficulty, completion ✓
+- On completion: floating **"QUEST COMPLETE"** popup with +XP/+Coins animation (extend existing `RewardPopup`)
+
+## 7. Quests unification (`src/routes/app.quests.tsx`)
+
+Tabbed view over existing quest data:
+- Daily | Weekly | Chapter | Special
+- Daily uses existing `getDailyQuestsAndStreak`
+- Weekly/Chapter/Special derived from existing data (test scores, lectures, attendance) — no new tables
+- Keep streak heatmap, restyled with monarch glow
+
+## 8. Leaderboard tiers (`src/routes/app.leaderboard.tsx`)
+
+**Calculation unchanged** (attendance + lecture completion). Presentation only:
+- Map score percentile → rank tier (E/D/C/B/A/S/National/Monarch) with thresholds
+- Show: my rank tier card, rank above me, rank below me, weekly delta, motivational message
+- Animated rank badges per tier
+
+## 9. Talents → Skill Tree polish (`src/routes/app.talents.tsx`)
+
+Reskin existing talents UI:
+- Categorize existing talents into Math/Science/Language/Reasoning trees (via existing talent metadata)
+- Visual node graph with locked/unlocked/path states, glowing connectors
+
+## 10. Player Profile page (new `src/routes/app.profile.tsx`)
+
+Aggregates existing data into RPG profile: avatar, level, rank, coins, streak, badges, achievements count, arena wins, lectures completed, attendance %. Linked from HUD avatar tap.
+
+## 11. Navigation cleanup (`src/routes/app.tsx`)
+
+- Primary bottom nav (mobile) / sidebar (desktop): Home, Worlds, Quests, Battles/Arena, Leaderboard, Shop, Profile
+- Move to secondary "More" menu: Attendance, Announcements, Notes, Settings, Admin entries
+- Nothing deleted — just regrouped
+
+## 12. Reward & feedback FX
+
+- Extend `RewardPopup` with particle burst, rune ring, level-up flash
+- Toast variants for: quest complete, rank up, achievement unlock, streak milestone
+- `framer-motion` for transitions (already in stack)
 
 ---
 
-Starting the build now.
+## Technical details
+
+**Files to create:**
+- `src/components/rpg/PlayerStatusBar.tsx`
+- `src/components/rpg/PlayerCard.tsx`
+- `src/components/rpg/QuestCard.tsx`
+- `src/components/rpg/WorldCard.tsx`
+- `src/components/rpg/DungeonCard.tsx`
+- `src/components/rpg/RankBadge.tsx`
+- `src/components/rpg/XPBar.tsx`
+- `src/components/rpg/ParticleField.tsx`
+- `src/components/rpg/QuestCompleteOverlay.tsx`
+- `src/lib/rpg/ranks.ts` (tier thresholds + helpers)
+- `src/lib/rpg/worlds.ts` (subject → world mapping)
+- `src/lib/rpg/dungeons.ts` (chapter → dungeon naming)
+- `src/routes/app.profile.tsx`
+
+**Files to edit (presentation only):**
+- `src/styles.css` — tokens, fonts, utilities, keyframes
+- `src/routes/__root.tsx` — font links
+- `src/routes/app.tsx` — mount HUD, restructure nav
+- `src/routes/app.index.tsx` — full redesign
+- `src/routes/app.worlds.tsx`, `app.content.tsx`, `app.lectures.tsx`, `app.tests.$testId.tsx`, `app.quests.tsx`, `app.leaderboard.tsx`, `app.talents.tsx`
+- `src/components/gamification/RewardPopup.tsx` — particle FX
+
+**Not touched:** any `src/lib/api/*.functions.ts`, attendance logic, leaderboard scoring, RLS, migrations, admin pages.
+
+**Out of scope for Phase 1** (planned for later phases):
+- P2: Shadows, Pets, Inventory, Titles catalog, Achievements expansion, Academy Passes
+- P3: Guilds, Monthly Seasons, Daily Spin Wheel, Loot Chests
+- P4: Boss Battles as distinct entity, Hidden Achievements, Teacher's Choice Badges, Parent Dashboard redesign
+
+After Phase 1 ships and you approve, I'll plan Phase 2.

@@ -99,6 +99,23 @@
 
   --shadow-card: 0 8px 24px -12px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.04);
   --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--primary-glow) 60%, transparent);
+
+  /* === MONARCH RPG SYSTEM (Solo Leveling inspired) === */
+  --bg-void: #06060a;
+  --bg-rift: #0f1226;
+  --monarch: #6d4cff;
+  --monarch-glow: #a78bfa;
+  --rune: #22d3ee;
+  --rune-glow: #67e8f9;
+  --ember: #ff3b6b;
+  --gold-rpg: #fbbf24;
+
+  --gradient-xp: linear-gradient(90deg, #22d3ee 0%, #6d4cff 50%, #a78bfa 100%);
+  --gradient-rank: linear-gradient(135deg, #6d4cff, #22d3ee);
+  --gradient-monarch: linear-gradient(135deg, #6d4cff 0%, #a855f7 35%, #fbbf24 65%, #ff3b6b 100%);
+
+  --shadow-monarch: 0 0 40px -6px color-mix(in oklab, #6d4cff 70%, transparent);
+  --shadow-rune: 0 0 30px -4px color-mix(in oklab, #22d3ee 60%, transparent);
 }
 
 .dark {
@@ -154,11 +171,109 @@
   to { background-position: -200% 0; }
 }
 
-@keyframes float-soft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
 @utility animate-float {
   animation: float-soft 3.5s ease-in-out infinite;
+}
+
+/* === MONARCH RPG UTILITIES === */
+@utility font-orbitron {
+  font-family: "Orbitron", "Baloo 2", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+@utility font-rajdhani {
+  font-family: "Rajdhani", "Inter", system-ui, sans-serif;
+}
+
+@utility holo-card {
+  background:
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--bg-rift) 92%, transparent) 0%,
+      color-mix(in oklab, var(--bg-void) 95%, transparent) 100%);
+  border: 1px solid color-mix(in oklab, var(--monarch) 25%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 8px 32px -12px rgba(0,0,0,0.6),
+    inset 0 1px 0 0 color-mix(in oklab, var(--monarch-glow) 15%, transparent);
+}
+
+@utility rune-border {
+  position: relative;
+  border-radius: 14px;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+      color-mix(in oklab, var(--monarch) 60%, transparent),
+      color-mix(in oklab, var(--rune) 40%, transparent),
+      transparent 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+@utility monarch-glow {
+  box-shadow: var(--shadow-monarch);
+}
+
+@utility rune-glow {
+  box-shadow: var(--shadow-rune);
+}
+
+@utility xp-bar-glow {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--rune) 25%, transparent),
+    0 0 12px -2px color-mix(in oklab, var(--monarch) 50%, transparent);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 40%, transparent); }
+  50%      { box-shadow: 0 0 0 8px color-mix(in oklab, currentColor 0%, transparent); }
+}
+@utility animate-pulse-glow {
+  animation: pulse-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes shimmer-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@utility animate-shimmer-sweep {
+  animation: shimmer-sweep 2.2s linear infinite;
+}
+
+@keyframes rune-rotate {
+  to { transform: rotate(360deg); }
+}
+@utility animate-rune-rotate {
+  animation: rune-rotate 18s linear infinite;
+}
+
+@keyframes float-up {
+  0%   { opacity: 0; transform: translateY(0) scale(0.8); }
+  20%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.1); }
+}
+@utility animate-float-up {
+  animation: float-up 1.6s ease-out forwards;
+}
+
+@keyframes level-up-flash {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.6) saturate(1.3); }
+}
+@utility animate-level-up-flash {
+  animation: level-up-flash 0.6s ease-in-out 3;
+}
+
+/* Player HUD bottom sheen */
+@utility hud-sheen {
+  background-image:
+    linear-gradient(180deg, color-mix(in oklab, var(--bg-rift) 80%, transparent), color-mix(in oklab, var(--bg-void) 95%, transparent));
 }

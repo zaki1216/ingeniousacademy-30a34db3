@@ -4,7 +4,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, LogOut, Menu, Settings, TrendingUp,
-  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye, Gauge, Target,
+  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye, Gauge, Target, MoreHorizontal,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { cn } from "@/lib/utils";
+import { PlayerStatusBar } from "@/components/rpg/PlayerStatusBar";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
@@ -43,6 +44,7 @@ const adminNav: NavItem[] = [
 // Student "hero" nav — game terminology
 const studentNav: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
+  { to: "/app/profile", label: "Profile", icon: User },
   { to: "/app/worlds", label: "Worlds", icon: Map },
   { to: "/app/quests", label: "Quests", icon: Target },
   { to: "/app/lectures", label: "Missions", icon: BookOpen },
@@ -52,19 +54,24 @@ const studentNav: NavItem[] = [
   { to: "/app/achievements", label: "Badges", icon: Award },
   { to: "/app/talents", label: "Talents", icon: Sparkles },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/coins", label: "Coins", icon: Coins },
+  { to: "/app/coins", label: "Treasury", icon: Coins },
+];
+
+// Secondary menu — less-used screens, decluttered from primary nav
+const studentSecondaryNav: NavItem[] = [
   { to: "/app/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/notes", label: "Scrolls", icon: FileText },
   { to: "/app/announcements", label: "News", icon: Megaphone },
+  { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
 // Mobile bottom tab bar for students — the 5 most-used
 const studentBottomTabs: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
   { to: "/app/worlds", label: "Worlds", icon: Map },
-  { to: "/app/tests", label: "Battles", icon: Swords },
+  { to: "/app/quests", label: "Quests", icon: Target },
   { to: "/app/leaderboard", label: "Rank", icon: Trophy },
-  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
+  { to: "/app/profile", label: "Hero", icon: User },
 ];
 
 
@@ -72,6 +79,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { role } = useAuth();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const items = role === "admin" ? adminNav : studentNav;
+  const isStudent = role === "student";
   return (
     <nav className="space-y-1">
       {items.map((it) => {
@@ -94,6 +102,33 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           </Link>
         );
       })}
+      {isStudent && (
+        <>
+          <div className="pt-3 pb-1 px-3 text-[10px] font-orbitron font-bold tracking-widest text-muted-foreground uppercase">
+            More
+          </div>
+          {studentSecondaryNav.map((it) => {
+            const active = path === it.to || path.startsWith(it.to + "/");
+            const Icon = it.icon;
+            return (
+              <Link
+                key={it.to}
+                to={it.to}
+                onClick={onNavigate}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all",
+                  active
+                    ? "bg-white/10 text-foreground"
+                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/40 hover:text-sidebar-accent-foreground",
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {it.label}
+              </Link>
+            );
+          })}
+        </>
+      )}
     </nav>
   );
 }
@@ -239,6 +274,11 @@ function AppLayout() {
           </div>
         </header>
         <main className={cn("flex-1 p-4 md:p-6 max-w-6xl w-full mx-auto", isStudent && "pb-24 md:pb-6")}>
+          {isStudent && (
+            <div className="mb-4 sticky top-14 z-10">
+              <PlayerStatusBar />
+            </div>
+          )}
           <Outlet />
         </main>
         {isStudent && <BottomTabs />}
