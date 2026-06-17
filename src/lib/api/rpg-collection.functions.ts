@@ -50,7 +50,7 @@ export const getCollection = createServerFn({ method: "GET" })
     return {
       titles: titleRows.map((t) => ({ ...t, owned: ownedTitles.has(t.code) })),
       shadows: shadowRows.map((s) => ({ ...s, owned: ownedShadows.has(s.code) })),
-      currentSeason: (seasons.data?.[0] ?? null) as SeasonRow | null,
+      currentSeason: (seasons.data?.[0] ?? null) as unknown as SeasonRow | null,
       badgesCount: badgesCount.count ?? 0,
       collectionPct: (() => {
         const total = titleRows.length + shadowRows.length;
