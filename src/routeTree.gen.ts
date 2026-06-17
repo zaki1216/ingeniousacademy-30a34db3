@@ -42,6 +42,7 @@ import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
+import { Route as AppAdminPassesRouteImport } from './routes/app.admin.passes'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
 import { Route as AppAdminAttendanceRouteImport } from './routes/app.admin.attendance'
@@ -213,6 +214,11 @@ const AppAdminTalentsRoute = AppAdminTalentsRouteImport.update({
   path: '/admin/talents',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminPassesRoute = AppAdminPassesRouteImport.update({
+  id: '/admin/passes',
+  path: '/admin/passes',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
   id: '/admin/lecture-views',
   path: '/admin/lecture-views',
@@ -272,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -310,6 +317,7 @@ export interface FileRoutesByTo {
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -351,6 +359,7 @@ export interface FileRoutesById {
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -393,6 +402,7 @@ export interface FileRouteTypes {
     | '/app/admin/attendance'
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
+    | '/app/admin/passes'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -431,6 +441,7 @@ export interface FileRouteTypes {
     | '/app/admin/attendance'
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
+    | '/app/admin/passes'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -471,6 +482,7 @@ export interface FileRouteTypes {
     | '/app/admin/attendance'
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
+    | '/app/admin/passes'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -721,6 +733,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminTalentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/passes': {
+      id: '/app/admin/passes'
+      path: '/admin/passes'
+      fullPath: '/app/admin/passes'
+      preLoaderRoute: typeof AppAdminPassesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/lecture-views': {
       id: '/app/admin/lecture-views'
       path: '/admin/lecture-views'
@@ -825,6 +844,7 @@ interface AppRouteChildren {
   AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
+  AppAdminPassesRoute: typeof AppAdminPassesRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
 }
 
@@ -855,6 +875,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminAttendanceRoute: AppAdminAttendanceRoute,
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
+  AppAdminPassesRoute: AppAdminPassesRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
 }
 

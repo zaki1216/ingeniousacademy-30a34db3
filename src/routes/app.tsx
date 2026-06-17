@@ -38,6 +38,7 @@ const adminNav: NavItem[] = [
   { to: "/app/results", label: "Results", icon: BarChart3 },
   { to: "/app/analytics", label: "Test Analytics", icon: TrendingUp },
   { to: "/app/admin/talents", label: "Talents", icon: Sparkles },
+  { to: "/app/admin/passes", label: "Pass Approvals", icon: Ticket },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
