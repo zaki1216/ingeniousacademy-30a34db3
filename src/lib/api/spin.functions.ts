@@ -200,7 +200,7 @@ export const doSpin = createServerFn({ method: "POST" })
 // ---------- Admin ----------
 
 async function requireAdmin(userId: string) {
-  const { data } = await supabaseAdmin.rpc("has_role", { _user_id: userId, _role: "admin" });
+  const { data } = await supabaseAdmin.from("user_roles").select("user_id").eq("user_id", userId).eq("role", "admin").maybeSingle();
   if (!data) throw new Error("Forbidden");
 }
 
