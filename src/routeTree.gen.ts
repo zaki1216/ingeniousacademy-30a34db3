@@ -46,12 +46,17 @@ import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
 import { Route as AppAdminSpinRouteImport } from './routes/app.admin.spin'
+import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.settings'
 import { Route as AppAdminPassesRouteImport } from './routes/app.admin.passes'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
+import { Route as AppAdminGamificationRouteImport } from './routes/app.admin.gamification'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
+import { Route as AppAdminContentRouteImport } from './routes/app.admin.content'
 import { Route as AppAdminAttendanceRouteImport } from './routes/app.admin.attendance'
+import { Route as AppAdminAssessmentRouteImport } from './routes/app.admin.assessment'
 import { Route as AppPvpDuelIdRouteImport } from './routes/app.pvp.duel.$id'
 import { Route as AppPvpBrIdRouteImport } from './routes/app.pvp.br.$id'
+import { Route as AppAdminStudentsIdRouteImport } from './routes/app.admin.students.$id'
 
 const SetupRoute = SetupRouteImport.update({
   id: '/setup',
@@ -238,6 +243,11 @@ const AppAdminSpinRoute = AppAdminSpinRouteImport.update({
   path: '/admin/spin',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminPassesRoute = AppAdminPassesRouteImport.update({
   id: '/admin/passes',
   path: '/admin/passes',
@@ -248,14 +258,29 @@ const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
   path: '/admin/lecture-views',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminGamificationRoute = AppAdminGamificationRouteImport.update({
+  id: '/admin/gamification',
+  path: '/admin/gamification',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
   id: '/admin/dashboard',
   path: '/admin/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminContentRoute = AppAdminContentRouteImport.update({
+  id: '/admin/content',
+  path: '/admin/content',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminAttendanceRoute = AppAdminAttendanceRouteImport.update({
   id: '/admin/attendance',
   path: '/admin/attendance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminAssessmentRoute = AppAdminAssessmentRouteImport.update({
+  id: '/admin/assessment',
+  path: '/admin/assessment',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPvpDuelIdRoute = AppPvpDuelIdRouteImport.update({
@@ -267,6 +292,11 @@ const AppPvpBrIdRoute = AppPvpBrIdRouteImport.update({
   id: '/br/$id',
   path: '/br/$id',
   getParentRoute: () => AppPvpRoute,
+} as any)
+const AppAdminStudentsIdRoute = AppAdminStudentsIdRouteImport.update({
+  id: '/admin/students/$id',
+  path: '/admin/students/$id',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -302,15 +332,20 @@ export interface FileRoutesByFullPath {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
+  '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/pvp/': typeof AppPvpIndexRoute
+  '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/pvp/br/$id': typeof AppPvpBrIdRoute
   '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
@@ -345,15 +380,20 @@ export interface FileRoutesByTo {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app': typeof AppIndexRoute
+  '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
+  '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/pvp': typeof AppPvpIndexRoute
+  '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/pvp/br/$id': typeof AppPvpBrIdRoute
   '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
@@ -391,15 +431,20 @@ export interface FileRoutesById {
   '/app/tests': typeof AppTestsRouteWithChildren
   '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
+  '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/pvp/': typeof AppPvpIndexRoute
+  '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/pvp/br/$id': typeof AppPvpBrIdRoute
   '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
 }
@@ -438,15 +483,20 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
+    | '/app/admin/assessment'
     | '/app/admin/attendance'
+    | '/app/admin/content'
     | '/app/admin/dashboard'
+    | '/app/admin/gamification'
     | '/app/admin/lecture-views'
     | '/app/admin/passes'
+    | '/app/admin/settings'
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
     | '/app/pvp/'
+    | '/app/admin/students/$id'
     | '/app/pvp/br/$id'
     | '/app/pvp/duel/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -481,15 +531,20 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app'
+    | '/app/admin/assessment'
     | '/app/admin/attendance'
+    | '/app/admin/content'
     | '/app/admin/dashboard'
+    | '/app/admin/gamification'
     | '/app/admin/lecture-views'
     | '/app/admin/passes'
+    | '/app/admin/settings'
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
     | '/app/pvp'
+    | '/app/admin/students/$id'
     | '/app/pvp/br/$id'
     | '/app/pvp/duel/$id'
   id:
@@ -526,15 +581,20 @@ export interface FileRouteTypes {
     | '/app/tests'
     | '/app/worlds'
     | '/app/'
+    | '/app/admin/assessment'
     | '/app/admin/attendance'
+    | '/app/admin/content'
     | '/app/admin/dashboard'
+    | '/app/admin/gamification'
     | '/app/admin/lecture-views'
     | '/app/admin/passes'
+    | '/app/admin/settings'
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
     | '/app/pvp/'
+    | '/app/admin/students/$id'
     | '/app/pvp/br/$id'
     | '/app/pvp/duel/$id'
   fileRoutesById: FileRoutesById
@@ -809,6 +869,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminSpinRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/settings': {
+      id: '/app/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/app/admin/settings'
+      preLoaderRoute: typeof AppAdminSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/passes': {
       id: '/app/admin/passes'
       path: '/admin/passes'
@@ -823,6 +890,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminLectureViewsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/gamification': {
+      id: '/app/admin/gamification'
+      path: '/admin/gamification'
+      fullPath: '/app/admin/gamification'
+      preLoaderRoute: typeof AppAdminGamificationRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/dashboard': {
       id: '/app/admin/dashboard'
       path: '/admin/dashboard'
@@ -830,11 +904,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/content': {
+      id: '/app/admin/content'
+      path: '/admin/content'
+      fullPath: '/app/admin/content'
+      preLoaderRoute: typeof AppAdminContentRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/attendance': {
       id: '/app/admin/attendance'
       path: '/admin/attendance'
       fullPath: '/app/admin/attendance'
       preLoaderRoute: typeof AppAdminAttendanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/assessment': {
+      id: '/app/admin/assessment'
+      path: '/admin/assessment'
+      fullPath: '/app/admin/assessment'
+      preLoaderRoute: typeof AppAdminAssessmentRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/pvp/duel/$id': {
@@ -850,6 +938,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/pvp/br/$id'
       preLoaderRoute: typeof AppPvpBrIdRouteImport
       parentRoute: typeof AppPvpRoute
+    }
+    '/app/admin/students/$id': {
+      id: '/app/admin/students/$id'
+      path: '/admin/students/$id'
+      fullPath: '/app/admin/students/$id'
+      preLoaderRoute: typeof AppAdminStudentsIdRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
@@ -920,12 +1015,17 @@ interface AppRouteChildren {
   AppTestsRoute: typeof AppTestsRouteWithChildren
   AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppAdminAssessmentRoute: typeof AppAdminAssessmentRoute
   AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
+  AppAdminContentRoute: typeof AppAdminContentRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
+  AppAdminGamificationRoute: typeof AppAdminGamificationRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminPassesRoute: typeof AppAdminPassesRoute
+  AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppAdminSpinRoute: typeof AppAdminSpinRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
+  AppAdminStudentsIdRoute: typeof AppAdminStudentsIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -955,12 +1055,17 @@ const AppRouteChildren: AppRouteChildren = {
   AppTestsRoute: AppTestsRouteWithChildren,
   AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppAdminAssessmentRoute: AppAdminAssessmentRoute,
   AppAdminAttendanceRoute: AppAdminAttendanceRoute,
+  AppAdminContentRoute: AppAdminContentRoute,
   AppAdminDashboardRoute: AppAdminDashboardRoute,
+  AppAdminGamificationRoute: AppAdminGamificationRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminPassesRoute: AppAdminPassesRoute,
+  AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppAdminSpinRoute: AppAdminSpinRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
+  AppAdminStudentsIdRoute: AppAdminStudentsIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
