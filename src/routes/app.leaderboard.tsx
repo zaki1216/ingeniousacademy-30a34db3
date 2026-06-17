@@ -39,27 +39,27 @@ function LeaderboardPage() {
 
   // Neighbors (one rank above / below) — pure presentation derived from rows.
   const { me, above, below, growthMsg } = useMemo(() => {
-    const me = rows.find((r: any) => r.isMe);
-    const above = me ? rows.find((r: any) => r.rank === me.rank - 1) : undefined;
-    const below = me ? rows.find((r: any) => r.rank === me.rank + 1) : undefined;
+    const meRow = rows.find((r: any) => r.isMe) as any | undefined;
+    const aboveRow = meRow ? (rows.find((r: any) => r.rank === meRow.rank - 1) as any | undefined) : undefined;
+    const belowRow = meRow ? (rows.find((r: any) => r.rank === meRow.rank + 1) as any | undefined) : undefined;
     let growthMsg = "";
-    if (mode === "xp" && me) {
-      const diff = above ? above.xp - me.xp : 0;
+    if (mode === "xp" && meRow) {
+      const diff = aboveRow ? (aboveRow.xp ?? 0) - (meRow.xp ?? 0) : 0;
       if (period === "weekly") {
-        growthMsg = diff > 0
-          ? `Earn ${diff.toLocaleString()} more XP this week to overtake #${above.rank}.`
+        growthMsg = aboveRow && diff > 0
+          ? `Earn ${diff.toLocaleString()} more XP this week to overtake #${aboveRow.rank}.`
           : `You're holding the top of your bracket — keep it up this week!`;
       } else if (period === "monthly") {
-        growthMsg = diff > 0
-          ? `${diff.toLocaleString()} XP separates you from #${above.rank} this month.`
+        growthMsg = aboveRow && diff > 0
+          ? `${diff.toLocaleString()} XP separates you from #${aboveRow.rank} this month.`
           : `Apex of the month so far. Defend your throne.`;
       } else {
-        growthMsg = diff > 0
-          ? `${diff.toLocaleString()} all-time XP to climb to #${above.rank}.`
+        growthMsg = aboveRow && diff > 0
+          ? `${diff.toLocaleString()} all-time XP to climb to #${aboveRow.rank}.`
           : `Legendary all-time placement.`;
       }
     }
-    return { me, above, below, growthMsg };
+    return { me: meRow, above: aboveRow, below: belowRow, growthMsg };
   }, [rows, mode, period]);
 
   return (
