@@ -76,15 +76,26 @@ function LeaderboardPage() {
   }, [rows, mode, period]);
 
   return (
+    <TooltipProvider delayDuration={150}>
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold font-orbitron flex items-center gap-2">
           <Trophy className="h-6 w-6 text-amber-500" /> Leaderboard
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground flex items-center gap-1.5">
           {mode === "xp"
             ? (period === "all" ? "Hunters of your class — all-time XP." : `Hunters of your class — ${period === "weekly" ? "weekly" : "monthly"} XP.`)
             : "Hunters of your class — attendance honor roll."}
+          {mode === "xp" && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button aria-label="How this is computed" className="inline-flex">
+                  <Info className="h-3.5 w-3.5 text-muted-foreground/70 hover:text-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs text-xs leading-relaxed">{PERIOD_HELP[period]}</TooltipContent>
+            </Tooltip>
+          )}
         </p>
       </div>
 
@@ -109,15 +120,43 @@ function LeaderboardPage() {
       {mode === "xp" && me && (
         <Card className="rune-border bg-[image:radial-gradient(circle_at_top,hsl(var(--primary)/0.18),transparent_60%)]">
           <CardContent className="p-4 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-orbitron uppercase tracking-widest text-primary">
-              <Sparkles className="h-3.5 w-3.5" /> Your bracket
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-orbitron uppercase tracking-widest text-primary">
+                <Sparkles className="h-3.5 w-3.5" /> Your bracket
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button aria-label="How your bracket works" className="inline-flex">
+                    <Info className="h-3.5 w-3.5 text-muted-foreground/70 hover:text-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-xs leading-relaxed">
+                  Shows the hunter directly above and below you in this period's ranking, so you can see exactly who to overtake — or who's chasing you.
+                </TooltipContent>
+              </Tooltip>
             </div>
-            <NeighborRow label="ABOVE" row={above} icon={<ArrowUp className="h-3 w-3" />} tone="up" />
-            <NeighborRow label="YOU"   row={me}    highlight />
-            <NeighborRow label="BELOW" row={below} icon={<ArrowDown className="h-3 w-3" />} tone="down" />
+            <NeighborRow label="ABOVE" tip={BRACKET_HELP.ABOVE} row={above} icon={<ArrowUp className="h-3 w-3" />} tone="up" />
+            <NeighborRow label="YOU"   tip={BRACKET_HELP.YOU}   row={me}    highlight />
+            <NeighborRow label="BELOW" tip={BRACKET_HELP.BELOW} row={below} icon={<ArrowDown className="h-3 w-3" />} tone="down" />
             {growthMsg && (
-              <div className="text-xs text-muted-foreground border-t pt-2 leading-relaxed">
-                {growthMsg}
+              <div className="text-xs text-muted-foreground border-t pt-2 leading-relaxed flex items-start gap-1.5">
+                <TrendingUp className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <span className="flex-1">
+                  <b className="text-foreground font-orbitron uppercase tracking-wider text-[10px] mr-1">
+                    {period === "weekly" ? "This week:" : period === "monthly" ? "This month:" : "All-time:"}
+                  </b>
+                  {growthMsg}
+                </span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button aria-label="How growth is computed" className="inline-flex shrink-0">
+                      <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs text-xs leading-relaxed">
+                    Growth is the XP gap between you and the hunter above. Earning that much more {period === "weekly" ? "before the week resets on Monday" : period === "monthly" ? "before the month ends" : "any time"} bumps you up one rank.
+                  </TooltipContent>
+                </Tooltip>
               </div>
             )}
           </CardContent>
