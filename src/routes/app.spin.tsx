@@ -7,8 +7,8 @@ import { Coins, Sparkles, Flame, Gift, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { getSpinStatus, doSpin } from "@/lib/api/spin.functions";
-import type { SpinPrize } from "@/lib/rpg/spin";
+import { getSpinStatus, doSpin, type SpinPrize } from "@/lib/api/spin.functions";
+
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/spin")({ component: SpinPage });

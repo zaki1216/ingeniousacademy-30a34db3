@@ -750,6 +750,57 @@ export type Database = {
         }
         Relationships: []
       }
+      spin_prize_configs: {
+        Row: {
+          code: string
+          color: string
+          created_at: string
+          enabled: boolean
+          icon: string
+          id: string
+          label: string
+          rarity: string
+          reward_amount: number
+          reward_type: string
+          reward_value: string
+          sort_order: number
+          updated_at: string
+          weight: number
+        }
+        Insert: {
+          code: string
+          color?: string
+          created_at?: string
+          enabled?: boolean
+          icon?: string
+          id?: string
+          label: string
+          rarity?: string
+          reward_amount?: number
+          reward_type: string
+          reward_value: string
+          sort_order?: number
+          updated_at?: string
+          weight?: number
+        }
+        Update: {
+          code?: string
+          color?: string
+          created_at?: string
+          enabled?: boolean
+          icon?: string
+          id?: string
+          label?: string
+          rarity?: string
+          reward_amount?: number
+          reward_type?: string
+          reward_value?: string
+          sort_order?: number
+          updated_at?: string
+          weight?: number
+        }
+        Relationships: []
+      }
       standards: {
         Row: {
           created_at: string

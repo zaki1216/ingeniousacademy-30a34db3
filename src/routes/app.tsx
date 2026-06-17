@@ -29,17 +29,22 @@ const adminNav: NavItem[] = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/app/admin/dashboard", label: "Analytics Hub", icon: Gauge },
   { to: "/app/students", label: "Students", icon: Users },
-  { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/content", label: "Content", icon: BookOpen },
   { to: "/app/admin/lecture-views", label: "Lecture Views", icon: Eye },
   { to: "/app/notes", label: "Notes", icon: FileText },
   { to: "/app/tests", label: "Tests", icon: ClipboardList },
-  { to: "/app/announcements", label: "Announcements", icon: Megaphone },
   { to: "/app/results", label: "Results", icon: BarChart3 },
   { to: "/app/analytics", label: "Test Analytics", icon: TrendingUp },
   { to: "/app/admin/talents", label: "Talents", icon: Sparkles },
   { to: "/app/admin/passes", label: "Pass Approvals", icon: Ticket },
-  { to: "/app/settings", label: "Settings", icon: Settings },
+  { to: "/app/admin/spin", label: "Spin Wheel", icon: Gift },
+];
+
+// Admin secondary — less-used screens, decluttered from primary nav
+const adminSecondaryNav: NavItem[] = [
+  { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
+  { to: "/app/announcements", label: "News", icon: Megaphone },
+  { to: "/app/settings", label: "System Settings", icon: Settings },
 ];
 
 // Student "hero" nav — game terminology
@@ -84,7 +89,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { role } = useAuth();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const items = role === "admin" ? adminNav : studentNav;
-  const isStudent = role === "student";
+  const secondary = role === "admin" ? adminSecondaryNav : studentSecondaryNav;
+  const showSecondary = role === "admin" || role === "student";
   return (
     <nav className="space-y-1">
       {items.map((it) => {
@@ -107,12 +113,12 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           </Link>
         );
       })}
-      {isStudent && (
+      {showSecondary && secondary.length > 0 && (
         <>
           <div className="pt-3 pb-1 px-3 text-[10px] font-orbitron font-bold tracking-widest text-muted-foreground uppercase">
             More
           </div>
-          {studentSecondaryNav.map((it) => {
+          {secondary.map((it) => {
             const active = path === it.to || path.startsWith(it.to + "/");
             const Icon = it.icon;
             return (

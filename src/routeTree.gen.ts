@@ -43,6 +43,7 @@ import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
+import { Route as AppAdminSpinRouteImport } from './routes/app.admin.spin'
 import { Route as AppAdminPassesRouteImport } from './routes/app.admin.passes'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
@@ -220,6 +221,11 @@ const AppAdminTalentsRoute = AppAdminTalentsRouteImport.update({
   path: '/admin/talents',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminSpinRoute = AppAdminSpinRouteImport.update({
+  id: '/admin/spin',
+  path: '/admin/spin',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminPassesRoute = AppAdminPassesRouteImport.update({
   id: '/admin/passes',
   path: '/admin/passes',
@@ -286,6 +292,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -326,6 +333,7 @@ export interface FileRoutesByTo {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -369,6 +377,7 @@ export interface FileRoutesById {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
@@ -413,6 +422,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
     | '/app/admin/passes'
+    | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -453,6 +463,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
     | '/app/admin/passes'
+    | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -495,6 +506,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
     | '/app/admin/passes'
+    | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
     | '/app/tests/$testId'
@@ -752,6 +764,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminTalentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/spin': {
+      id: '/app/admin/spin'
+      path: '/admin/spin'
+      fullPath: '/app/admin/spin'
+      preLoaderRoute: typeof AppAdminSpinRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/passes': {
       id: '/app/admin/passes'
       path: '/admin/passes'
@@ -865,6 +884,7 @@ interface AppRouteChildren {
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminPassesRoute: typeof AppAdminPassesRoute
+  AppAdminSpinRoute: typeof AppAdminSpinRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
 }
 
@@ -897,6 +917,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminPassesRoute: AppAdminPassesRoute,
+  AppAdminSpinRoute: AppAdminSpinRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
 }
 
