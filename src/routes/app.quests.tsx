@@ -76,6 +76,7 @@ function QuestsPage() {
 
   return (
     <div className="space-y-4">
+      <FloatingReward reward={floating} />
       <div>
         <h1 className="text-2xl font-bold font-orbitron flex items-center gap-2">
           <Sparkles className="h-6 w-6 text-amber-400" />Quests &amp; Missions
