@@ -1,127 +1,114 @@
 
-# Phase 1 — RPG Shell: "Solo Leveling Monarch" Edition
+# Learning RPG Upgrade Plan
 
-Pure presentation upgrade. Zero data changes. Zero removed functionality. All existing routes, server functions, attendance/coin logic, leaderboard calculation, and admin tools stay exactly as they are.
+Goal: simplify navigation, surface progression, and re-skin existing systems as an RPG. **No existing logic, table, or server function will be deleted** — only re-organized and re-presented.
 
-Aesthetic: dark cosmic (#06060a / #0f1226) with monarch purple (#6d4cff) and rune cyan (#22d3ee). Glowing edges, animated gradients, particle accents, glassy cards.
+## 1. Navigation Restructure
 
----
+Reduce primary nav (both desktop sidebar and mobile bottom tabs) to:
 
-## 1. Design system (`src/styles.css`)
+```
+Home  |  Journey  |  Arena  |  Shop  |  Profile
+```
 
-- Add Monarch palette tokens: `--bg-void`, `--bg-rift`, `--monarch`, `--monarch-glow`, `--rune`, `--rune-glow`, `--rank-e/d/c/b/a/s/national/monarch` color tokens, `--gradient-xp`, `--gradient-rank`, `--shadow-monarch`, `--shadow-rune`.
-- Add display font **Orbitron** (HUD/ranks) + body **Rajdhani** via `<link>` in `__root.tsx`; register in `@theme`.
-- New `@utility` classes: `rune-border`, `monarch-glow`, `holo-card`, `xp-bar-glow`, `rank-badge-{tier}`.
-- New keyframes: `pulse-glow`, `shimmer-sweep`, `rune-rotate`, `float-up`, `particle-rise`, `level-up-flash`.
+Everything else moves into a "More" overflow menu or becomes a subsection of one of the five primary screens:
 
-## 2. Global Player HUD (new component, mounted in `src/routes/app.tsx`)
+| Old item | New location |
+|---|---|
+| Quests, Missions | Journey → Quests tab |
+| Worlds, Lectures, Content, Chapters | Journey → Worlds / Dungeons |
+| Tests, Results | Journey → Quests (Chapter Quests) |
+| PvP, Battles | Arena |
+| Achievements, Badges, Pets, Inventory, Talents | Profile (tabbed) |
+| Coins, Spin, Passes | Shop (tabs) |
+| Attendance | Profile → Stats |
+| Announcements (News) | Home cards |
+| Settings, Admin pages | "More" menu (unchanged) |
 
-`<PlayerStatusBar />` fixed-top on every `/app/*` route:
-- Avatar (with equipped frame) + pet thumbnail beside it
-- Level + animated XP bar (current/next from existing `gamification_stats`)
-- Rank tier badge (derived from existing leaderboard score → E/D/C/B/A/S/National/Monarch)
-- Coin counter (existing `coins`)
-- Streak flame 🔥 (existing streak from quests data)
-- Active title pill under name
-- Reuses existing data — no new queries
+Admin nav is left as-is (admin needs all tools).
 
-Mobile: compact single-row HUD; Desktop: expanded with labels.
+## 2. Home Screen — Game Lobby
 
-## 3. Home Screen redesign (`src/routes/app.index.tsx`)
+Rebuild `app.index.tsx` as a lobby with three sections:
 
-Rebuild presentation, keep existing data hooks:
-- **Player Card hero** — large monarch-themed card with avatar, level, XP bar, rank, coins, streak, "Next Unlock" teaser (computed from next level milestone)
-- **Today's Quests** — pulls existing `getDailyQuestsAndStreak`; rendered as glowing RPG quest cards with reward chips (+XP, +Coins) and progress bars
-- **Continue Journey** — new card that finds last incomplete lecture from existing `video_completions` and links into it
-- **Quick Tiles** — Worlds, Dungeons, Arena, Leaderboard, Shop entrances styled as RPG portals
+**a) Hero Player Card** — avatar, name + equipped title, Level, XP bar, Rank tier badge, Coin balance, 🔥 streak, attendance %, "Next Unlock" line (next title/shadow/rank).
 
-## 4. Worlds → RPG Worlds (`src/routes/app.worlds.tsx`)
+**b) Today's Quests** — daily checklist with progress bars:
+- Attend Class (+2 Coins)
+- Watch 1 Lecture (+50 XP)
+- Complete 1 Quiz (+100 XP)
+- Revise 15 min (+25 XP)
 
-Reskin existing subjects as worlds:
-- Math Kingdom ⚔, Science Realm ⚡, Language Empire 📜, Reasoning Citadel 🧠 (auto-mapped from existing subject names with fallback)
-- Each card: completion %, recommended level, quests done, "boss remaining" badge (derived from chapter count vs completed tests)
-- Full-bleed gradient cards with particle backgrounds
+Derives progress from existing tables (`attendance`, `video_completions`, `results`, `xp_transactions`).
 
-## 5. Chapters → Dungeons (presentation in `src/routes/app.content.tsx` + lectures)
+**c) Announcement Cards** — reads from existing `announcements` table; replaces the standalone News page. (Route file kept but de-linked.)
 
-- Chapter name shown as "{Chapter} Dungeon/Fortress/Citadel" (rotating suffix)
-- Each shows difficulty stars, XP/coin rewards, lock state, boss-battle button (links to existing chapter test)
-- No data change — purely label + visual
+## 3. Journey Page (new `app.journey.tsx`)
 
-## 6. Lectures (`src/routes/app.lectures.tsx`, `app.tests.$testId.tsx`)
+Single progression hub with tabs:
+- **Worlds** — Math Kingdom, Science Realm, Language Empire, Reasoning Citadel. Each card shows completion %, recommended level, bosses/quests remaining.
+- **Dungeons** — chapters re-skinned (Algebra Dungeon, Geometry Fortress, …) with XP/Coin/Shadow rewards.
+- **Quests** — merged Daily / Weekly / Chapter / Special tabs.
+- **Boss Battles** — chapter-end tests.
+- **Progress Map** — visual rail of completed → current → locked nodes.
 
-- Each lecture row shows XP reward, coin reward, est. time, difficulty, completion ✓
-- On completion: floating **"QUEST COMPLETE"** popup with +XP/+Coins animation (extend existing `RewardPopup`)
+Reuses existing `subjects`, `chapters`, `tests`, `quests` server fns.
 
-## 7. Quests unification (`src/routes/app.quests.tsx`)
+## 4. Profile Page Overhaul
 
-Tabbed view over existing quest data:
-- Daily | Weekly | Chapter | Special
-- Daily uses existing `getDailyQuestsAndStreak`
-- Weekly/Chapter/Special derived from existing data (test scores, lectures, attendance) — no new tables
-- Keep streak heatmap, restyled with monarch glow
+Tabbed RPG profile:
+- **Overview** — avatar, level, rank, coins, streak, attendance %, arena wins, lectures, quests completed, collection %.
+- **Achievements** (merged) — Badges | Titles | Achievements | Collection Progress.
+- **Collection** — Shadows | Pets | Titles | Badges | Special Rewards with % bars.
+- **Stats** — attendance breakdown + XP/coin history.
+- **Talents** — link to existing talents page.
 
-## 8. Leaderboard tiers (`src/routes/app.leaderboard.tsx`)
+## 5. New Systems (light, data-driven)
 
-**Calculation unchanged** (attendance + lecture completion). Presentation only:
-- Map score percentile → rank tier (E/D/C/B/A/S/National/Monarch) with thresholds
-- Show: my rank tier card, rank above me, rank below me, weekly delta, motivational message
-- Animated rank badges per tier
+**Titles** — `titles` table (key, name, description, requirement_type, requirement_value, rarity) + `user_titles` (unlocked, equipped). Seed with: Rookie Hunter, Dungeon Explorer, Homework Slayer, Quiz Assassin, Algebra Warrior, Science Mage, Rank Climber, Elite Scholar, S-Rank Hunter, Monarch Candidate. Equipped title shows under player name everywhere (PlayerStatusBar, HeroCard, Profile).
 
-## 9. Talents → Skill Tree polish (`src/routes/app.talents.tsx`)
+**Shadows** — `shadows` table (key, name, subject, rarity, description, unlock_rule) + `user_shadows`. Seed Algebra Knight, Geometry Archer, Motion Warrior, Grammar Sage, Atom Mage. Awarded on chapter completion.
 
-Reskin existing talents UI:
-- Categorize existing talents into Math/Science/Language/Reasoning trees (via existing talent metadata)
-- Visual node graph with locked/unlocked/path states, glowing connectors
+**Seasons** — `seasons` table (key, name, starts_at, ends_at, theme) + `season_progress` (user_id, season_id, points). Attendance/lectures/quizzes/quests contribute points via existing XP hooks (additive trigger). Rewards listed in season config: badges, titles, frames, shadows.
 
-## 10. Player Profile page (new `src/routes/app.profile.tsx`)
+All new tables: GRANT + RLS + `has_role` admin policies per project standards.
 
-Aggregates existing data into RPG profile: avatar, level, rank, coins, streak, badges, achievements count, arena wins, lectures completed, attendance %. Linked from HUD avatar tap.
+## 6. Rank Tier Visuals
 
-## 11. Navigation cleanup (`src/routes/app.tsx`)
+New `<RankTier>` component renders E → D → C → B → A → S → National → Monarch with distinct colors/icons. **No change to rank calculation** — only visual. Used in Home hero, Profile, Leaderboard.
 
-- Primary bottom nav (mobile) / sidebar (desktop): Home, Worlds, Quests, Battles/Arena, Leaderboard, Shop, Profile
-- Move to secondary "More" menu: Attendance, Announcements, Notes, Settings, Admin entries
-- Nothing deleted — just regrouped
+## 7. Rankings
 
-## 12. Reward & feedback FX
+Existing `app.leaderboard.tsx` stays as the "Rankings" destination, linked from Profile and Home. Adds: Current Position card, Rank Progress bar to next tier, Top 10 list. Logic untouched.
 
-- Extend `RewardPopup` with particle burst, rune ring, level-up flash
-- Toast variants for: quest complete, rank up, achievement unlock, streak milestone
-- `framer-motion` for transitions (already in stack)
+## 8. Cleanup (no deletions)
 
----
+- Remove sidebar/bottom-tab links to: Coins, Attendance, News, Inventory, Pets, Talents, Achievements, Quests, Lectures, Tests, Worlds, Content (still reachable via Journey/Profile or direct URL).
+- Spin & Passes accessible from Shop tabs.
+- All old routes remain functional and unbroken.
 
-## Technical details
+## Technical Section
 
-**Files to create:**
-- `src/components/rpg/PlayerStatusBar.tsx`
-- `src/components/rpg/PlayerCard.tsx`
-- `src/components/rpg/QuestCard.tsx`
-- `src/components/rpg/WorldCard.tsx`
-- `src/components/rpg/DungeonCard.tsx`
-- `src/components/rpg/RankBadge.tsx`
-- `src/components/rpg/XPBar.tsx`
-- `src/components/rpg/ParticleField.tsx`
-- `src/components/rpg/QuestCompleteOverlay.tsx`
-- `src/lib/rpg/ranks.ts` (tier thresholds + helpers)
-- `src/lib/rpg/worlds.ts` (subject → world mapping)
-- `src/lib/rpg/dungeons.ts` (chapter → dungeon naming)
-- `src/routes/app.profile.tsx`
+**New files**
+- `src/routes/app.journey.tsx` (tabs: Worlds, Dungeons, Quests, Bosses, Map)
+- `src/routes/app.collection.tsx` (linked from Profile)
+- `src/components/rpg/RankTier.tsx`, `HeroLobbyCard.tsx`, `DailyObjectives.tsx`, `AnnouncementsFeed.tsx`, `WorldCard.tsx`, `DungeonCard.tsx`, `TitleChip.tsx`, `ShadowCard.tsx`, `SeasonProgress.tsx`
+- `src/lib/api/journey.functions.ts`, `titles.functions.ts`, `shadows.functions.ts`, `seasons.functions.ts`, `home.functions.ts` (daily-objective aggregator)
+- `src/lib/rpg/titles.ts`, `shadows.ts`, `seasons.ts`, `tiers.ts`
 
-**Files to edit (presentation only):**
-- `src/styles.css` — tokens, fonts, utilities, keyframes
-- `src/routes/__root.tsx` — font links
-- `src/routes/app.tsx` — mount HUD, restructure nav
-- `src/routes/app.index.tsx` — full redesign
-- `src/routes/app.worlds.tsx`, `app.content.tsx`, `app.lectures.tsx`, `app.tests.$testId.tsx`, `app.quests.tsx`, `app.leaderboard.tsx`, `app.talents.tsx`
-- `src/components/gamification/RewardPopup.tsx` — particle FX
+**Edited files**
+- `src/routes/app.tsx` — slim primary nav to 5 items + "More" overflow; mobile bottom tabs to same 5.
+- `src/routes/app.index.tsx` — replace with lobby layout.
+- `src/routes/app.profile.tsx` — tabbed RPG profile with Collection.
+- `src/routes/app.shop.tsx` — add Passes + Spin tabs.
+- `src/components/rpg/PlayerStatusBar.tsx` — show equipped title.
 
-**Not touched:** any `src/lib/api/*.functions.ts`, attendance logic, leaderboard scoring, RLS, migrations, admin pages.
+**Migrations (one combined)**
+- `titles`, `user_titles`, `shadows`, `user_shadows`, `seasons`, `season_progress` tables
+- GRANTs to authenticated + service_role; RLS: users read all catalog rows, read/write own progress rows; admins manage catalog via `has_role`.
+- Seed rows for titles, shadows, current month season.
 
-**Out of scope for Phase 1** (planned for later phases):
-- P2: Shadows, Pets, Inventory, Titles catalog, Achievements expansion, Academy Passes
-- P3: Guilds, Monthly Seasons, Daily Spin Wheel, Loot Chests
-- P4: Boss Battles as distinct entity, Hidden Achievements, Teacher's Choice Badges, Parent Dashboard redesign
+**Preserved**
+- All existing tables, server fns, rank/XP/coin/streak logic, attendance rewards, talent tree, PvP, lectures, achievements, badges, spin, passes — untouched. Only re-organized in the UI.
 
-After Phase 1 ships and you approve, I'll plan Phase 2.
+Risks: file scope is wide; will land in two passes — (1) DB migration + nav/home/profile shell, (2) Journey + Collection + Titles/Shadows/Seasons wiring.

@@ -47,41 +47,42 @@ const adminSecondaryNav: NavItem[] = [
   { to: "/app/settings", label: "System Settings", icon: Settings },
 ];
 
-// Student "hero" nav — game terminology
+// Student primary nav — 5 hero actions only
 const studentNav: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
-  { to: "/app/profile", label: "Profile", icon: User },
-  { to: "/app/worlds", label: "Worlds", icon: Map },
-  { to: "/app/quests", label: "Quests", icon: Target },
-  { to: "/app/lectures", label: "Missions", icon: BookOpen },
-  { to: "/app/tests", label: "Battles", icon: Swords },
+  { to: "/app/journey", label: "Journey", icon: Map },
   { to: "/app/pvp", label: "Arena", icon: Swords },
-  { to: "/app/leaderboard", label: "Rank", icon: Trophy },
-  { to: "/app/achievements", label: "Badges", icon: Award },
+  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
+  { to: "/app/profile", label: "Profile", icon: User },
+];
+
+// Secondary "More" menu — everything else lives here, nothing is deleted
+const studentSecondaryNav: NavItem[] = [
+  { to: "/app/collection", label: "Collection", icon: Sparkles },
+  { to: "/app/leaderboard", label: "Rankings", icon: Trophy },
+  { to: "/app/achievements", label: "Badges & Achievements", icon: Award },
+  { to: "/app/quests", label: "Quests", icon: Target },
+  { to: "/app/lectures", label: "Lectures", icon: BookOpen },
+  { to: "/app/tests", label: "Boss Battles", icon: Swords },
+  { to: "/app/worlds", label: "Worlds", icon: Map },
+  { to: "/app/passes", label: "Passes", icon: Ticket },
+  { to: "/app/spin", label: "Spin Wheel", icon: Gift },
   { to: "/app/talents", label: "Talents", icon: Sparkles },
   { to: "/app/pets", label: "Pets", icon: PawPrint },
   { to: "/app/inventory", label: "Inventory", icon: Backpack },
-  { to: "/app/passes", label: "Passes", icon: Ticket },
-  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/spin", label: "Spin Wheel", icon: Gift },
-  { to: "/app/coins", label: "Treasury", icon: Coins },
-];
-
-// Secondary menu — less-used screens, decluttered from primary nav
-const studentSecondaryNav: NavItem[] = [
-  { to: "/app/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/notes", label: "Scrolls", icon: FileText },
+  { to: "/app/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/announcements", label: "News", icon: Megaphone },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
-// Mobile bottom tab bar for students — the 5 most-used
+// Mobile bottom tabs — same 5 primary actions
 const studentBottomTabs: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
-  { to: "/app/worlds", label: "Worlds", icon: Map },
-  { to: "/app/quests", label: "Quests", icon: Target },
-  { to: "/app/leaderboard", label: "Rank", icon: Trophy },
-  { to: "/app/profile", label: "Hero", icon: User },
+  { to: "/app/journey", label: "Journey", icon: Map },
+  { to: "/app/pvp", label: "Arena", icon: Swords },
+  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
+  { to: "/app/profile", label: "Profile", icon: User },
 ];
 
 

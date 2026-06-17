@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
 import {
   Users, BookOpen, FileText, ClipboardList, Megaphone, GraduationCap,
-  Map, Swords, Trophy, ShoppingBag, Award, ChevronRight, Sparkles,
+  Map, Swords, Trophy, ShoppingBag, Award, ChevronRight, Sparkles, Target, CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -15,6 +15,8 @@ import { HeroCard } from "@/components/gamification/HeroCard";
 import { DailyChestCard } from "@/components/gamification/DailyChestCard";
 import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
 import { getGamificationDashboard, dailyCheckIn } from "@/lib/api/gamification.functions";
+import { getDailyObjectives } from "@/lib/api/rpg-collection.functions";
+import { nextRank } from "@/lib/rpg/ranks";
 import { getIcon } from "@/lib/gamification/icons";
 
 export const Route = createFileRoute("/app/")({
@@ -113,13 +115,12 @@ function AdminDashboard() {
 }
 
 const QUICK_ACTIONS: { to: string; label: string; sub: string; icon: typeof Map; gradient: string }[] = [
-  { to: "/app/worlds", label: "World Map", sub: "Explore worlds", icon: Map, gradient: "from-blue-500 to-indigo-600" },
-  { to: "/app/tests", label: "Boss Battles", sub: "Fight bosses", icon: Swords, gradient: "from-rose-500 to-orange-500" },
-  { to: "/app/leaderboard", label: "Rankings", sub: "Climb the ladder", icon: Trophy, gradient: "from-amber-400 to-yellow-600" },
-  { to: "/app/shop", label: "Hero Shop", sub: "Spend coins", icon: ShoppingBag, gradient: "from-fuchsia-500 to-purple-600" },
-  { to: "/app/achievements", label: "Badges", sub: "Collect them all", icon: Award, gradient: "from-emerald-400 to-teal-600" },
-  { to: "/app/coins", label: "Treasury", sub: "Coin history", icon: Sparkles, gradient: "from-cyan-400 to-blue-500" },
-  { to: "/app/talents", label: "Talents", sub: "Skill tree", icon: Sparkles, gradient: "from-violet-500 to-fuchsia-600" },
+  { to: "/app/journey",     label: "Journey",    sub: "Worlds & dungeons",  icon: Map,        gradient: "from-blue-500 to-indigo-600" },
+  { to: "/app/pvp",         label: "Arena",      sub: "PvP battles",        icon: Swords,     gradient: "from-rose-500 to-orange-500" },
+  { to: "/app/leaderboard", label: "Rankings",   sub: "Climb the ladder",   icon: Trophy,     gradient: "from-amber-400 to-yellow-600" },
+  { to: "/app/shop",        label: "Hero Shop",  sub: "Spend coins",        icon: ShoppingBag, gradient: "from-fuchsia-500 to-purple-600" },
+  { to: "/app/collection",  label: "Collection", sub: "Shadows & titles",   icon: Sparkles,   gradient: "from-violet-500 to-fuchsia-600" },
+  { to: "/app/profile",     label: "Profile",    sub: "Your hunter",        icon: Award,      gradient: "from-emerald-400 to-teal-600" },
 ];
 
 function StudentDashboard({ userId }: { userId?: string }) {
@@ -154,7 +155,15 @@ function StudentDashboard({ userId }: { userId?: string }) {
       (await supabase.from("announcements").select("id, title, message, created_at").order("created_at", { ascending: false }).limit(3)).data ?? [],
   });
 
+  const getObjectives = useServerFn(getDailyObjectives);
+  const objectives = useQuery({
+    queryKey: ["daily-objectives", userId],
+    enabled: !!userId,
+    queryFn: () => getObjectives(),
+  });
+
   const stats = dash.data?.stats;
+  const next = stats ? nextRank(stats.level) : null;
 
   return (
     <div className="space-y-5">
@@ -171,12 +180,66 @@ function StudentDashboard({ userId }: { userId?: string }) {
         />
       )}
 
+      {/* Next Unlock strip */}
+      {next?.next && (
+        <div className="rounded-2xl glass-card p-3 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-[image:var(--gradient-primary)] grid place-items-center">
+            <Sparkles className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Next Unlock</div>
+            <div className="font-extrabold truncate">{next.next.label}</div>
+          </div>
+          <div className="text-right">
+            <div className="font-orbitron font-black">{next.levelsAway}</div>
+            <div className="text-[10px] uppercase text-muted-foreground">Levels</div>
+          </div>
+        </div>
+      )}
+
+      {/* Today's Quests */}
+      <div className="rounded-2xl glass-card p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-extrabold flex items-center gap-2">
+            <Target className="h-4 w-4 text-amber-300" /> Today's Quests
+          </h2>
+          <Link to="/app/quests" className="text-xs font-bold text-primary-glow">All quests →</Link>
+        </div>
+        <div className="space-y-2.5">
+          {(objectives.data?.objectives ?? []).map((o) => {
+            const pct = Math.round((o.progress / o.goal) * 100);
+            const done = pct >= 100;
+            return (
+              <div key={o.key} className="flex items-center gap-3">
+                <div className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 ${done ? "bg-emerald-500/20 text-emerald-300" : "bg-white/5 text-muted-foreground"}`}>
+                  <CheckCircle2 className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between text-xs">
+                    <span className="font-semibold truncate">{o.label}</span>
+                    <span className="text-amber-300 font-bold ml-2 shrink-0">{o.reward}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/10 overflow-hidden mt-1">
+                    <motion.div
+                      className="h-full bg-[image:var(--gradient-primary)]"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.6 }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       <ActiveBonusesCard />
 
       <DailyChestCard />
 
       {/* Continue Adventure / World map preview */}
-      <Link to="/app/worlds" className="block">
+      <Link to="/app/journey" className="block">
         <motion.div
           whileTap={{ scale: 0.98 }}
           className="relative overflow-hidden rounded-2xl p-5 glass-card glow-primary"

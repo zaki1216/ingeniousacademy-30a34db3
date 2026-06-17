@@ -32,8 +32,10 @@ import { Route as AppPassesRouteImport } from './routes/app.passes'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
+import { Route as AppJourneyRouteImport } from './routes/app.journey'
 import { Route as AppInventoryRouteImport } from './routes/app.inventory'
 import { Route as AppContentRouteImport } from './routes/app.content'
+import { Route as AppCollectionRouteImport } from './routes/app.collection'
 import { Route as AppCoinsRouteImport } from './routes/app.coins'
 import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
@@ -166,6 +168,11 @@ const AppLeaderboardRoute = AppLeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => AppRoute,
 } as any)
+const AppJourneyRoute = AppJourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInventoryRoute = AppInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
@@ -174,6 +181,11 @@ const AppInventoryRoute = AppInventoryRouteImport.update({
 const AppContentRoute = AppContentRouteImport.update({
   id: '/content',
   path: '/content',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCollectionRoute = AppCollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCoinsRoute = AppCoinsRouteImport.update({
@@ -269,8 +281,10 @@ export interface FileRoutesByFullPath {
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
+  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
   '/app/inventory': typeof AppInventoryRoute
+  '/app/journey': typeof AppJourneyRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
@@ -311,8 +325,10 @@ export interface FileRoutesByTo {
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
+  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
   '/app/inventory': typeof AppInventoryRoute
+  '/app/journey': typeof AppJourneyRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
@@ -354,8 +370,10 @@ export interface FileRoutesById {
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/attendance': typeof AppAttendanceRoute
   '/app/coins': typeof AppCoinsRoute
+  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
   '/app/inventory': typeof AppInventoryRoute
+  '/app/journey': typeof AppJourneyRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
@@ -399,8 +417,10 @@ export interface FileRouteTypes {
     | '/app/announcements'
     | '/app/attendance'
     | '/app/coins'
+    | '/app/collection'
     | '/app/content'
     | '/app/inventory'
+    | '/app/journey'
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
@@ -441,8 +461,10 @@ export interface FileRouteTypes {
     | '/app/announcements'
     | '/app/attendance'
     | '/app/coins'
+    | '/app/collection'
     | '/app/content'
     | '/app/inventory'
+    | '/app/journey'
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
@@ -483,8 +505,10 @@ export interface FileRouteTypes {
     | '/app/announcements'
     | '/app/attendance'
     | '/app/coins'
+    | '/app/collection'
     | '/app/content'
     | '/app/inventory'
+    | '/app/journey'
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
@@ -687,6 +711,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLeaderboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/journey': {
+      id: '/app/journey'
+      path: '/journey'
+      fullPath: '/app/journey'
+      preLoaderRoute: typeof AppJourneyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/inventory': {
       id: '/app/inventory'
       path: '/inventory'
@@ -699,6 +730,13 @@ declare module '@tanstack/react-router' {
       path: '/content'
       fullPath: '/app/content'
       preLoaderRoute: typeof AppContentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/collection': {
+      id: '/app/collection'
+      path: '/collection'
+      fullPath: '/app/collection'
+      preLoaderRoute: typeof AppCollectionRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/coins': {
@@ -861,8 +899,10 @@ interface AppRouteChildren {
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
   AppAttendanceRoute: typeof AppAttendanceRoute
   AppCoinsRoute: typeof AppCoinsRoute
+  AppCollectionRoute: typeof AppCollectionRoute
   AppContentRoute: typeof AppContentRoute
   AppInventoryRoute: typeof AppInventoryRoute
+  AppJourneyRoute: typeof AppJourneyRoute
   AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppLecturesRoute: typeof AppLecturesRoute
   AppNotesRoute: typeof AppNotesRoute
@@ -894,8 +934,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppAnnouncementsRoute: AppAnnouncementsRoute,
   AppAttendanceRoute: AppAttendanceRoute,
   AppCoinsRoute: AppCoinsRoute,
+  AppCollectionRoute: AppCollectionRoute,
   AppContentRoute: AppContentRoute,
   AppInventoryRoute: AppInventoryRoute,
+  AppJourneyRoute: AppJourneyRoute,
   AppLeaderboardRoute: AppLeaderboardRoute,
   AppLecturesRoute: AppLecturesRoute,
   AppNotesRoute: AppNotesRoute,
@@ -934,13 +976,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
