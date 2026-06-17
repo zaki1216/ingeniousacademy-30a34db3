@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Coins, Check, Lock, ShoppingBag, Sparkles } from "lucide-react";
+import { Coins, Check, Lock, ShoppingBag, Sparkles, Ticket, Gift, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
