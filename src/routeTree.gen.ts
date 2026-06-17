@@ -20,6 +20,7 @@ import { Route as AppWorldsRouteImport } from './routes/app.worlds'
 import { Route as AppTestsRouteImport } from './routes/app.tests'
 import { Route as AppTalentsRouteImport } from './routes/app.talents'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
+import { Route as AppSpinRouteImport } from './routes/app.spin'
 import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppResultsRouteImport } from './routes/app.results'
@@ -102,6 +103,11 @@ const AppTalentsRoute = AppTalentsRouteImport.update({
 const AppStudentsRoute = AppStudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSpinRoute = AppSpinRouteImport.update({
+  id: '/spin',
+  path: '/spin',
   getParentRoute: () => AppRoute,
 } as any)
 const AppShopRoute = AppShopRouteImport.update({
@@ -270,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
+  '/app/spin': typeof AppSpinRoute
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
@@ -309,6 +316,7 @@ export interface FileRoutesByTo {
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
+  '/app/spin': typeof AppSpinRoute
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
@@ -351,6 +359,7 @@ export interface FileRoutesById {
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shop': typeof AppShopRoute
+  '/app/spin': typeof AppSpinRoute
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
@@ -394,6 +403,7 @@ export interface FileRouteTypes {
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
+    | '/app/spin'
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
@@ -433,6 +443,7 @@ export interface FileRouteTypes {
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
+    | '/app/spin'
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
@@ -474,6 +485,7 @@ export interface FileRouteTypes {
     | '/app/results'
     | '/app/settings'
     | '/app/shop'
+    | '/app/spin'
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
@@ -577,6 +589,13 @@ declare module '@tanstack/react-router' {
       path: '/students'
       fullPath: '/app/students'
       preLoaderRoute: typeof AppStudentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/spin': {
+      id: '/app/spin'
+      path: '/spin'
+      fullPath: '/app/spin'
+      preLoaderRoute: typeof AppSpinRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/shop': {
@@ -836,6 +855,7 @@ interface AppRouteChildren {
   AppResultsRoute: typeof AppResultsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppShopRoute: typeof AppShopRoute
+  AppSpinRoute: typeof AppSpinRoute
   AppStudentsRoute: typeof AppStudentsRoute
   AppTalentsRoute: typeof AppTalentsRoute
   AppTestsRoute: typeof AppTestsRouteWithChildren
@@ -867,6 +887,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppResultsRoute: AppResultsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppShopRoute: AppShopRoute,
+  AppSpinRoute: AppSpinRoute,
   AppStudentsRoute: AppStudentsRoute,
   AppTalentsRoute: AppTalentsRoute,
   AppTestsRoute: AppTestsRouteWithChildren,
