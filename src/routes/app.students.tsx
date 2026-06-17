@@ -346,3 +346,97 @@ function ResetPasswordDialog({ onSubmit }: { onSubmit: (password: string) => Pro
     </Dialog>
   );
 }
+
+function BulkActionsPanel({ standards }: { standards: { id: string; name: string }[] }) {
+  const [standardId, setStandardId] = useState<string>("all");
+  const [coins, setCoins] = useState(25);
+  const [badgeId, setBadgeId] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const badges = useQuery({
+    queryKey: ["bulk-badges"],
+    queryFn: async () => (await supabase.from("achievements").select("id,name")).data ?? [],
+  });
+
+  async function run(label: string, fn: () => Promise<unknown>) {
+    setBusy(true);
+    try { await fn(); toast.success(label); }
+    catch (e: any) { toast.error(e?.message ?? "Failed"); }
+    finally { setBusy(false); }
+  }
+
+  const stdId = standardId === "all" ? null : standardId;
+
+  return (
+    <Card>
+      <CardContent className="p-4 space-y-3">
+        <div className="text-sm font-bold">Bulk Actions</div>
+        <div className="grid md:grid-cols-2 gap-3">
+          <div>
+            <Label className="text-xs">Target class</Label>
+            <Select value={standardId} onValueChange={setStandardId}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All students</SelectItem>
+                {standards.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-end gap-2">
+          <div>
+            <Label className="text-xs">Coins</Label>
+            <Input type="number" className="w-24" value={coins} onChange={(e) => setCoins(Number(e.target.value))} />
+          </div>
+          <Button size="sm" disabled={busy} onClick={async () => {
+            const { adminBulkAwardCoins } = await import("@/lib/api/admin-rewards.functions");
+            run("Coins awarded to class", () => adminBulkAwardCoins({ data: { standardId: stdId, amount: coins, reason: "event" } }));
+          }}>Award Coins To Class</Button>
+
+          <div className="min-w-[160px]">
+            <Label className="text-xs">Badge</Label>
+            <Select value={badgeId} onValueChange={setBadgeId}>
+              <SelectTrigger><SelectValue placeholder="Pick" /></SelectTrigger>
+              <SelectContent>{(badges.data ?? []).map((b) => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <Button size="sm" disabled={busy || !badgeId} onClick={async () => {
+            const { adminBulkAwardBadge } = await import("@/lib/api/admin-rewards.functions");
+            run("Badge awarded to class", () => adminBulkAwardBadge({ data: { standardId: stdId, achievementId: badgeId } }));
+          }}>Award Badge To Class</Button>
+
+          <Button size="sm" variant="outline" disabled={busy} onClick={async () => {
+            const { adminBulkAwardCoins } = await import("@/lib/api/admin-rewards.functions");
+            run("Event reward sent", () => adminBulkAwardCoins({ data: { standardId: stdId, amount: 100, reason: "event_reward" } }));
+          }}>Grant Event Rewards</Button>
+
+          <ResetSeasonButton busy={busy} run={run} />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ResetSeasonButton({ busy, run }: { busy: boolean; run: (label: string, fn: () => Promise<unknown>) => void }) {
+  const seasons = useQuery({
+    queryKey: ["seasons-list"],
+    queryFn: async () => (await supabase.from("seasons").select("id,name").order("created_at", { ascending: false })).data ?? [],
+  });
+  const [seasonId, setSeasonId] = useState<string>("");
+  return (
+    <div className="flex items-end gap-2">
+      <div className="min-w-[160px]">
+        <Label className="text-xs">Season</Label>
+        <Select value={seasonId} onValueChange={setSeasonId}>
+          <SelectTrigger><SelectValue placeholder="Season" /></SelectTrigger>
+          <SelectContent>{(seasons.data ?? []).map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+        </Select>
+      </div>
+      <Button size="sm" variant="destructive" disabled={busy || !seasonId} onClick={async () => {
+        const { adminResetSeasonRewards } = await import("@/lib/api/admin-rewards.functions");
+        run("Season rewards reset", () => adminResetSeasonRewards({ data: { seasonId } }));
+      }}>Reset Season Rewards</Button>
+    </div>
+  );
+}
