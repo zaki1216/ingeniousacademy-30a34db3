@@ -873,6 +873,51 @@ export type Database = {
           },
         ]
       }
+      user_passes: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          cost_coins: number
+          created_at: string
+          expires_at: string | null
+          id: string
+          notes: string | null
+          pass_code: string
+          status: string
+          updated_at: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          cost_coins: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          pass_code: string
+          status?: string
+          updated_at?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          cost_coins?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          pass_code?: string
+          status?: string
+          updated_at?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
