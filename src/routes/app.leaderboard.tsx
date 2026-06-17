@@ -249,26 +249,47 @@ function LeaderboardPage() {
         <p className="text-xs text-center text-muted-foreground">Your rank: #{myRank}</p>
       )}
     </div>
+    </TooltipProvider>
   );
 }
 
 function NeighborRow({
   label,
+  tip,
   row,
   icon,
   tone,
   highlight,
 }: {
   label: string;
+  tip?: string;
   row: any;
   icon?: React.ReactNode;
   tone?: "up" | "down";
   highlight?: boolean;
 }) {
+  const LabelEl = (
+    <span className={cn(
+      "w-12 text-[10px] font-orbitron tracking-wider flex items-center gap-1 cursor-help",
+      tone === "up" && "text-emerald-400",
+      tone === "down" && "text-rose-400",
+      highlight && "text-primary",
+      !row && "text-muted-foreground/70",
+    )}>
+      {icon}{label}
+    </span>
+  );
+  const Labeled = tip ? (
+    <Tooltip>
+      <TooltipTrigger asChild>{LabelEl}</TooltipTrigger>
+      <TooltipContent className="max-w-xs text-xs leading-relaxed">{tip}</TooltipContent>
+    </Tooltip>
+  ) : LabelEl;
+
   if (!row) {
     return (
       <div className="flex items-center gap-3 text-xs text-muted-foreground/70">
-        <span className="w-12 font-orbitron tracking-wider">{label}</span>
+        {Labeled}
         <span>— none —</span>
       </div>
     );
@@ -279,14 +300,7 @@ function NeighborRow({
       "flex items-center gap-3 rounded-lg p-2",
       highlight && "bg-primary/10 ring-1 ring-primary/40",
     )}>
-      <span className={cn(
-        "w-12 text-[10px] font-orbitron tracking-wider flex items-center gap-1",
-        tone === "up" && "text-emerald-400",
-        tone === "down" && "text-rose-400",
-        highlight && "text-primary",
-      )}>
-        {icon}{label}
-      </span>
+      {Labeled}
       <span className="font-orbitron text-sm text-muted-foreground w-8">#{row.rank}</span>
       <RankBadge tier={tier.tier} size="sm" />
       <span className="flex-1 min-w-0 truncate text-sm font-semibold">{row.name}</span>
