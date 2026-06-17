@@ -27,6 +27,7 @@ import { Route as AppQuestsRouteImport } from './routes/app.quests'
 import { Route as AppPvpRouteImport } from './routes/app.pvp'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppPetsRouteImport } from './routes/app.pets'
+import { Route as AppPassesRouteImport } from './routes/app.passes'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
@@ -135,6 +136,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
 const AppPetsRoute = AppPetsRouteImport.update({
   id: '/pets',
   path: '/pets',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPassesRoute = AppPassesRouteImport.update({
+  id: '/passes',
+  path: '/passes',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNotesRoute = AppNotesRouteImport.update({
@@ -250,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
+  '/app/passes': typeof AppPassesRoute
   '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/pvp': typeof AppPvpRouteWithChildren
@@ -288,6 +295,7 @@ export interface FileRoutesByTo {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
+  '/app/passes': typeof AppPassesRoute
   '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/quests': typeof AppQuestsRoute
@@ -327,6 +335,7 @@ export interface FileRoutesById {
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
+  '/app/passes': typeof AppPassesRoute
   '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/pvp': typeof AppPvpRouteWithChildren
@@ -368,6 +377,7 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
+    | '/app/passes'
     | '/app/pets'
     | '/app/profile'
     | '/app/pvp'
@@ -406,6 +416,7 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
+    | '/app/passes'
     | '/app/pets'
     | '/app/profile'
     | '/app/quests'
@@ -444,6 +455,7 @@ export interface FileRouteTypes {
     | '/app/leaderboard'
     | '/app/lectures'
     | '/app/notes'
+    | '/app/passes'
     | '/app/pets'
     | '/app/profile'
     | '/app/pvp'
@@ -602,6 +614,13 @@ declare module '@tanstack/react-router' {
       path: '/pets'
       fullPath: '/app/pets'
       preLoaderRoute: typeof AppPetsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/passes': {
+      id: '/app/passes'
+      path: '/passes'
+      fullPath: '/app/passes'
+      preLoaderRoute: typeof AppPassesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/notes': {
@@ -790,6 +809,7 @@ interface AppRouteChildren {
   AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppLecturesRoute: typeof AppLecturesRoute
   AppNotesRoute: typeof AppNotesRoute
+  AppPassesRoute: typeof AppPassesRoute
   AppPetsRoute: typeof AppPetsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppPvpRoute: typeof AppPvpRouteWithChildren
@@ -819,6 +839,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppLeaderboardRoute: AppLeaderboardRoute,
   AppLecturesRoute: AppLecturesRoute,
   AppNotesRoute: AppNotesRoute,
+  AppPassesRoute: AppPassesRoute,
   AppPetsRoute: AppPetsRoute,
   AppProfileRoute: AppProfileRoute,
   AppPvpRoute: AppPvpRouteWithChildren,
