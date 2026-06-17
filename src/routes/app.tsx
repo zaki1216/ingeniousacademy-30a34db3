@@ -114,12 +114,12 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           </Link>
         );
       })}
-      {isStudent && (
+      {showSecondary && secondary.length > 0 && (
         <>
           <div className="pt-3 pb-1 px-3 text-[10px] font-orbitron font-bold tracking-widest text-muted-foreground uppercase">
             More
           </div>
-          {studentSecondaryNav.map((it) => {
+          {secondary.map((it) => {
             const active = path === it.to || path.startsWith(it.to + "/");
             const Icon = it.icon;
             return (
