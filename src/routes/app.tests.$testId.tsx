@@ -95,6 +95,24 @@ function TakeTestPage() {
               <div className="text-muted-foreground">
                 {result.score} / {result.total} marks
               </div>
+              <Button
+                onClick={handleClaim}
+                disabled={claiming || claimDone}
+                size="lg"
+                className={
+                  claimDone
+                    ? "w-full bg-emerald-600 hover:bg-emerald-600 text-white font-orbitron uppercase tracking-wider"
+                    : "w-full bg-amber-500 hover:bg-amber-400 text-amber-950 font-orbitron uppercase tracking-wider animate-pulse"
+                }
+              >
+                {claiming ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Claiming…</>
+                ) : claimDone ? (
+                  <><CheckCircle2 className="h-4 w-4 mr-2" /> Reward Claimed</>
+                ) : (
+                  <><Gift className="h-4 w-4 mr-2" /> Claim Battle Rewards</>
+                )}
+              </Button>
               <div className="flex gap-2 justify-center pt-2">
                 <Button asChild variant="outline"><Link to="/app/tests">Back to tests</Link></Button>
                 <Button asChild><Link to="/app/results">View all results</Link></Button>
