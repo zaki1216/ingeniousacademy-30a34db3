@@ -295,6 +295,50 @@ export type Database = {
           },
         ]
       }
+      pass_audit_log: {
+        Row: {
+          action: string
+          admin_user_id: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          new_status: string | null
+          pass_id: string
+          prev_status: string | null
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          new_status?: string | null
+          pass_id: string
+          prev_status?: string | null
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          new_status?: string | null
+          pass_id?: string
+          prev_status?: string | null
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pass_audit_log_pass_id_fkey"
+            columns: ["pass_id"]
+            isOneToOne: false
+            referencedRelation: "user_passes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
