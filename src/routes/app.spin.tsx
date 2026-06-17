@@ -47,7 +47,7 @@ function SpinPage() {
     setSpinning(true);
     setResult(null);
     try {
-      const res = await spin({});
+      const res = await spin();
       if (res.alreadyClaimed) {
         toast.error("You already spun today. Come back tomorrow!");
         await qc.invalidateQueries({ queryKey: ["spin-status"] });
