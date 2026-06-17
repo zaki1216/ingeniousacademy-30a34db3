@@ -89,6 +89,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { role } = useAuth();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const items = role === "admin" ? adminNav : studentNav;
+  const secondary = role === "admin" ? adminSecondaryNav : studentSecondaryNav;
+  const showSecondary = role === "admin" || role === "student";
   const isStudent = role === "student";
   return (
     <nav className="space-y-1">
