@@ -13,16 +13,18 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/shop")({ component: ShopPage });
 
-const RARITY: Record<string, { label: string; ring: string; chip: string }> = {
-  common: { label: "Common", ring: "ring-slate-400/40", chip: "bg-slate-700 text-slate-100" },
-  rare: { label: "Rare", ring: "ring-sky-400/60", chip: "bg-sky-600 text-sky-50" },
-  epic: { label: "Epic", ring: "ring-fuchsia-400/70", chip: "bg-fuchsia-600 text-white" },
-  legendary: { label: "Legendary", ring: "ring-amber-300/80", chip: "bg-amber-400 text-amber-950" },
+const RARITY: Record<string, { label: string; ring: string; chip: string; glow: string }> = {
+  common:    { label: "Common",    ring: "ring-slate-400/40",  chip: "bg-slate-700 text-slate-100",       glow: "" },
+  rare:      { label: "Rare",      ring: "ring-sky-400/60",    chip: "bg-sky-600 text-sky-50",            glow: "shadow-[0_0_18px_rgba(56,189,248,0.25)]" },
+  epic:      { label: "Epic",      ring: "ring-fuchsia-400/70",chip: "bg-fuchsia-600 text-white",         glow: "shadow-[0_0_22px_rgba(217,70,239,0.35)]" },
+  legendary: { label: "Legendary", ring: "ring-amber-300/80",  chip: "bg-amber-400 text-amber-950",       glow: "shadow-[0_0_28px_rgba(251,191,36,0.45)]" },
 };
+
+type ShopType = "avatar" | "frame" | "title" | "theme" | "name_color" | "badge" | "seasonal" | "shadow_skin" | "pet_skin" | "effect";
 
 type ShopItem = {
   id: string;
-  type: "avatar" | "frame" | "title";
+  type: ShopType;
   code: string;
   name: string;
   value: string;
@@ -30,6 +32,21 @@ type ShopItem = {
   rarity: keyof typeof RARITY;
   owned: boolean;
 };
+
+const EQUIPPABLE: ShopType[] = ["avatar", "frame", "title"];
+
+const CATEGORIES: { key: ShopType; label: string }[] = [
+  { key: "avatar",      label: "Avatars" },
+  { key: "frame",       label: "Frames" },
+  { key: "title",       label: "Titles" },
+  { key: "theme",       label: "Themes" },
+  { key: "name_color",  label: "Name Color" },
+  { key: "badge",       label: "Badges" },
+  { key: "seasonal",    label: "Seasonal" },
+  { key: "shadow_skin", label: "Shadows" },
+  { key: "pet_skin",    label: "Pet Skins" },
+  { key: "effect",      label: "Effects" },
+];
 
 function ShopPage() {
   const qc = useQueryClient();
@@ -48,7 +65,8 @@ function ShopPage() {
     if (!equipped) return false;
     if (it.type === "avatar") return equipped.avatar === it.value;
     if (it.type === "frame") return equipped.frame === it.value;
-    return equipped.title === it.value;
+    if (it.type === "title") return equipped.title === it.value;
+    return false;
   }
 
   async function buy(it: ShopItem) {
@@ -70,6 +88,10 @@ function ShopPage() {
   }
 
   async function equip(it: ShopItem) {
+    if (!EQUIPPABLE.includes(it.type)) {
+      toast.success(`${it.name} is in your collection`);
+      return;
+    }
     setPending(it.id);
     try {
       await equipFn({ data: { itemId: it.id } });
@@ -82,10 +104,6 @@ function ShopPage() {
       setPending(null);
     }
   }
-
-  const avatars = items.filter((i) => i.type === "avatar");
-  const frames = items.filter((i) => i.type === "frame");
-  const titles = items.filter((i) => i.type === "title");
 
   return (
     <div className="space-y-4">
@@ -102,59 +120,99 @@ function ShopPage() {
       </div>
 
       <Tabs defaultValue="avatar">
-        <TabsList className="grid grid-cols-3 w-full">
-          <TabsTrigger value="avatar">Avatars</TabsTrigger>
-          <TabsTrigger value="frame">Frames</TabsTrigger>
-          <TabsTrigger value="title">Titles</TabsTrigger>
+        <TabsList className="w-full flex overflow-x-auto no-scrollbar gap-1 justify-start">
+          {CATEGORIES.map((c) => (
+            <TabsTrigger key={c.key} value={c.key} className="text-xs shrink-0">
+              {c.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="avatar" className="mt-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {avatars.map((it) => (
-              <ItemCard key={it.id} item={it} equipped={isEquipped(it)} coins={coins} pending={pending === it.id} onBuy={() => buy(it)} onEquip={() => equip(it)}>
-                <div className={cn("h-24 rounded-xl flex items-center justify-center text-5xl bg-gradient-to-br from-white/10 to-white/5 ring-2", RARITY[it.rarity].ring)}>
-                  {it.value}
+        {CATEGORIES.map((c) => {
+          const list = items.filter((i) => i.type === c.key);
+          return (
+            <TabsContent key={c.key} value={c.key} className="mt-4">
+              {list.length === 0 ? (
+                <div className="rounded-2xl glass-card p-6 text-center text-sm text-muted-foreground">
+                  No {c.label.toLowerCase()} available yet — restock soon.
                 </div>
-              </ItemCard>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="frame" className="mt-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {frames.map((it) => (
-              <ItemCard key={it.id} item={it} equipped={isEquipped(it)} coins={coins} pending={pending === it.id} onBuy={() => buy(it)} onEquip={() => equip(it)}>
-                <div
-                  className={cn("h-24 rounded-xl p-[4px] flex items-center justify-center ring-2", RARITY[it.rarity].ring)}
-                  style={{ background: it.value }}
-                >
-                  <div className="h-full w-full rounded-lg bg-card flex items-center justify-center text-3xl">
-                    🧑‍🎓
-                  </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {list.map((it) => (
+                    <ItemCard
+                      key={it.id}
+                      item={it}
+                      equipped={isEquipped(it)}
+                      coins={coins}
+                      pending={pending === it.id}
+                      onBuy={() => buy(it)}
+                      onEquip={() => equip(it)}
+                    >
+                      <Preview item={it} />
+                    </ItemCard>
+                  ))}
                 </div>
-              </ItemCard>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="title" className="mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {titles.map((it) => (
-              <ItemCard key={it.id} item={it} equipped={isEquipped(it)} coins={coins} pending={pending === it.id} onBuy={() => buy(it)} onEquip={() => equip(it)} compact>
-                <div className={cn("h-16 rounded-xl flex items-center justify-center font-extrabold text-xl bg-gradient-to-br from-white/10 to-white/5 ring-2", RARITY[it.rarity].ring)}>
-                  <span className={cn(it.rarity === "legendary" && "shimmer-gold")}>{it.value}</span>
-                </div>
-              </ItemCard>
-            ))}
-          </div>
-        </TabsContent>
+              )}
+            </TabsContent>
+          );
+        })}
       </Tabs>
     </div>
   );
 }
 
+function Preview({ item: it }: { item: ShopItem }) {
+  const ring = RARITY[it.rarity].ring;
+  const glow = RARITY[it.rarity].glow;
+  const base = cn("h-24 rounded-xl flex items-center justify-center ring-2", ring, glow);
+
+  switch (it.type) {
+    case "avatar":
+      return <div className={cn(base, "text-5xl bg-gradient-to-br from-white/10 to-white/5")}>{it.value}</div>;
+    case "frame":
+      return (
+        <div className={cn(base, "p-[4px]")} style={{ background: it.value }}>
+          <div className="h-full w-full rounded-lg bg-card flex items-center justify-center text-3xl">🧑‍🎓</div>
+        </div>
+      );
+    case "title":
+      return (
+        <div className={cn(base, "font-extrabold text-xl bg-gradient-to-br from-white/10 to-white/5")}>
+          <span className={cn(it.rarity === "legendary" && "shimmer-gold")}>{it.value}</span>
+        </div>
+      );
+    case "theme":
+      return <div className={base} style={{ background: it.value }} />;
+    case "name_color": {
+      const isGradient = it.value.startsWith("linear-gradient");
+      return (
+        <div className={cn(base, "bg-gradient-to-br from-white/5 to-white/0")}>
+          <span
+            className="text-2xl font-extrabold bg-clip-text"
+            style={
+              isGradient
+                ? { backgroundImage: it.value, WebkitBackgroundClip: "text", color: "transparent" }
+                : { color: it.value }
+            }
+          >
+            Hunter
+          </span>
+        </div>
+      );
+    }
+    case "badge":
+    case "seasonal":
+    case "shadow_skin":
+    case "pet_skin":
+    case "effect":
+      return <div className={cn(base, "text-5xl bg-gradient-to-br from-white/10 to-white/5")}>{it.value}</div>;
+    default:
+      return <div className={base}>{it.value}</div>;
+  }
+}
+
 function ItemCard({
-  item, equipped, coins, pending, onBuy, onEquip, children, compact,
+  item, equipped, coins, pending, onBuy, onEquip, children,
 }: {
   item: ShopItem;
   equipped: boolean;
@@ -163,11 +221,11 @@ function ItemCard({
   onBuy: () => void;
   onEquip: () => void;
   children: React.ReactNode;
-  compact?: boolean;
 }) {
   const rarity = RARITY[item.rarity];
   const owned = item.owned || item.price_coins === 0;
   const canAfford = coins >= item.price_coins;
+  const equippable = EQUIPPABLE.includes(item.type);
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -188,15 +246,21 @@ function ItemCard({
           </div>
         )}
       </div>
-      <div className={cn("mt-2", compact && "mt-1.5")}>
+      <div className="mt-2">
         {equipped ? (
           <Button size="sm" disabled className="w-full bg-success/20 text-success border border-success/50">
             <Check className="h-3.5 w-3.5 mr-1" /> Equipped
           </Button>
         ) : owned ? (
-          <Button size="sm" onClick={onEquip} disabled={pending} className="w-full bg-[image:var(--gradient-primary)] font-bold">
-            <Sparkles className="h-3.5 w-3.5 mr-1" /> Equip
-          </Button>
+          equippable ? (
+            <Button size="sm" onClick={onEquip} disabled={pending} className="w-full bg-[image:var(--gradient-primary)] font-bold">
+              <Sparkles className="h-3.5 w-3.5 mr-1" /> Equip
+            </Button>
+          ) : (
+            <Button size="sm" disabled className="w-full bg-success/15 text-success border border-success/40">
+              <Check className="h-3.5 w-3.5 mr-1" /> Collected
+            </Button>
+          )
         ) : canAfford ? (
           <Button size="sm" onClick={onBuy} disabled={pending} className="w-full bg-[image:var(--gradient-gold)] text-amber-950 font-extrabold hover:opacity-90">
             Unlock

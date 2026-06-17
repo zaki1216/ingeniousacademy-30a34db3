@@ -4,7 +4,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard, Users, BookOpen, FileText, ClipboardList,
   Megaphone, BarChart3, LogOut, Menu, Settings, TrendingUp,
-  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye, Gauge, Target, MoreHorizontal, PawPrint, Backpack, Ticket,
+  Trophy, Coins, Award, Map, Swords, ShoppingBag, Home, User, Sparkles, CalendarCheck, Eye, Gauge, Target, MoreHorizontal, PawPrint, Backpack, Ticket, Gift,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,7 @@ const studentNav: NavItem[] = [
   { to: "/app/inventory", label: "Inventory", icon: Backpack },
   { to: "/app/passes", label: "Passes", icon: Ticket },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
+  { to: "/app/spin", label: "Spin Wheel", icon: Gift },
   { to: "/app/coins", label: "Treasury", icon: Coins },
 ];
 
