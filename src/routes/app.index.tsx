@@ -47,71 +47,7 @@ function Dashboard() {
 }
 
 function AdminDashboard() {
-  const stats = useQuery({
-    queryKey: ["admin-stats"],
-    queryFn: async () => {
-      const [students, active, lectures, notes, tests] = await Promise.all([
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
-        supabase.from("profiles").select("id", { count: "exact", head: true }).eq("is_active", true),
-        supabase.from("lectures").select("id", { count: "exact", head: true }),
-        supabase.from("notes").select("id", { count: "exact", head: true }),
-        supabase.from("tests").select("id", { count: "exact", head: true }),
-      ]);
-      return {
-        students: students.count ?? 0,
-        active: active.count ?? 0,
-        lectures: lectures.count ?? 0,
-        notes: notes.count ?? 0,
-        tests: tests.count ?? 0,
-      };
-    },
-  });
-
-  const announcements = useQuery({
-    queryKey: ["recent-announcements"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("announcements").select("id, title, message, created_at")
-        .order("created_at", { ascending: false }).limit(5);
-      return data ?? [];
-    },
-  });
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground text-sm mt-1">Manage students, content, tests and announcements.</p>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <StatCard icon={Users} label="Total students" value={stats.data?.students ?? "—"} />
-        <StatCard icon={GraduationCap} label="Active students" value={stats.data?.active ?? "—"} />
-        <StatCard icon={BookOpen} label="Lectures" value={stats.data?.lectures ?? "—"} />
-        <StatCard icon={FileText} label="Notes" value={stats.data?.notes ?? "—"} />
-        <StatCard icon={ClipboardList} label="Tests" value={stats.data?.tests ?? "—"} />
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Megaphone className="h-5 w-5 text-primary" /> Recent announcements
-          </CardTitle>
-          <CardDescription>Latest updates from your academy</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {announcements.data?.length === 0 && <p className="text-sm text-muted-foreground">No announcements yet.</p>}
-          {announcements.data?.map((a) => (
-            <div key={a.id} className="border-l-4 border-primary pl-3 py-1">
-              <div className="font-semibold text-sm">{a.title}</div>
-              <div className="text-sm text-muted-foreground">{a.message}</div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {new Date(a.created_at).toLocaleDateString()}
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-    </div>
-  );
+  return <AcademyCommandCenter />;
 }
 
 const QUICK_ACTIONS: { to: string; label: string; sub: string; icon: typeof Map; gradient: string }[] = [
