@@ -258,13 +258,14 @@ function AppLayout() {
           <div className="ml-auto md:hidden">
             {isStudent && (
               <Link
-                to="/app/settings"
+                to="/app/profile"
                 className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center text-foreground"
                 aria-label="Profile"
               >
                 <User className="h-4 w-4" />
               </Link>
             )}
+
           </div>
         </header>
         <main className={cn("flex-1 p-4 md:p-6 max-w-6xl w-full mx-auto", isStudent && "pb-24 md:pb-6")}>
