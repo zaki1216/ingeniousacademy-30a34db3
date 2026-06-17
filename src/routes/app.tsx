@@ -58,6 +58,7 @@ const studentNav: NavItem[] = [
   { to: "/app/inventory", label: "Inventory", icon: Backpack },
   { to: "/app/passes", label: "Passes", icon: Ticket },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
+  { to: "/app/spin", label: "Spin Wheel", icon: Gift },
   { to: "/app/coins", label: "Treasury", icon: Coins },
 ];
 
