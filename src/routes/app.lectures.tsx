@@ -78,10 +78,23 @@ function LecturesPage() {
     );
   }, [lectures.data, subjectId, search]);
 
-  const handleVideoEnded = useCallback(async () => {
+  const handleVideoEnded = useCallback(() => {
+    // Video finished — surface an explicit Claim button. Don't auto-award.
     if (!activeLecture) return;
+    if (completedSet.has(activeLecture.id)) {
+      setClaimDone(true);
+    } else {
+      setClaimReady(true);
+    }
+  }, [activeLecture, completedSet]);
+
+  const handleClaim = useCallback(async () => {
+    if (!activeLecture || claiming || claimDone) return;
+    setClaiming(true);
     try {
       const r = await completeFn({ data: { lectureId: activeLecture.id } });
+      setClaimDone(true);
+      setClaimReady(false);
       if (!r.alreadyCompleted) {
         setFloating({ xp: r.xpAwarded, coins: r.coinsAwarded, label: "Lecture", key: Date.now() });
         setReward({ ...r, title: "Lecture complete!" });
@@ -90,8 +103,17 @@ function LecturesPage() {
       }
     } catch {
       /* silent */
+    } finally {
+      setClaiming(false);
     }
-  }, [activeLecture, completeFn, qc]);
+  }, [activeLecture, claiming, claimDone, completeFn, qc]);
+
+  const openLecture = useCallback((l: { id: string; url: string; title: string }) => {
+    setActiveLecture(l);
+    setClaimReady(false);
+    setClaiming(false);
+    setClaimDone(completedSet.has(l.id));
+  }, [completedSet]);
 
   if (!standardId) {
     return (
