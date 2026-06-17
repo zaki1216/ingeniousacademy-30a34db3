@@ -44,6 +44,7 @@ const adminNav: NavItem[] = [
 // Student "hero" nav — game terminology
 const studentNav: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
+  { to: "/app/profile", label: "Profile", icon: User },
   { to: "/app/worlds", label: "Worlds", icon: Map },
   { to: "/app/quests", label: "Quests", icon: Target },
   { to: "/app/lectures", label: "Missions", icon: BookOpen },
@@ -53,19 +54,24 @@ const studentNav: NavItem[] = [
   { to: "/app/achievements", label: "Badges", icon: Award },
   { to: "/app/talents", label: "Talents", icon: Sparkles },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/coins", label: "Coins", icon: Coins },
+  { to: "/app/coins", label: "Treasury", icon: Coins },
+];
+
+// Secondary menu — less-used screens, decluttered from primary nav
+const studentSecondaryNav: NavItem[] = [
   { to: "/app/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/notes", label: "Scrolls", icon: FileText },
   { to: "/app/announcements", label: "News", icon: Megaphone },
+  { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
 // Mobile bottom tab bar for students — the 5 most-used
 const studentBottomTabs: NavItem[] = [
   { to: "/app", label: "Home", icon: Home, end: true },
   { to: "/app/worlds", label: "Worlds", icon: Map },
-  { to: "/app/tests", label: "Battles", icon: Swords },
+  { to: "/app/quests", label: "Quests", icon: Target },
   { to: "/app/leaderboard", label: "Rank", icon: Trophy },
-  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
+  { to: "/app/profile", label: "Hero", icon: User },
 ];
 
 
