@@ -16,6 +16,7 @@ import { DailyChestCard } from "@/components/gamification/DailyChestCard";
 import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
 import { getGamificationDashboard, dailyCheckIn } from "@/lib/api/gamification.functions";
 import { getDailyObjectives } from "@/lib/api/rpg-collection.functions";
+import { adminGetCommandCenterOverview } from "@/lib/api/admin-rewards.functions";
 import { nextRank } from "@/lib/rpg/ranks";
 import { getIcon } from "@/lib/gamification/icons";
 
