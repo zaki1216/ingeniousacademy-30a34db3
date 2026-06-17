@@ -45,14 +45,14 @@ function ProfilePage() {
         supabase.from("results").select("id, percentage, test:tests(is_boss)").eq("student_id", user!.id),
         supabase.from("user_achievements").select("id", { count: "exact", head: true }).eq("user_id", user!.id),
         supabase.from("attendance").select("status").eq("student_id", user!.id),
-        supabase.from("pvp_duels").select("id, winner_user_id").or(`player1_id.eq.${user!.id},player2_id.eq.${user!.id}`),
+        supabase.from("pvp_duels").select("id, winner_id").or(`player1_id.eq.${user!.id},player2_id.eq.${user!.id}`),
       ]);
       const resultRows = (results.data ?? []) as { percentage: number; test: { is_boss: boolean } | null }[];
       const attRows = (att.data ?? []) as { status: string }[];
       const present = attRows.filter((r) => r.status === "present").length;
       const total = attRows.length;
-      const arenaRows = (arenaW.data ?? []) as { winner_user_id: string | null }[];
-      const wins = arenaRows.filter((r) => r.winner_user_id === user!.id).length;
+      const arenaRows = (arenaW.data ?? []) as { winner_id: string | null }[];
+      const wins = arenaRows.filter((r) => r.winner_id === user!.id).length;
       return {
         lectures: vc.count ?? 0,
         quizzes: resultRows.length,
