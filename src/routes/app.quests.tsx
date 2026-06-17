@@ -2,15 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { Flame, Sparkles, Trophy, Zap, CalendarDays, BookOpen, Crown, Lock } from "lucide-react";
+import { Flame, Sparkles, Trophy, Zap, CalendarDays, BookOpen, Crown, Lock, Coins, Check } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { getDailyQuestsAndStreak } from "@/lib/api/quests.functions";
 import { cn } from "@/lib/utils";
+import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 
 export const Route = createFileRoute("/app/quests")({ component: QuestsPage });
 
