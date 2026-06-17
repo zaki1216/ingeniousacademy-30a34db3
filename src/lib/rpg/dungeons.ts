@@ -5,6 +5,17 @@ import { rankFromLevel } from "./ranks";
 
 export type DungeonDifficulty = "Trivial" | "Normal" | "Hard" | "Elite" | "Nightmare";
 
+export type ShadowStatus = {
+  /** True when the shadow is currently available to be awakened by the player. */
+  unlocked: boolean;
+  /** Short label e.g. "Dungeon Shadow". */
+  name: string;
+  /** Plain-English unlock requirement, always present so cards can show progress. */
+  requirement: string;
+  /** Progress toward unlock 0–1, useful for progress bars on the card. */
+  progress: number;
+};
+
 export type DungeonMeta = {
   name: string;            // "Algebra Dungeon", "Geometry Fortress"
   suffix: string;          // "Dungeon" | "Fortress" | ...
@@ -14,7 +25,7 @@ export type DungeonMeta = {
   rewardXp: number;
   rewardCoins: number;
   bossAvailable: boolean;
-  shadowUnlock: string | null;
+  shadow: ShadowStatus;
 };
 
 const SUFFIX_POOL: { keys: string[]; suffix: string; emoji: string }[] = [
