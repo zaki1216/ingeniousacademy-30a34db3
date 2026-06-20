@@ -1624,24 +1624,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_lecture_unlock_state: {
-        Args: { _user_id: string }
-        Returns: {
-          best_score: number
-          chapter_id: string
-          lecture_id: string
-          lecture_number: number
-          passing_marks: number
-          prev_lecture_id: string
-          prev_passing_marks: number
-          prev_total_marks: number
-          quiz_passed: boolean
-          subject_id: string
-          test_id: string
-          total_marks: number
-          unlocked: boolean
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       app_role: "admin" | "student"
