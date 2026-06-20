@@ -49,7 +49,7 @@ function AdminLectureQuizzes() {
 }
 
 function QuizzesTab() {
-  const standards = useQuery({ queryKey: ["std-all"], queryFn: async () => (await supabase.from("standards").select("id, standard_name").order("standard_name")).data ?? [] });
+  const standards = useQuery({ queryKey: ["std-all"], queryFn: async () => (await supabase.from("standards").select("id, name").order("name")).data ?? [] });
   const [standardId, setStandardId] = useState<string | null>(null);
   const subjects = useQuery({
     queryKey: ["subj-by-std", standardId],
@@ -79,7 +79,7 @@ function QuizzesTab() {
       <Card><CardContent className="p-3 grid sm:grid-cols-3 gap-2">
         <Select value={standardId ?? ""} onValueChange={(v) => { setStandardId(v); setSubjectId(null); setChapterId(null); }}>
           <SelectTrigger><SelectValue placeholder="Standard" /></SelectTrigger>
-          <SelectContent>{standards.data?.map((s) => <SelectItem key={s.id} value={s.id}>{s.standard_name}</SelectItem>)}</SelectContent>
+          <SelectContent>{standards.data?.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
         </Select>
         <Select value={subjectId ?? ""} onValueChange={(v) => { setSubjectId(v); setChapterId(null); }} disabled={!standardId}>
           <SelectTrigger><SelectValue placeholder="Subject" /></SelectTrigger>
@@ -294,7 +294,7 @@ function EditQuestionsDialog({ testId, lectureTitle, onClose, onSaved }: { testI
 }
 
 function ProgressTab() {
-  const standards = useQuery({ queryKey: ["std-all-p"], queryFn: async () => (await supabase.from("standards").select("id, standard_name").order("standard_name")).data ?? [] });
+  const standards = useQuery({ queryKey: ["std-all-p"], queryFn: async () => (await supabase.from("standards").select("id, name").order("name")).data ?? [] });
   const [standardId, setStandardId] = useState<string | null>(null);
   const getProgress = useServerFn(adminGetStudentProgress);
   const setUnlock = useServerFn(adminSetManualUnlock);
@@ -334,7 +334,7 @@ function ProgressTab() {
     <>
       <Select value={standardId ?? ""} onValueChange={setStandardId}>
         <SelectTrigger><SelectValue placeholder="Standard" /></SelectTrigger>
-        <SelectContent>{standards.data?.map((s) => <SelectItem key={s.id} value={s.id}>{s.standard_name}</SelectItem>)}</SelectContent>
+        <SelectContent>{standards.data?.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
       </Select>
 
       {data.data && (
