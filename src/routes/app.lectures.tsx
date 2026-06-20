@@ -64,7 +64,8 @@ function LecturesPage() {
     queryFn: () => progressFn(),
   });
   const stateById = useMemo(() => {
-    const m = new Map<string, (typeof progress.data)["states"][number]>();
+    type S = NonNullable<typeof progress.data>["states"][number];
+    const m = new Map<string, S>();
     for (const s of progress.data?.states ?? []) m.set(s.lecture_id, s);
     return m;
   }, [progress.data]);
@@ -114,7 +115,8 @@ function LecturesPage() {
   }, [lectures.data, subjectId, search]);
 
   const chapterAggById = useMemo(() => {
-    const m = new Map<string, (typeof progress.data)["chapters"][number]>();
+    type C = NonNullable<typeof progress.data>["chapters"][number];
+    const m = new Map<string, C>();
     for (const c of progress.data?.chapters ?? []) m.set(c.chapter_id, c);
     return m;
   }, [progress.data]);
