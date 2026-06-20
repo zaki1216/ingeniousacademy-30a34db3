@@ -16,7 +16,6 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppWorldsRouteImport } from './routes/app.worlds'
 import { Route as AppTestsRouteImport } from './routes/app.tests'
 import { Route as AppTalentsRouteImport } from './routes/app.talents'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
@@ -25,13 +24,11 @@ import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppResultsRouteImport } from './routes/app.results'
 import { Route as AppReportCardRouteImport } from './routes/app.report-card'
-import { Route as AppQuestsRouteImport } from './routes/app.quests'
 import { Route as AppPvpRouteImport } from './routes/app.pvp'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppPetsRouteImport } from './routes/app.pets'
 import { Route as AppPassesRouteImport } from './routes/app.passes'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
-import { Route as AppLecturesRouteImport } from './routes/app.lectures'
 import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
 import { Route as AppJourneyRouteImport } from './routes/app.journey'
 import { Route as AppInventoryRouteImport } from './routes/app.inventory'
@@ -96,11 +93,6 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppWorldsRoute = AppWorldsRouteImport.update({
-  id: '/worlds',
-  path: '/worlds',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppTestsRoute = AppTestsRouteImport.update({
   id: '/tests',
   path: '/tests',
@@ -141,11 +133,6 @@ const AppReportCardRoute = AppReportCardRouteImport.update({
   path: '/report-card',
   getParentRoute: () => AppRoute,
 } as any)
-const AppQuestsRoute = AppQuestsRouteImport.update({
-  id: '/quests',
-  path: '/quests',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppPvpRoute = AppPvpRouteImport.update({
   id: '/pvp',
   path: '/pvp',
@@ -169,11 +156,6 @@ const AppPassesRoute = AppPassesRouteImport.update({
 const AppNotesRoute = AppNotesRouteImport.update({
   id: '/notes',
   path: '/notes',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppLecturesRoute = AppLecturesRouteImport.update({
-  id: '/lectures',
-  path: '/lectures',
   getParentRoute: () => AppRoute,
 } as any)
 const AppLeaderboardRoute = AppLeaderboardRouteImport.update({
@@ -334,13 +316,11 @@ export interface FileRoutesByFullPath {
   '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
-  '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/passes': typeof AppPassesRoute
   '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/pvp': typeof AppPvpRouteWithChildren
-  '/app/quests': typeof AppQuestsRoute
   '/app/report-card': typeof AppReportCardRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -349,7 +329,6 @@ export interface FileRoutesByFullPath {
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
-  '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
@@ -386,12 +365,10 @@ export interface FileRoutesByTo {
   '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
-  '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/passes': typeof AppPassesRoute
   '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
-  '/app/quests': typeof AppQuestsRoute
   '/app/report-card': typeof AppReportCardRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -400,7 +377,6 @@ export interface FileRoutesByTo {
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
-  '/app/worlds': typeof AppWorldsRoute
   '/app': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
@@ -439,13 +415,11 @@ export interface FileRoutesById {
   '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
-  '/app/lectures': typeof AppLecturesRoute
   '/app/notes': typeof AppNotesRoute
   '/app/passes': typeof AppPassesRoute
   '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/pvp': typeof AppPvpRouteWithChildren
-  '/app/quests': typeof AppQuestsRoute
   '/app/report-card': typeof AppReportCardRoute
   '/app/results': typeof AppResultsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -454,7 +428,6 @@ export interface FileRoutesById {
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
-  '/app/worlds': typeof AppWorldsRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
@@ -494,13 +467,11 @@ export interface FileRouteTypes {
     | '/app/inventory'
     | '/app/journey'
     | '/app/leaderboard'
-    | '/app/lectures'
     | '/app/notes'
     | '/app/passes'
     | '/app/pets'
     | '/app/profile'
     | '/app/pvp'
-    | '/app/quests'
     | '/app/report-card'
     | '/app/results'
     | '/app/settings'
@@ -509,7 +480,6 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
-    | '/app/worlds'
     | '/app/'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
@@ -546,12 +516,10 @@ export interface FileRouteTypes {
     | '/app/inventory'
     | '/app/journey'
     | '/app/leaderboard'
-    | '/app/lectures'
     | '/app/notes'
     | '/app/passes'
     | '/app/pets'
     | '/app/profile'
-    | '/app/quests'
     | '/app/report-card'
     | '/app/results'
     | '/app/settings'
@@ -560,7 +528,6 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
-    | '/app/worlds'
     | '/app'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
@@ -598,13 +565,11 @@ export interface FileRouteTypes {
     | '/app/inventory'
     | '/app/journey'
     | '/app/leaderboard'
-    | '/app/lectures'
     | '/app/notes'
     | '/app/passes'
     | '/app/pets'
     | '/app/profile'
     | '/app/pvp'
-    | '/app/quests'
     | '/app/report-card'
     | '/app/results'
     | '/app/settings'
@@ -613,7 +578,6 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
-    | '/app/worlds'
     | '/app/'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
@@ -695,13 +659,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/worlds': {
-      id: '/app/worlds'
-      path: '/worlds'
-      fullPath: '/app/worlds'
-      preLoaderRoute: typeof AppWorldsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/tests': {
       id: '/app/tests'
       path: '/tests'
@@ -758,13 +715,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppReportCardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/quests': {
-      id: '/app/quests'
-      path: '/quests'
-      fullPath: '/app/quests'
-      preLoaderRoute: typeof AppQuestsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/pvp': {
       id: '/app/pvp'
       path: '/pvp'
@@ -798,13 +748,6 @@ declare module '@tanstack/react-router' {
       path: '/notes'
       fullPath: '/app/notes'
       preLoaderRoute: typeof AppNotesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/lectures': {
-      id: '/app/lectures'
-      path: '/lectures'
-      fullPath: '/app/lectures'
-      preLoaderRoute: typeof AppLecturesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/leaderboard': {
@@ -1056,13 +999,11 @@ interface AppRouteChildren {
   AppInventoryRoute: typeof AppInventoryRoute
   AppJourneyRoute: typeof AppJourneyRoute
   AppLeaderboardRoute: typeof AppLeaderboardRoute
-  AppLecturesRoute: typeof AppLecturesRoute
   AppNotesRoute: typeof AppNotesRoute
   AppPassesRoute: typeof AppPassesRoute
   AppPetsRoute: typeof AppPetsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppPvpRoute: typeof AppPvpRouteWithChildren
-  AppQuestsRoute: typeof AppQuestsRoute
   AppReportCardRoute: typeof AppReportCardRoute
   AppResultsRoute: typeof AppResultsRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -1071,7 +1012,6 @@ interface AppRouteChildren {
   AppStudentsRoute: typeof AppStudentsRoute
   AppTalentsRoute: typeof AppTalentsRoute
   AppTestsRoute: typeof AppTestsRouteWithChildren
-  AppWorldsRoute: typeof AppWorldsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminAssessmentRoute: typeof AppAdminAssessmentRoute
   AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
@@ -1099,13 +1039,11 @@ const AppRouteChildren: AppRouteChildren = {
   AppInventoryRoute: AppInventoryRoute,
   AppJourneyRoute: AppJourneyRoute,
   AppLeaderboardRoute: AppLeaderboardRoute,
-  AppLecturesRoute: AppLecturesRoute,
   AppNotesRoute: AppNotesRoute,
   AppPassesRoute: AppPassesRoute,
   AppPetsRoute: AppPetsRoute,
   AppProfileRoute: AppProfileRoute,
   AppPvpRoute: AppPvpRouteWithChildren,
-  AppQuestsRoute: AppQuestsRoute,
   AppReportCardRoute: AppReportCardRoute,
   AppResultsRoute: AppResultsRoute,
   AppSettingsRoute: AppSettingsRoute,
@@ -1114,7 +1052,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppStudentsRoute: AppStudentsRoute,
   AppTalentsRoute: AppTalentsRoute,
   AppTestsRoute: AppTestsRouteWithChildren,
-  AppWorldsRoute: AppWorldsRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminAssessmentRoute: AppAdminAssessmentRoute,
   AppAdminAttendanceRoute: AppAdminAttendanceRoute,
@@ -1144,13 +1081,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
