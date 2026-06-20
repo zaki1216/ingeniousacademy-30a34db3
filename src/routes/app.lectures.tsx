@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useMemo, useState } from "react";
-import { Search, PlayCircle, CheckCircle2, Gift, Loader2, BrainCircuit, Coins } from "lucide-react";
+import { Search, PlayCircle, CheckCircle2, Gift, Loader2, BrainCircuit, Coins, Lock, Trophy, XCircle, Timer } from "lucide-react";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
@@ -17,6 +18,7 @@ import { RewardPopup, type RewardPayload } from "@/components/gamification/Rewar
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 import { completeVideo } from "@/lib/api/gamification.functions";
 import { getQuizForLecture, submitLectureQuiz } from "@/lib/api/lecture-quiz.functions";
+import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/lectures")({ component: LecturesPage });
@@ -25,6 +27,7 @@ function LecturesPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const completeFn = useServerFn(completeVideo);
+  const progressFn = useServerFn(getLectureProgress);
 
   const [search, setSearch] = useState("");
   const [subjectId, setSubjectId] = useState("all");
@@ -55,6 +58,18 @@ function LecturesPage() {
   });
   const completedSet = useMemo(() => new Set((completions.data ?? []).map((c) => c.lecture_id)), [completions.data]);
 
+  const progress = useQuery({
+    queryKey: ["lecture-progress", user?.id],
+    enabled: !!user?.id,
+    queryFn: () => progressFn(),
+  });
+  const stateById = useMemo(() => {
+    type S = NonNullable<typeof progress.data>["states"][number];
+    const m = new Map<string, S>();
+    for (const s of progress.data?.states ?? []) m.set(s.lecture_id, s);
+    return m;
+  }, [progress.data]);
+
   const lectures = useQuery({
     queryKey: ["lectures-flat", standardId],
     enabled: !!standardId,
@@ -72,23 +87,44 @@ function LecturesPage() {
     },
   });
 
-  const filtered = useMemo(() => {
-    return (lectures.data ?? []).filter((l) =>
+  // Group lectures by subject → chapter, sorted
+  const grouped = useMemo(() => {
+    const all = (lectures.data ?? []).filter((l) =>
       (subjectId === "all" || l.subject_id === subjectId) &&
       (search === "" ||
         l.lecture_title.toLowerCase().includes(search.toLowerCase()) ||
         l.chapter_name?.toLowerCase().includes(search.toLowerCase())),
     );
+    const map = new Map<string, { chapter_id: string; chapter_name: string; chapter_number: number; subject_name: string; lectures: typeof all }>();
+    for (const l of all) {
+      const key = `${l.subject_id}::${l.chapter_id}`;
+      const entry = map.get(key) ?? {
+        chapter_id: l.chapter_id,
+        chapter_name: l.chapter_name ?? "",
+        chapter_number: l.chapter_number ?? 0,
+        subject_name: l.subject_name ?? "",
+        lectures: [] as typeof all,
+      };
+      entry.lectures.push(l);
+      map.set(key, entry);
+    }
+    const arr = Array.from(map.values());
+    arr.forEach((g) => g.lectures.sort((a, b) => a.lecture_number - b.lecture_number));
+    arr.sort((a, b) => a.subject_name.localeCompare(b.subject_name) || a.chapter_number - b.chapter_number);
+    return arr;
   }, [lectures.data, subjectId, search]);
 
+  const chapterAggById = useMemo(() => {
+    type C = NonNullable<typeof progress.data>["chapters"][number];
+    const m = new Map<string, C>();
+    for (const c of progress.data?.chapters ?? []) m.set(c.chapter_id, c);
+    return m;
+  }, [progress.data]);
+
   const handleVideoEnded = useCallback(() => {
-    // Video finished — surface an explicit Claim button. Don't auto-award.
     if (!activeLecture) return;
-    if (completedSet.has(activeLecture.id)) {
-      setClaimDone(true);
-    } else {
-      setClaimReady(true);
-    }
+    if (completedSet.has(activeLecture.id)) setClaimDone(true);
+    else setClaimReady(true);
   }, [activeLecture, completedSet]);
 
   const handleClaim = useCallback(async () => {
@@ -111,12 +147,20 @@ function LecturesPage() {
     }
   }, [activeLecture, claiming, claimDone, completeFn, qc]);
 
-  const openLecture = useCallback((l: { id: string; url: string; title: string }) => {
-    setActiveLecture(l);
-    setClaimReady(false);
-    setClaiming(false);
-    setClaimDone(completedSet.has(l.id));
-  }, [completedSet]);
+  const openLecture = useCallback(
+    (l: { id: string; url: string; title: string }) => {
+      const st = stateById.get(l.id);
+      if (st && !st.unlocked) {
+        toast.error("Locked", { description: `Pass Lecture ${st.prev_lecture_number ?? ""} quiz first.` });
+        return;
+      }
+      setActiveLecture(l);
+      setClaimReady(false);
+      setClaiming(false);
+      setClaimDone(completedSet.has(l.id));
+    },
+    [completedSet, stateById],
+  );
 
   if (!standardId) {
     return (
@@ -133,7 +177,7 @@ function LecturesPage() {
       <FloatingReward reward={floating} />
       <div>
         <h1 className="text-2xl font-bold">Lectures</h1>
-        <p className="text-sm text-muted-foreground">{filtered.length} videos · Watch fully to earn XP</p>
+        <p className="text-sm text-muted-foreground">Watch in order — pass each quiz to unlock the next lecture</p>
       </div>
 
       {activeLecture && (
@@ -164,7 +208,12 @@ function LecturesPage() {
                 )}
               </Button>
             )}
-            <LectureQuizPanel lectureId={activeLecture.id} />
+            <LectureQuizPanel
+              lectureId={activeLecture.id}
+              onResult={() => {
+                qc.invalidateQueries({ queryKey: ["lecture-progress"] });
+              }}
+            />
           </CardContent>
         </Card>
       )}
@@ -183,27 +232,83 @@ function LecturesPage() {
         </Select>
       </div>
 
-      <div className="space-y-2">
-        {filtered.map((l) => {
-          const done = completedSet.has(l.id);
+      <div className="space-y-4">
+        {grouped.map((g) => {
+          const agg = chapterAggById.get(g.chapter_id);
           return (
-            <Card key={l.id} className="cursor-pointer hover:bg-accent/30 transition" onClick={() => openLecture({ id: l.id, url: l.youtube_url, title: l.lecture_title })}>
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className={`h-12 w-12 rounded-lg flex items-center justify-center shrink-0 ${done ? "bg-green-500/15 text-green-600" : "bg-primary/10 text-primary"}`}>
-                  {done ? <CheckCircle2 className="h-6 w-6" /> : <PlayCircle className="h-6 w-6" />}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="font-medium truncate">L {l.lecture_number}. {l.lecture_title}</div>
-                  <div className="text-xs text-muted-foreground truncate">
-                    {l.subject_name} · Ch {l.chapter_number}. {l.chapter_name}
+            <div key={g.chapter_id} className="space-y-2">
+              <Card className="bg-muted/30">
+                <CardContent className="p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="text-xs text-muted-foreground">{g.subject_name}</div>
+                      <div className="font-semibold truncate">Ch {g.chapter_number}. {g.chapter_name}</div>
+                    </div>
+                    {agg && (
+                      <div className="text-right text-xs shrink-0">
+                        <div className="font-bold">{agg.passed}/{agg.total}</div>
+                        <div className="text-muted-foreground">{agg.percent}%</div>
+                      </div>
+                    )}
                   </div>
-                </div>
-                {done && <span className="text-[10px] font-semibold text-green-600 uppercase">+50 XP</span>}
-              </CardContent>
-            </Card>
+                  {agg && <Progress value={agg.percent} className="h-1.5" />}
+                  {agg?.next_to_unlock && (
+                    <div className="text-xs text-muted-foreground">
+                      Next: Lecture {agg.next_to_unlock.lecture_number}
+                    </div>
+                  )}
+                  {agg && agg.passed === agg.total && agg.total > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-emerald-600 font-semibold">
+                      <Trophy className="h-3.5 w-3.5" /> Chapter complete · Boss battle unlocked
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {g.lectures.map((l) => {
+                const done = completedSet.has(l.id);
+                const st = stateById.get(l.id);
+                const locked = st ? !st.unlocked : false;
+                return (
+                  <Card
+                    key={l.id}
+                    className={cn(
+                      "transition",
+                      locked ? "opacity-60" : "cursor-pointer hover:bg-accent/30",
+                    )}
+                    onClick={() => !locked && openLecture({ id: l.id, url: l.youtube_url, title: l.lecture_title })}
+                  >
+                    <CardContent className="p-3 flex items-center gap-3">
+                      <div className={cn(
+                        "h-12 w-12 rounded-lg flex items-center justify-center shrink-0",
+                        locked ? "bg-muted text-muted-foreground" : done ? "bg-green-500/15 text-green-600" : "bg-primary/10 text-primary",
+                      )}>
+                        {locked ? <Lock className="h-6 w-6" /> : done ? <CheckCircle2 className="h-6 w-6" /> : <PlayCircle className="h-6 w-6" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium truncate">L {l.lecture_number}. {l.lecture_title}</div>
+                        {locked ? (
+                          <div className="text-xs text-muted-foreground truncate">
+                            Pass Lecture {st?.prev_lecture_number} quiz
+                            {st && st.prev_passing_marks > 0 && st.prev_total_marks > 0
+                              ? ` (${st.prev_passing_marks}/${st.prev_total_marks})`
+                              : ""} to unlock
+                          </div>
+                        ) : (
+                          <div className="text-xs text-muted-foreground truncate">
+                            {st?.quiz_passed ? "Quiz passed ✓" : st?.test_id ? `Quiz: ${st.passing_marks}/${st.total_marks} to pass` : "Watch to earn XP"}
+                          </div>
+                        )}
+                      </div>
+                      {!locked && done && <span className="text-[10px] font-semibold text-green-600 uppercase">+50 XP</span>}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           );
         })}
-        {filtered.length === 0 && (
+        {grouped.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">No lectures found.</p>
         )}
       </div>
@@ -211,7 +316,7 @@ function LecturesPage() {
   );
 }
 
-function LectureQuizPanel({ lectureId }: { lectureId: string }) {
+function LectureQuizPanel({ lectureId, onResult }: { lectureId: string; onResult?: () => void }) {
   const qc = useQueryClient();
   const getQuiz = useServerFn(getQuizForLecture);
   const submit = useServerFn(submitLectureQuiz);
@@ -223,7 +328,7 @@ function LectureQuizPanel({ lectureId }: { lectureId: string }) {
 
   const [open, setOpen] = useState(false);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [result, setResult] = useState<{ correct: number; total: number; coinsAwarded: number } | null>(null);
+  const [result, setResult] = useState<Awaited<ReturnType<typeof submit>> | null>(null);
   const [busy, setBusy] = useState(false);
 
   const test = quiz.data?.test;
@@ -241,12 +346,11 @@ function LectureQuizPanel({ lectureId }: { lectureId: string }) {
     try {
       const r = await submit({ data: { testId: test.id, answers } });
       setResult(r);
-      if (r.coinsAwarded > 0) {
-        toast.success(`+${r.coinsAwarded} coins · ${r.correct}/${r.total} correct`);
-        qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
-      } else {
-        toast.message(`${r.correct}/${r.total} correct · try again for coins`);
-      }
+      if (r.passed) toast.success(`PASS · +${r.coinsAwarded} coins · next lecture unlocked`);
+      else toast.error(`FAIL · ${r.score}/${r.totalMarks} (need ${r.passingMarks})`);
+      qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
+      qc.invalidateQueries({ queryKey: ["lecture-quiz", lectureId] });
+      onResult?.();
     } catch (e: any) {
       toast.error(e?.message ?? "Failed");
     } finally {
@@ -256,6 +360,10 @@ function LectureQuizPanel({ lectureId }: { lectureId: string }) {
 
   if (!test) return null;
 
+  const passingMarks = (test as any).passing_marks ?? 0;
+  const mpq = (test as any).marks_per_question ?? 1;
+  const timeLimit = (test as any).time_limit_seconds as number | null | undefined;
+
   return (
     <>
       <Button
@@ -264,7 +372,7 @@ function LectureQuizPanel({ lectureId }: { lectureId: string }) {
         onClick={start}
       >
         <BrainCircuit className="h-4 w-4 mr-2 text-cyan-400" />
-        Revision Quiz · Earn 1 coin per correct answer
+        Lecture Quiz · {passingMarks > 0 ? `Pass ${passingMarks}/${test.total_marks ?? questions.length * mpq} to unlock next` : "Practice"}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -274,21 +382,43 @@ function LectureQuizPanel({ lectureId }: { lectureId: string }) {
               <BrainCircuit className="h-5 w-5 text-cyan-400" /> {test.title}
             </DialogTitle>
             <p className="text-xs text-muted-foreground">
-              Revision only · {questions.length} questions · Does not affect your report card
+              {questions.length} questions · {mpq} mark{mpq === 1 ? "" : "s"} each · Pass {passingMarks}/{test.total_marks ?? questions.length * mpq}
+              {timeLimit ? <> · <Timer className="h-3 w-3 inline" /> {Math.round(timeLimit / 60)} min</> : null}
             </p>
+            {quiz.data?.bestScore != null && quiz.data.bestScore > 0 && (
+              <p className="text-xs text-muted-foreground">Best so far: {quiz.data.bestScore}</p>
+            )}
           </DialogHeader>
 
           {result ? (
             <div className="space-y-3 py-4 text-center">
+              <div className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold", result.passed ? "bg-emerald-500/15 text-emerald-500" : "bg-red-500/15 text-red-500")}>
+                {result.passed ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                {result.passed ? "PASS" : "FAIL"}
+              </div>
               <div className="text-4xl font-extrabold font-orbitron">
                 {result.correct}/{result.total}
               </div>
-              <div className="flex items-center justify-center gap-2 text-amber-400 font-bold">
-                <Coins className="h-5 w-5" /> +{result.coinsAwarded} coins earned
+              <div className="text-sm text-muted-foreground">
+                Score {result.score}/{result.totalMarks} · need {result.passingMarks}
               </div>
-              <p className="text-xs text-muted-foreground">
-                Replay anytime to earn more coins.
-              </p>
+              <div className="flex items-center justify-center gap-2 text-amber-400 font-bold">
+                <Coins className="h-5 w-5" /> +{result.coinsAwarded} coins
+              </div>
+              {result.passed ? (
+                result.nextLectureUnlocked ? (
+                  <p className="text-xs text-emerald-500 font-medium">Next lecture unlocked</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Chapter complete!</p>
+                )
+              ) : (
+                <p className="text-xs text-muted-foreground">Next lecture stays locked · retry to unlock</p>
+              )}
+              {result.chapterCompleted && (
+                <div className="flex items-center justify-center gap-1 text-sm text-amber-500 font-bold">
+                  <Trophy className="h-4 w-4" /> Chapter complete · +{result.chapterCompleted.xp} XP · +{result.chapterCompleted.coins} coins
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
@@ -323,7 +453,9 @@ function LectureQuizPanel({ lectureId }: { lectureId: string }) {
 
           <DialogFooter>
             {result ? (
-              <Button onClick={() => { setResult(null); setAnswers({}); }} variant="outline">Replay</Button>
+              <Button onClick={() => { setResult(null); setAnswers({}); }} variant="outline">
+                {result.passed ? "Replay" : "Retry Quiz"}
+              </Button>
             ) : (
               <Button
                 onClick={send}

@@ -118,10 +118,47 @@ export type Database = {
           },
         ]
       }
+      chapter_completions: {
+        Row: {
+          chapter_id: string
+          coins_awarded: number
+          completed_at: string
+          id: string
+          user_id: string
+          xp_awarded: number
+        }
+        Insert: {
+          chapter_id: string
+          coins_awarded?: number
+          completed_at?: string
+          id?: string
+          user_id: string
+          xp_awarded?: number
+        }
+        Update: {
+          chapter_id?: string
+          coins_awarded?: number
+          completed_at?: string
+          id?: string
+          user_id?: string
+          xp_awarded?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chapter_completions_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chapters: {
         Row: {
           chapter_name: string
           chapter_number: number
+          completion_coins: number
+          completion_xp: number
           created_at: string
           description: string | null
           id: string
@@ -130,6 +167,8 @@ export type Database = {
         Insert: {
           chapter_name: string
           chapter_number?: number
+          completion_coins?: number
+          completion_xp?: number
           created_at?: string
           description?: string | null
           id?: string
@@ -138,6 +177,8 @@ export type Database = {
         Update: {
           chapter_name?: string
           chapter_number?: number
+          completion_coins?: number
+          completion_xp?: number
           created_at?: string
           description?: string | null
           id?: string
@@ -292,6 +333,41 @@ export type Database = {
             columns: ["chapter_id"]
             isOneToOne: false
             referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      manual_unlocks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          lecture_id: string
+          unlocked: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lecture_id: string
+          unlocked?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lecture_id?: string
+          unlocked?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manual_unlocks_lecture_id_fkey"
+            columns: ["lecture_id"]
+            isOneToOne: false
+            referencedRelation: "lectures"
             referencedColumns: ["id"]
           },
         ]
@@ -1193,6 +1269,9 @@ export type Database = {
           is_boss: boolean
           kind: string
           lecture_id: string | null
+          marks_per_question: number
+          passing_marks: number
+          time_limit_seconds: number | null
           title: string
           total_marks: number
         }
@@ -1203,6 +1282,9 @@ export type Database = {
           is_boss?: boolean
           kind?: string
           lecture_id?: string | null
+          marks_per_question?: number
+          passing_marks?: number
+          time_limit_seconds?: number | null
           title: string
           total_marks?: number
         }
@@ -1213,6 +1295,9 @@ export type Database = {
           is_boss?: boolean
           kind?: string
           lecture_id?: string | null
+          marks_per_question?: number
+          passing_marks?: number
+          time_limit_seconds?: number | null
           title?: string
           total_marks?: number
         }

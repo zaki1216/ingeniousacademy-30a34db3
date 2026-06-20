@@ -51,6 +51,7 @@ import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.setting
 import { Route as AppAdminPassesRouteImport } from './routes/app.admin.passes'
 import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
+import { Route as AppAdminLectureQuizzesRouteImport } from './routes/app.admin.lecture-quizzes'
 import { Route as AppAdminGamificationRouteImport } from './routes/app.admin.gamification'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
 import { Route as AppAdminContentRouteImport } from './routes/app.admin.content'
@@ -270,6 +271,11 @@ const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
   path: '/admin/lecture-views',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminLectureQuizzesRoute = AppAdminLectureQuizzesRouteImport.update({
+  id: '/admin/lecture-quizzes',
+  path: '/admin/lecture-quizzes',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminGamificationRoute = AppAdminGamificationRouteImport.update({
   id: '/admin/gamification',
   path: '/admin/gamification',
@@ -350,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
+  '/app/admin/lecture-quizzes': typeof AppAdminLectureQuizzesRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
@@ -400,6 +407,7 @@ export interface FileRoutesByTo {
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
+  '/app/admin/lecture-quizzes': typeof AppAdminLectureQuizzesRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
@@ -453,6 +461,7 @@ export interface FileRoutesById {
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
+  '/app/admin/lecture-quizzes': typeof AppAdminLectureQuizzesRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
@@ -507,6 +516,7 @@ export interface FileRouteTypes {
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
+    | '/app/admin/lecture-quizzes'
     | '/app/admin/lecture-views'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
@@ -557,6 +567,7 @@ export interface FileRouteTypes {
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
+    | '/app/admin/lecture-quizzes'
     | '/app/admin/lecture-views'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
@@ -609,6 +620,7 @@ export interface FileRouteTypes {
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
+    | '/app/admin/lecture-quizzes'
     | '/app/admin/lecture-views'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
@@ -928,6 +940,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminLectureViewsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/lecture-quizzes': {
+      id: '/app/admin/lecture-quizzes'
+      path: '/admin/lecture-quizzes'
+      fullPath: '/app/admin/lecture-quizzes'
+      preLoaderRoute: typeof AppAdminLectureQuizzesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/gamification': {
       id: '/app/admin/gamification'
       path: '/admin/gamification'
@@ -1059,6 +1078,7 @@ interface AppRouteChildren {
   AppAdminContentRoute: typeof AppAdminContentRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminGamificationRoute: typeof AppAdminGamificationRoute
+  AppAdminLectureQuizzesRoute: typeof AppAdminLectureQuizzesRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminOfflineTestsRoute: typeof AppAdminOfflineTestsRoute
   AppAdminPassesRoute: typeof AppAdminPassesRoute
@@ -1101,6 +1121,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminContentRoute: AppAdminContentRoute,
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminGamificationRoute: AppAdminGamificationRoute,
+  AppAdminLectureQuizzesRoute: AppAdminLectureQuizzesRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminOfflineTestsRoute: AppAdminOfflineTestsRoute,
   AppAdminPassesRoute: AppAdminPassesRoute,
@@ -1123,13 +1144,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
