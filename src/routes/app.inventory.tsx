@@ -284,17 +284,17 @@ function InventoryPage() {
           icon={<Key className="h-5 w-5" />}
           title="No keys collected"
           body="Defeat dungeon bosses to claim shadow keys."
-          to="/app/worlds"
-          cta="Enter Worlds"
+          to="/app/journey"
+          cta="Enter Journey"
         />
       )}
       {active === "shadows" && (
         <ComingSoon
           icon={<Ghost className="h-5 w-5" />}
           title="Shadow Army"
-          body="Awakened shadows from cleared dungeons appear here. Visit a dungeon's boss to begin extraction."
-          to="/app/worlds"
-          cta="View Dungeons"
+          body="Awakened shadows from cleared dungeons appear here. Defeat a chapter boss in your Journey to begin extraction."
+          to="/app/journey"
+          cta="Enter Journey"
         />
       )}
     </div>
