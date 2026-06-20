@@ -7,7 +7,7 @@ import { ChevronRight, ChevronLeft, Castle, Crown, Swords } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 
-export const Route = createFileRoute("/app/journey/$worldId")({ component: WorldPage });
+export const Route = createFileRoute("/app/journey/$worldId/")({ component: WorldPage });
 
 const DUNGEON_THEMES = [
   { emoji: "🗡️", grad: "from-rose-500 to-red-800" },
