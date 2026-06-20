@@ -98,8 +98,11 @@ async function computeUnlockState(userId: string) {
       if (manual === true) unlocked = true;
       else if (manual === false) unlocked = false;
       else if (!prev) unlocked = true;
-      else if (!prevTest || (prevTest.passing_marks ?? 0) === 0) unlocked = true;
-      else {
+      else if (!prevTest || (prevTest.passing_marks ?? 0) === 0) {
+        // Strict gate: without a configured prev quiz, the next quest stays locked.
+        // Admin must publish a quiz (or grant manual unlock) to progress.
+        unlocked = false;
+      } else {
         const prevBest = bestByLecture.get(prev.id) ?? 0;
         unlocked = prevBest >= (prevTest.passing_marks ?? 0);
       }
