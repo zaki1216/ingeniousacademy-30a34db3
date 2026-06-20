@@ -11,7 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { checkSetupNeeded } from "@/lib/api/academy.functions";
 
 export const Route = createFileRoute("/login")({
+  ssr: false,
   beforeLoad: async () => {
+    if (typeof window === "undefined") return;
     const { data } = await supabase.auth.getSession();
     if (data.session) throw redirect({ to: "/app" });
     const status = await checkSetupNeeded();
