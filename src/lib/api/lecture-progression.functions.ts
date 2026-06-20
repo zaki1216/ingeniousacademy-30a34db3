@@ -63,10 +63,11 @@ async function computeUnlockState(userId: string) {
   // best score per lecture
   const bestByLecture = new Map<string, number>();
   for (const a of attemptsRes.data ?? []) {
-    const mpq = (a.test_id && tests.find((t) => t.id === a.test_id)?.marks_per_question) ?? 1;
+    const mpq: number = a.test_id ? (tests.find((t) => t.id === a.test_id)?.marks_per_question ?? 1) : 1;
     const score = (a.correct_count ?? 0) * mpq;
-    const prev = bestByLecture.get(a.lecture_id ?? "") ?? 0;
-    if (score > prev) bestByLecture.set(a.lecture_id ?? "", score);
+    const lid = a.lecture_id ?? "";
+    const prev = bestByLecture.get(lid) ?? 0;
+    if (score > prev) bestByLecture.set(lid, score);
   }
 
   const manualMap = new Map<string, boolean>();
