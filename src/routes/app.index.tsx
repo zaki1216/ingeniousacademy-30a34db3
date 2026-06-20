@@ -140,7 +140,7 @@ function StudentDashboard({ userId }: { userId?: string }) {
           <h2 className="font-extrabold flex items-center gap-2">
             <Target className="h-4 w-4 text-amber-300" /> Today's Quests
           </h2>
-          <Link to="/app/quests" className="text-xs font-bold text-primary-glow">All quests →</Link>
+          <Link to="/app/journey" className="text-xs font-bold text-primary-glow">All quests →</Link>
         </div>
         <div className="space-y-2.5">
           {(objectives.data?.objectives ?? []).map((o) => {
@@ -234,7 +234,7 @@ function StudentDashboard({ userId }: { userId?: string }) {
             <h2 className="font-extrabold flex items-center gap-2">
               <Map className="h-4 w-4 text-primary-glow" /> Your Worlds
             </h2>
-            <Link to="/app/worlds" className="text-xs font-bold text-primary-glow">View all →</Link>
+            <Link to="/app/journey" className="text-xs font-bold text-primary-glow">View all →</Link>
           </div>
           <div className="space-y-3">
             {dash.data?.subjectProgress.slice(0, 4).map((s) => {
