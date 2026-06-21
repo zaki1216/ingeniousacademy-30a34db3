@@ -68,7 +68,8 @@ export const submitLectureQuiz = createServerFn({ method: "POST" })
     if (tErr || !test) throw new Error("Quiz not found");
     if (test.kind !== "lecture_quiz") throw new Error("Not a lecture quiz");
 
-    const { data: questions } = await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: questions } = await supabaseAdmin
       .from("questions")
       .select("id, correct_option")
       .eq("test_id", data.testId);
