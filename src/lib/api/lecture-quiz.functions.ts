@@ -22,7 +22,9 @@ export const getQuizForLecture = createServerFn({ method: "POST" })
         bestScore: 0,
         attempts: 0,
       };
-    const { data: qs } = await supabase
+    // Use admin client and project ONLY safe columns — never expose correct_option to clients.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: qs } = await supabaseAdmin
       .from("questions")
       .select("id, question_text, options, question_order")
       .eq("test_id", test.id)
