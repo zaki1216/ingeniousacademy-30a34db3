@@ -97,7 +97,6 @@ export const submitLectureQuiz = createServerFn({ method: "POST" })
     });
     if (aErr) throw aErr;
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (coins > 0) {
       await supabaseAdmin.from("coin_transactions").insert({
