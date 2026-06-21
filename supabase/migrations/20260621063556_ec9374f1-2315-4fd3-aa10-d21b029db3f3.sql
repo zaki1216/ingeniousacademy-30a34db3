@@ -1,0 +1,1 @@
+CREATE POLICY questions_select_authenticated ON public.questions FOR SELECT TO authenticated USING (true);
