@@ -22,7 +22,9 @@ export const getQuizForLecture = createServerFn({ method: "POST" })
         bestScore: 0,
         attempts: 0,
       };
-    const { data: qs } = await supabase
+    // Use admin client and project ONLY safe columns — never expose correct_option to clients.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: qs } = await supabaseAdmin
       .from("questions")
       .select("id, question_text, options, question_order")
       .eq("test_id", test.id)
@@ -66,7 +68,8 @@ export const submitLectureQuiz = createServerFn({ method: "POST" })
     if (tErr || !test) throw new Error("Quiz not found");
     if (test.kind !== "lecture_quiz") throw new Error("Not a lecture quiz");
 
-    const { data: questions } = await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: questions } = await supabaseAdmin
       .from("questions")
       .select("id, correct_option")
       .eq("test_id", data.testId);
@@ -94,7 +97,6 @@ export const submitLectureQuiz = createServerFn({ method: "POST" })
     });
     if (aErr) throw aErr;
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (coins > 0) {
       await supabaseAdmin.from("coin_transactions").insert({
