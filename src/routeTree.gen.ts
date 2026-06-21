@@ -47,6 +47,7 @@ import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
 import { Route as AppAdminSpinRouteImport } from './routes/app.admin.spin'
 import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.settings'
+import { Route as AppAdminQuizImportRouteImport } from './routes/app.admin.quiz-import'
 import { Route as AppAdminPassesRouteImport } from './routes/app.admin.passes'
 import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
@@ -252,6 +253,11 @@ const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
   path: '/admin/settings',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminQuizImportRoute = AppAdminQuizImportRouteImport.update({
+  id: '/admin/quiz-import',
+  path: '/admin/quiz-import',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminPassesRoute = AppAdminPassesRouteImport.update({
   id: '/admin/passes',
   path: '/admin/passes',
@@ -365,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/quiz-import': typeof AppAdminQuizImportRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
@@ -416,6 +423,7 @@ export interface FileRoutesByTo {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/quiz-import': typeof AppAdminQuizImportRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
@@ -471,6 +479,7 @@ export interface FileRoutesById {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
+  '/app/admin/quiz-import': typeof AppAdminQuizImportRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
@@ -527,6 +536,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
+    | '/app/admin/quiz-import'
     | '/app/admin/settings'
     | '/app/admin/spin'
     | '/app/admin/talents'
@@ -578,6 +588,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
+    | '/app/admin/quiz-import'
     | '/app/admin/settings'
     | '/app/admin/spin'
     | '/app/admin/talents'
@@ -632,6 +643,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
+    | '/app/admin/quiz-import'
     | '/app/admin/settings'
     | '/app/admin/spin'
     | '/app/admin/talents'
@@ -924,6 +936,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminSettingsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/quiz-import': {
+      id: '/app/admin/quiz-import'
+      path: '/admin/quiz-import'
+      fullPath: '/app/admin/quiz-import'
+      preLoaderRoute: typeof AppAdminQuizImportRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/passes': {
       id: '/app/admin/passes'
       path: '/admin/passes'
@@ -1114,6 +1133,7 @@ interface AppRouteChildren {
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminOfflineTestsRoute: typeof AppAdminOfflineTestsRoute
   AppAdminPassesRoute: typeof AppAdminPassesRoute
+  AppAdminQuizImportRoute: typeof AppAdminQuizImportRoute
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppAdminSpinRoute: typeof AppAdminSpinRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
@@ -1154,6 +1174,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminOfflineTestsRoute: AppAdminOfflineTestsRoute,
   AppAdminPassesRoute: AppAdminPassesRoute,
+  AppAdminQuizImportRoute: AppAdminQuizImportRoute,
   AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppAdminSpinRoute: AppAdminSpinRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
