@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, FileText, Eye, Upload, ListChecks } from "lucide-react";
+import { BookOpen, FileText, Eye, Upload, ListChecks, FileSpreadsheet } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth/AuthContext";
 
@@ -9,6 +9,7 @@ const tiles = [
   { to: "/app/content", label: "Content Library", desc: "Subjects, chapters, lectures", icon: BookOpen },
   { to: "/app/notes", label: "Notes", desc: "Manage downloadable notes", icon: FileText },
   { to: "/app/admin/lecture-quizzes", label: "Lecture Quizzes", desc: "Unlock rules, quizzes, progress", icon: ListChecks },
+  { to: "/app/admin/quiz-import", label: "Quiz Import", desc: "Bulk upload from XLSX / CSV", icon: FileSpreadsheet },
   { to: "/app/admin/lecture-views", label: "Lecture Views", desc: "Engagement & analytics", icon: Eye },
   { to: "/app/content", label: "Upload Content", desc: "Add new lectures & material", icon: Upload },
 ];
