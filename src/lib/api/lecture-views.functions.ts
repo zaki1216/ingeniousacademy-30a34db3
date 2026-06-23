@@ -62,8 +62,8 @@ export const adminGetLectureWatchers = createServerFn({ method: "POST" })
 
     const ids = (views ?? []).map((v) => v.user_id);
     const { data: profiles } = ids.length
-      ? await supabaseAdmin.from("profiles").select("id, name, email").in("id", ids)
-      : { data: [] as { id: string; name: string | null; email: string | null }[] };
+      ? await supabaseAdmin.from("profiles").select("id, name, email, standard_id").in("id", ids)
+      : { data: [] as { id: string; name: string | null; email: string | null; standard_id: string | null }[] };
 
     const rows = (views ?? []).map((v) => {
       const p = profiles?.find((p) => p.id === v.user_id);
@@ -71,6 +71,7 @@ export const adminGetLectureWatchers = createServerFn({ method: "POST" })
         user_id: v.user_id,
         name: p?.name ?? "—",
         email: p?.email ?? "",
+        standard_id: p?.standard_id ?? null,
         watch_count: v.watch_count ?? 1,
         last_watched_at: v.last_watched_at ?? v.completed_at,
         first_completed_at: v.completed_at,
