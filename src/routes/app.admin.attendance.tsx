@@ -82,7 +82,7 @@ function Page() {
     try {
       await markFn({ data: { studentId, date, status } });
       toast.success(`Marked ${status}`);
-      qc.invalidateQueries({ queryKey: ["att-list", date] });
+      qc.invalidateQueries({ queryKey: ["att-list"] });
       qc.invalidateQueries({ queryKey: ["att-hist"] });
     } catch (e) {
       toast.error((e as Error).message);
@@ -93,12 +93,13 @@ function Page() {
     try {
       const res = await resetFn({ data: { date, ...(studentId ? { studentId } : {}) } });
       toast.success(`Reset ${res.cleared ?? 0} record${res.cleared === 1 ? "" : "s"} • coins reverted`);
-      qc.invalidateQueries({ queryKey: ["att-list", date] });
+      qc.invalidateQueries({ queryKey: ["att-list"] });
       qc.invalidateQueries({ queryKey: ["att-hist"] });
     } catch (e) {
       toast.error((e as Error).message);
     }
   }
+
 
 
   return (
