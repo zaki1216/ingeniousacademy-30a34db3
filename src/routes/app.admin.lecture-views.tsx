@@ -16,6 +16,8 @@ import {
   adminGetLectureWatchers,
   adminListStudentsForViews,
   adminGetStudentWatchHistory,
+  adminListStandardsForViews,
+  adminListLectureViewStatsByStandard,
 } from "@/lib/api/lecture-views.functions";
 
 export const Route = createFileRoute("/app/admin/lecture-views")({ component: Page });
