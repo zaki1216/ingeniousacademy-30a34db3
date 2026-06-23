@@ -120,6 +120,20 @@ function Page() {
         </TabsList>
 
         <TabsContent value="mark" className="space-y-4">
+          {standards.data && standards.data.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              {standards.data.map((s) => (
+                <Button
+                  key={s.id}
+                  size="sm"
+                  variant={standardId === s.id ? "default" : "outline"}
+                  onClick={() => setStandardId(s.id)}
+                >
+                  {s.name}
+                </Button>
+              ))}
+            </div>
+          )}
           <div className="flex items-center gap-3 flex-wrap">
             <label className="text-sm font-medium">Date</label>
             <Input type="date" value={date} max={today} onChange={(e) => setDate(e.target.value)} className="w-48" />
