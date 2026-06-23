@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Sparkles, Ticket, Gift, Award, Crown, CalendarRange } from "lucide-react";
+import { Sparkles, Ticket, Gift, Award, Crown, CalendarRange, CalendarCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 export const Route = createFileRoute("/app/admin/gamification")({ component: GamificationHub });
 
 const tiles = [
+  { to: "/app/admin/attendance", label: "Attendance", desc: "Mark present/absent (+1 / −1 coin)", icon: CalendarCheck },
   { to: "/app/admin/talents", label: "Talents", desc: "Tier costs & multipliers", icon: Sparkles },
   { to: "/app/admin/passes", label: "Pass Approvals", desc: "Review pending requests", icon: Ticket },
   { to: "/app/admin/spin", label: "Spin Wheel", desc: "Prize weights & rewards", icon: Gift },
