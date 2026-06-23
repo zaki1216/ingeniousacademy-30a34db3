@@ -246,3 +246,151 @@ function ByStudent() {
     </div>
   );
 }
+
+/* ---------------- By Standard ---------------- */
+
+function ByStandard() {
+  const standardsFn = useServerFn(adminListStandardsForViews);
+  const listFn = useServerFn(adminListLectureViewStatsByStandard);
+  const watchersFn = useServerFn(adminGetLectureWatchers);
+  const [standardId, setStandardId] = useState<string>("");
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<{ id: string; title: string } | null>(null);
+
+  const standards = useQuery({ queryKey: ["adm-lv-standards"], queryFn: () => standardsFn() });
+  const list = useQuery({
+    queryKey: ["adm-lv-by-std", standardId],
+    enabled: !!standardId,
+    queryFn: () => listFn({ data: { standardId } }),
+  });
+  const watchers = useQuery({
+    queryKey: ["adm-lv-by-std-watchers", selected?.id, standardId],
+    enabled: !!selected && !!standardId,
+    queryFn: () => watchersFn({ data: { lectureId: selected!.id } }),
+  });
+
+  const filteredLectures = useMemo(() => {
+    const rows = list.data?.rows ?? [];
+    const base = rows.filter((r) => r.viewers > 0);
+    if (!search) return base;
+    const q = search.toLowerCase();
+    return base.filter(
+      (r) =>
+        r.lecture_title.toLowerCase().includes(q) ||
+        r.chapter_name?.toLowerCase().includes(q) ||
+        r.subject_name?.toLowerCase().includes(q),
+    );
+  }, [list.data, search]);
+
+  const filteredWatchers = useMemo(() => {
+    const rows = watchers.data?.rows ?? [];
+    return rows.filter((r) =>
+      standardId === "others" ? !r.standard_id : r.standard_id === standardId,
+    );
+  }, [watchers.data, standardId]);
+
+  return (
+    <div className="space-y-3">
+      <Select value={standardId} onValueChange={(v) => { setStandardId(v); setSelected(null); }}>
+        <SelectTrigger><SelectValue placeholder="Select a standard" /></SelectTrigger>
+        <SelectContent>
+          {standards.data?.standards.map((s) => (
+            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+          ))}
+          <SelectItem value="others">Others (no standard)</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {!standardId && (
+        <p className="text-sm text-muted-foreground text-center py-6">Pick a standard to see lecture views.</p>
+      )}
+
+      {standardId && selected && (
+        <div className="space-y-3">
+          <Button variant="ghost" size="sm" onClick={() => setSelected(null)}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back to lectures
+          </Button>
+          <Card>
+            <CardContent className="p-3">
+              <div className="font-semibold">{selected.title}</div>
+              <div className="text-xs text-muted-foreground">
+                {filteredWatchers.length} student{filteredWatchers.length === 1 ? "" : "s"} watched
+              </div>
+            </CardContent>
+          </Card>
+          {watchers.isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+          {filteredWatchers.length === 0 && !watchers.isLoading && (
+            <p className="text-sm text-muted-foreground text-center py-6">No students from this standard have watched yet.</p>
+          )}
+          <div className="space-y-2">
+            {filteredWatchers.map((r) => (
+              <Card key={r.user_id}>
+                <CardContent className="p-3 flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <UserIcon className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{r.name}</div>
+                    <div className="text-xs text-muted-foreground truncate">{r.email}</div>
+                    <div className="text-[11px] text-muted-foreground mt-0.5">
+                      Last watched {new Date(r.last_watched_at).toLocaleString()}
+                    </div>
+                  </div>
+                  <Badge variant="default" className="shrink-0">{r.watch_count}× watched</Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {standardId && !selected && (
+        <>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search lectures, chapters, subjects…"
+              className="pl-9"
+            />
+          </div>
+          {list.isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+          {filteredLectures.length === 0 && !list.isLoading && (
+            <p className="text-sm text-muted-foreground text-center py-6">No lecture views yet for this standard.</p>
+          )}
+          <div className="space-y-2">
+            {filteredLectures.map((l) => (
+              <Card
+                key={l.id}
+                className="cursor-pointer hover:bg-accent/30 transition"
+                onClick={() => setSelected({ id: l.id, title: l.lecture_title })}
+              >
+                <CardContent className="p-3 flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                    <PlayCircle className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium truncate">L {l.lecture_number}. {l.lecture_title}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {l.subject_name ?? "—"}
+                      {l.chapter_name ? ` · Ch ${l.chapter_number}. ${l.chapter_name}` : ""}
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="flex items-center gap-1 text-sm font-semibold">
+                      <Users className="h-3.5 w-3.5" /> {l.viewers}
+                    </div>
+                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {l.totalWatches} watch{l.totalWatches === 1 ? "" : "es"}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
