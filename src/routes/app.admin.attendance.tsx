@@ -23,7 +23,7 @@ import {
 export const Route = createFileRoute("/app/admin/attendance")({ component: Page });
 
 function Page() {
-  const { role } = useAuth();
+  const { role, loading, session } = useAuth();
   const qc = useQueryClient();
   const today = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(today);
@@ -55,6 +55,10 @@ function Page() {
       unmarked: s.filter((x) => x.status === null).length,
     };
   }, [list.data]);
+
+  if (loading || (session && role === null)) {
+    return <p className="text-sm text-muted-foreground">Loading…</p>;
+  }
 
   if (role !== "admin") {
     return <p className="text-sm text-muted-foreground">Admin only.</p>;
