@@ -142,3 +142,63 @@ export const adminListStudentsForViews = createServerFn({ method: "GET" })
       .from("profiles").select("id, name, email").in("id", ids).order("name");
     return { students: profiles ?? [] };
   });
+
+// List standards (for filter UI)
+export const adminListStandardsForViews = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { data } = await supabaseAdmin.from("standards").select("id, name").order("display_order");
+    return { standards: data ?? [] };
+  });
+
+// Per-standard: lecture view stats limited to users whose profile.standard_id matches.
+// Pass standardId = "others" to include users with null/unknown standard.
+export const adminListLectureViewStatsByStandard = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ standardId: z.string() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+
+    const [{ data: lectures }, { data: subjects }, { data: chapters }, { data: views }, { data: profiles }] = await Promise.all([
+      supabaseAdmin.from("lectures").select("id, lecture_title, lecture_number, chapter_id").order("lecture_number"),
+      supabaseAdmin.from("subjects").select("id, subject_name"),
+      supabaseAdmin.from("chapters").select("id, chapter_name, chapter_number, subject_id"),
+      supabaseAdmin.from("video_completions").select("lecture_id, user_id, watch_count"),
+      supabaseAdmin.from("profiles").select("id, standard_id"),
+    ]);
+
+    const stdByUser = new Map<string, string | null>();
+    for (const p of profiles ?? []) stdByUser.set(p.id, p.standard_id ?? null);
+
+    const matches = (uid: string) => {
+      const sid = stdByUser.get(uid) ?? null;
+      return data.standardId === "others" ? !sid : sid === data.standardId;
+    };
+
+    const agg = new Map<string, { viewers: number; totalWatches: number }>();
+    for (const v of views ?? []) {
+      if (!matches(v.user_id)) continue;
+      const cur = agg.get(v.lecture_id) ?? { viewers: 0, totalWatches: 0 };
+      cur.viewers += 1;
+      cur.totalWatches += v.watch_count ?? 1;
+      agg.set(v.lecture_id, cur);
+    }
+
+    const rows = (lectures ?? []).map((l) => {
+      const ch = (chapters ?? []).find((c) => c.id === l.chapter_id);
+      const sub = (subjects ?? []).find((s) => s.id === ch?.subject_id);
+      const a = agg.get(l.id) ?? { viewers: 0, totalWatches: 0 };
+      return {
+        id: l.id,
+        lecture_number: l.lecture_number,
+        lecture_title: l.lecture_title,
+        chapter_name: ch?.chapter_name ?? null,
+        chapter_number: ch?.chapter_number ?? null,
+        subject_name: sub?.subject_name ?? null,
+        viewers: a.viewers,
+        totalWatches: a.totalWatches,
+      };
+    });
+    return { rows };
+  });
