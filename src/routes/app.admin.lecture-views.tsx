@@ -41,9 +41,11 @@ function Page() {
         <TabsList>
           <TabsTrigger value="by-lecture">By Lecture</TabsTrigger>
           <TabsTrigger value="by-student">By Student</TabsTrigger>
+          <TabsTrigger value="by-standard">By Standard</TabsTrigger>
         </TabsList>
         <TabsContent value="by-lecture"><ByLecture /></TabsContent>
         <TabsContent value="by-student"><ByStudent /></TabsContent>
+        <TabsContent value="by-standard"><ByStandard /></TabsContent>
       </Tabs>
     </div>
   );
