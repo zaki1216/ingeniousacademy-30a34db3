@@ -15,6 +15,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import {
   getAttendanceForDate, markAttendance, getAttendanceHistory, resetAttendance,
 } from "@/lib/api/attendance.functions";
@@ -27,17 +28,29 @@ function Page() {
   const qc = useQueryClient();
   const today = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(today);
+  const [standardId, setStandardId] = useState<string | null>(null);
 
   const listFn = useServerFn(getAttendanceForDate);
   const markFn = useServerFn(markAttendance);
   const histFn = useServerFn(getAttendanceHistory);
   const resetFn = useServerFn(resetAttendance);
 
+  const standards = useQuery({
+    queryKey: ["att-standards"],
+    queryFn: async () =>
+      (await supabase.from("standards").select("id, name").order("display_order")).data ?? [],
+    enabled: role === "admin",
+  });
+
+  // Default to first standard once loaded
+  if (standardId === null && standards.data && standards.data.length > 0) {
+    setStandardId(standards.data[0].id);
+  }
 
   const list = useQuery({
-    queryKey: ["att-list", date],
-    queryFn: () => listFn({ data: { date } }),
-    enabled: role === "admin",
+    queryKey: ["att-list", date, standardId],
+    queryFn: () => listFn({ data: { date, standardId: standardId ?? undefined } }),
+    enabled: role === "admin" && !!standardId,
   });
 
   const hist = useQuery({
@@ -45,6 +58,7 @@ function Page() {
     queryFn: () => histFn({ data: { days: 30 } }),
     enabled: role === "admin",
   });
+
 
   const stats = useMemo(() => {
     const s = list.data?.students ?? [];
