@@ -197,3 +197,155 @@ export const adminGetCommandCenterOverview = createServerFn({ method: "GET" })
       recentResultsCount: recentResults.data?.length ?? 0,
     };
   });
+
+// ---- Student quiz history ----
+export const adminGetStudentQuizHistory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ userId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const [attemptsRes, resultsRes] = await Promise.all([
+      supabaseAdmin
+        .from("quiz_attempts")
+        .select("id, test_id, lecture_id, correct_count, total_questions, coins_awarded, created_at")
+        .eq("student_id", data.userId)
+        .order("created_at", { ascending: false }),
+      supabaseAdmin
+        .from("results")
+        .select("id, test_id, score, total_marks, percentage, attempt_date")
+        .eq("student_id", data.userId)
+        .order("attempt_date", { ascending: false }),
+    ]);
+
+    const attempts = attemptsRes.data ?? [];
+    const results = resultsRes.data ?? [];
+
+    const testIds = Array.from(new Set([
+      ...attempts.map((a) => a.test_id),
+      ...results.map((r) => r.test_id),
+    ]));
+    const lectureIds = Array.from(new Set(attempts.map((a) => a.lecture_id).filter(Boolean) as string[]));
+
+    const [testsRes, lecturesRes] = await Promise.all([
+      testIds.length
+        ? supabaseAdmin.from("tests").select("id, title, kind, passing_marks, marks_per_question, total_marks, chapter_id, lecture_id").in("id", testIds)
+        : Promise.resolve({ data: [] as any[] }),
+      lectureIds.length
+        ? supabaseAdmin.from("lectures").select("id, title, chapter_id").in("id", lectureIds)
+        : Promise.resolve({ data: [] as any[] }),
+    ]);
+    const tests = testsRes.data ?? [];
+    const lectures = lecturesRes.data ?? [];
+
+    const chapterIds = Array.from(new Set([
+      ...tests.map((t: any) => t.chapter_id).filter(Boolean),
+      ...lectures.map((l: any) => l.chapter_id).filter(Boolean),
+    ]));
+    const chaptersRes = chapterIds.length
+      ? await supabaseAdmin.from("chapters").select("id, title, subject_id").in("id", chapterIds)
+      : { data: [] as any[] };
+    const chapters = chaptersRes.data ?? [];
+
+    const subjectIds = Array.from(new Set(chapters.map((c: any) => c.subject_id).filter(Boolean)));
+    const subjectsRes = subjectIds.length
+      ? await supabaseAdmin.from("subjects").select("id, name").in("id", subjectIds)
+      : { data: [] as any[] };
+    const subjects = subjectsRes.data ?? [];
+
+    const testById = new Map(tests.map((t: any) => [t.id, t]));
+    const lectureById = new Map(lectures.map((l: any) => [l.id, l]));
+    const chapterById = new Map(chapters.map((c: any) => [c.id, c]));
+    const subjectById = new Map(subjects.map((s: any) => [s.id, s]));
+
+    function lookupContext(testId: string, lectureId: string | null) {
+      const t: any = testById.get(testId);
+      const lec: any = lectureId ? lectureById.get(lectureId) : (t?.lecture_id ? lectureById.get(t.lecture_id) : null);
+      const chapId = lec?.chapter_id ?? t?.chapter_id;
+      const chap: any = chapId ? chapterById.get(chapId) : null;
+      const subj: any = chap?.subject_id ? subjectById.get(chap.subject_id) : null;
+      return {
+        testTitle: t?.title ?? "Quiz",
+        kind: t?.kind ?? "test",
+        lectureTitle: lec?.title ?? null,
+        chapterTitle: chap?.title ?? null,
+        subjectName: subj?.name ?? null,
+      };
+    }
+
+    type Row = {
+      type: "lecture_quiz" | "test";
+      testId: string;
+      testTitle: string;
+      kind: string;
+      lectureTitle: string | null;
+      chapterTitle: string | null;
+      subjectName: string | null;
+      attempts: Array<{
+        id: string;
+        date: string;
+        score: number;
+        totalMarks: number;
+        percentage: number;
+        passed: boolean | null;
+        passingMarks: number | null;
+        coinsAwarded?: number;
+      }>;
+    };
+
+    const rowsByTest = new Map<string, Row>();
+
+    for (const a of attempts) {
+      const t: any = testById.get(a.test_id);
+      const mpq = t?.marks_per_question ?? 1;
+      const score = (a.correct_count ?? 0) * mpq;
+      const totalMarks = t?.total_marks ?? (a.total_questions ?? 0) * mpq;
+      const pass = t?.passing_marks ?? 0;
+      const ctx = lookupContext(a.test_id, a.lecture_id);
+      const row = rowsByTest.get(a.test_id) ?? {
+        type: "lecture_quiz",
+        testId: a.test_id, ...ctx, attempts: [],
+      } as Row;
+      row.attempts.push({
+        id: a.id,
+        date: a.created_at,
+        score,
+        totalMarks,
+        percentage: totalMarks ? Math.round((score / totalMarks) * 1000) / 10 : 0,
+        passed: pass > 0 ? score >= pass : null,
+        passingMarks: pass > 0 ? pass : null,
+        coinsAwarded: a.coins_awarded ?? 0,
+      });
+      rowsByTest.set(a.test_id, row);
+    }
+
+    for (const r of results) {
+      const ctx = lookupContext(r.test_id, null);
+      const row = rowsByTest.get(r.test_id) ?? {
+        type: "test",
+        testId: r.test_id, ...ctx, attempts: [],
+      } as Row;
+      row.attempts.push({
+        id: r.id,
+        date: r.attempt_date,
+        score: Number(r.score),
+        totalMarks: Number(r.total_marks),
+        percentage: Number(r.percentage),
+        passed: null,
+        passingMarks: null,
+      });
+      rowsByTest.set(r.test_id, row);
+    }
+
+    const rows = Array.from(rowsByTest.values()).map((r) => {
+      r.attempts.sort((a, b) => +new Date(b.date) - +new Date(a.date));
+      return r;
+    }).sort((a, b) => +new Date(b.attempts[0]?.date ?? 0) - +new Date(a.attempts[0]?.date ?? 0));
+
+    return {
+      totalAttempts: attempts.length + results.length,
+      quizzesAttempted: rows.length,
+      rows,
+    };
+  });
