@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { ArrowLeft, Coins, Award, Crown, Ticket, Ghost, Minus, Plus } from "lucide-react";
+import { ArrowLeft, Coins, Award, Crown, Ticket, Ghost, Minus, Plus, ChevronDown, ChevronRight, ListChecks } from "lucide-react";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { rankFromLevel } from "@/lib/rpg/ranks";
 import {
   adminGetStudentCommandCenter, adminAwardCoins, adminAwardBadge, adminAwardTitle,
-  adminGrantPass, adminUnlockShadow,
+  adminGrantPass, adminUnlockShadow, adminGetStudentQuizHistory,
 } from "@/lib/api/admin-rewards.functions";
 
 export const Route = createFileRoute("/app/admin/students/$id")({ component: StudentCommandCenter });
