@@ -108,7 +108,91 @@ function StudentCommandCenter() {
           ))}
         </StatList>
       </div>
+
+      <QuizHistory userId={id} />
     </div>
+  );
+}
+
+function QuizHistory({ userId }: { userId: string }) {
+  const fn = useServerFn(adminGetStudentQuizHistory);
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const q = useQuery({
+    queryKey: ["admin-quiz-history", userId],
+    queryFn: () => fn({ data: { userId } }),
+  });
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base flex items-center gap-2">
+          <ListChecks className="h-4 w-4" /> Quiz Attempts
+          {q.data && (
+            <span className="text-xs font-normal text-muted-foreground ml-auto">
+              {q.data.quizzesAttempted} quizzes · {q.data.totalAttempts} attempts
+            </span>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {q.isLoading ? (
+          <Skeleton className="h-24" />
+        ) : !q.data || q.data.rows.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No quiz attempts yet.</p>
+        ) : (
+          q.data.rows.map((row: any) => {
+            const isOpen = open[row.testId] ?? false;
+            const best = row.attempts.reduce((m: number, a: any) => Math.max(m, a.percentage), 0);
+            const lastPassed = row.attempts.some((a: any) => a.passed);
+            return (
+              <div key={row.testId} className="border rounded-md">
+                <button
+                  className="w-full flex items-center gap-2 p-2 text-left hover:bg-muted/50"
+                  onClick={() => setOpen((o) => ({ ...o, [row.testId]: !isOpen }))}
+                >
+                  {isOpen ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{row.testTitle}</div>
+                    <div className="text-[11px] text-muted-foreground truncate">
+                      {[row.subjectName, row.chapterTitle, row.lectureTitle].filter(Boolean).join(" › ") || row.kind}
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-[10px]">{row.attempts.length}x</Badge>
+                  <Badge variant="secondary" className="text-[10px]">Best {best}%</Badge>
+                  {row.attempts[0]?.passed != null && (
+                    <Badge variant={lastPassed ? "default" : "destructive"} className="text-[10px]">
+                      {lastPassed ? "Passed" : "Not passed"}
+                    </Badge>
+                  )}
+                </button>
+                {isOpen && (
+                  <div className="px-2 pb-2 space-y-1">
+                    {row.attempts.map((a: any, i: number) => (
+                      <div key={a.id} className="text-xs flex items-center gap-2 px-2 py-1 rounded bg-muted/30">
+                        <span className="w-12 text-muted-foreground">#{row.attempts.length - i}</span>
+                        <span className="flex-1 truncate">{new Date(a.date).toLocaleString()}</span>
+                        <span>{a.score}/{a.totalMarks}</span>
+                        <span className="text-muted-foreground">({a.percentage}%)</span>
+                        {a.passingMarks != null && (
+                          <Badge variant={a.passed ? "default" : "destructive"} className="text-[10px]">
+                            {a.passed ? "Pass" : "Fail"}
+                          </Badge>
+                        )}
+                        {a.coinsAwarded > 0 && (
+                          <span className="inline-flex items-center text-amber-600">
+                            <Coins className="h-3 w-3 mr-0.5" />{a.coinsAwarded}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
