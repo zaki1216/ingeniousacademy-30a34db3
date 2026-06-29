@@ -259,7 +259,7 @@ export const adminGetStudentQuizHistory = createServerFn({ method: "POST" })
     const chapterById = new Map(chapters.map((c: any) => [c.id, c]));
     const subjectById = new Map(subjects.map((s: any) => [s.id, s]));
 
-    function context(testId: string, lectureId: string | null) {
+    function lookupContext(testId: string, lectureId: string | null) {
       const t: any = testById.get(testId);
       const lec: any = lectureId ? lectureById.get(lectureId) : (t?.lecture_id ? lectureById.get(t.lecture_id) : null);
       const chapId = lec?.chapter_id ?? t?.chapter_id;
@@ -302,7 +302,7 @@ export const adminGetStudentQuizHistory = createServerFn({ method: "POST" })
       const score = (a.correct_count ?? 0) * mpq;
       const totalMarks = t?.total_marks ?? (a.total_questions ?? 0) * mpq;
       const pass = t?.passing_marks ?? 0;
-      const ctx = context(a.test_id, a.lecture_id);
+      const ctx = lookupContext(a.test_id, a.lecture_id);
       const row = rowsByTest.get(a.test_id) ?? {
         type: "lecture_quiz",
         testId: a.test_id, ...ctx, attempts: [],
@@ -321,7 +321,7 @@ export const adminGetStudentQuizHistory = createServerFn({ method: "POST" })
     }
 
     for (const r of results) {
-      const ctx = context(r.test_id, null);
+      const ctx = lookupContext(r.test_id, null);
       const row = rowsByTest.get(r.test_id) ?? {
         type: "test",
         testId: r.test_id, ...ctx, attempts: [],
