@@ -1,74 +1,78 @@
-## Lecture Progression & Unlock System
 
-A sequential unlock flow where students watch Lecture N → pass Quiz N → unlock Lecture N+1, per chapter. Quiz settings are admin‑controlled per lecture quiz, with coin rewards on pass.
+# Academy Campus Experience
 
-### 1. Database changes (single migration)
+Replace the student's dashboard-based home with a cinematic intro + illustrated campus map. Zero backend/auth/quiz/coin/XP changes — pure frontend redesign of the student entry flow and primary navigation.
 
-**`tests` table — add quiz config columns (lecture_quiz only):**
-- `marks_per_question int default 1`
-- `passing_marks int default 0`
-- `time_limit_seconds int null`
-- `total_questions int null` (target count for admin reference)
+## Scope guardrails
 
-**`chapters` table — add completion rewards:**
-- `completion_xp int default 100`
-- `completion_coins int default 50`
+- No changes to server functions, DB, auth, quizzes, coins, or XP logic.
+- Admins keep their current dashboard + sidebar untouched.
+- All existing pages (`/app/journey`, `/app/pvp`, `/app/shop`, `/app/profile`, etc.) remain unchanged — only how students reach them changes.
 
-**New table `chapter_completions`** (user_id, chapter_id, completed_at) — RLS: user reads own; insert by service role.
+## 1. Intro Sequence (`/app/welcome`)
 
-**New view / RPC `get_lecture_unlock_state(_user_id, _standard_id)`** (security definer) that returns, per lecture in the student's standard:
-- `unlocked` (bool), `quiz_passed` (bool), `previous_lecture_id`, `previous_quiz_id`, `previous_passing_marks`
+New route `src/routes/app.welcome.tsx`, shown once per session after login before the campus.
 
-Logic: For each chapter ordered by `lecture_number`, lecture 1 unlocked. Lecture N unlocked iff the lecture N‑1's quiz has a `quiz_attempts` row with `correct_count * marks_per_question >= passing_marks` for that user.
+- Full-screen dark magical background: animated gradient + drifting particle/spark effect (framer-motion + CSS, no external libs).
+- Ingenious Academy logo (existing `ingenious-logo.webp` asset) with soft glow.
+- Sequenced fade-in text (framer-motion `AnimatePresence`, ~1.6s per line):
+  1. "Welcome to Ingenious Academy"
+  2. "Every Lecture is a Quest"
+  3. "Every Chapter is a Dungeon"
+  4. "Every Test is a Boss Battle"
+  5. "Your adventure begins now."
+- Large glowing "ENTER CAMPUS" button appears after the final line.
+- Click → set `sessionStorage.campusIntroSeen = "1"` and navigate to `/app`.
+- A "Skip intro" link in the corner for repeat visits.
 
-**RLS / GRANTS** on new table; reuse `private.has_role` for admin overrides.
+## 2. Campus Home (`/app/`) — student view rewrite
 
-### 2. Server functions
+Rewrite the `StudentDashboard` component inside `src/routes/app.index.tsx` (admin branch preserved as-is). The old dashboard cards (Today's Quests, Active Bonuses, Daily Chest, Continue Adventure, Quick travel grid, Worlds, badges, announcements) are removed from the home. Those features remain accessible via their own routes.
 
-`src/lib/api/lecture-progression.functions.ts` (new):
-- `getLectureProgress({ standardId? })` — calls the RPC, returns map keyed by lecture id with unlock + pass status, plus per‑chapter aggregates (lectures_completed, total, pass_rate, percent, next_to_unlock).
-- `getChapterProgress({ chapterId })` — same data scoped to one chapter.
+- On mount: if `sessionStorage.campusIntroSeen !== "1"`, redirect to `/app/welcome`.
+- Renders a stylized campus map (CSS + SVG, no image asset required):
+  - Layered background: sky gradient, distant mountains (SVG), grass field, curved dirt pathway connecting buildings, animated trees/lanterns/banners, drifting particles.
+  - 7 building "cards" positioned at map-like coordinates (absolute % positions on desktop, responsive stacked grid on mobile):
+    - 🏫 Mathematics Building → `/app/journey` (filter/anchor optional, no route change)
+    - 🧪 Science Laboratory → `/app/journey`
+    - 📚 Language Library → `/app/journey`
+    - ⚔ Arena Coliseum → `/app/pvp`
+    - 🛒 Merchant Shop → `/app/shop`
+    - 🏆 Hall of Fame → `/app/leaderboard`
+    - 🏠 Residence → `/app/profile`
+  - Each building = illustrated emoji + gradient card + name banner. `whileHover` scale/glow, `whileTap` press animation.
+- Player avatar sprite at the Academy Gate (bottom-center). On building click, framer-motion animates the avatar `x/y` toward that building over ~700ms, then navigates.
 
-`src/lib/api/lecture-quiz.functions.ts` (update):
-- `getQuizForLecture` also returns `passing_marks`, `marks_per_question`, `time_limit_seconds`, and the caller's best previous attempt.
-- `submitLectureQuiz` computes `score = correct * marks_per_question`, `passed = score >= passing_marks`. Coins still = 1 per correct, awarded regardless (per spec: "1 correct = 1 coin"). Returns `{ correct, total, score, passingMarks, passed, coinsAwarded, nextLectureUnlocked }`. On pass, if this is the final lecture of the chapter, insert `chapter_completions` and award chapter XP/coins (idempotent).
+Since Mathematics/Science/Library all lead to Journey today, the plan keeps them all pointing to `/app/journey` for now (no route/backend change); each building visual remains distinct so the campus reads correctly.
 
-`src/lib/api/lecture-quiz-admin.functions.ts` (new, admin-gated via `assertAdmin`):
-- `adminListLectureQuizzes({ subjectId?, chapterId? })` — lecture → quiz config + question count + attempt stats (attempts, pass %, most‑failed question).
-- `adminUpsertLectureQuiz({ lectureId, title, marks_per_question, passing_marks, time_limit_seconds })` — creates the `tests` row of kind `lecture_quiz` if missing, else updates.
-- `adminGetQuizQuestions({ testId })` / `adminUpsertQuestion(...)` / `adminDeleteQuestion(...)` — full question editor (text, options[], correct_option).
-- `adminGetLectureProgress({ studentId? })` — per‑student progress matrix.
-- `adminOverrideUnlock({ studentId, lectureId, unlocked })` — writes to a new `manual_unlocks` table (user_id, lecture_id, unlocked bool) that the RPC also honors.
+## 3. Fixed Player Status Bar (top)
 
-### 3. Student UI
+The existing `PlayerStatusBar` already shows avatar/name/level/XP/coins. Extend it (frontend only, using data it already has) to also render:
+- Current Rank badge (existing `RankBadge` component with `rankByTier`)
+- Current Streak (already in `stats.streak_days` from `getGamificationDashboard`)
 
-**`src/routes/app.lectures.tsx`** — lectures list rewritten to:
-- Group by subject → chapter, sorted by `lecture_number`.
-- Each lecture row reads unlock state from `getLectureProgress`.
-- Locked rows: lock icon, dim style, subtitle "Pass Quiz {N‑1} ({passing_marks}/{total_marks}) to unlock".
-- `openLecture` blocks opening when locked (toast).
-- Quiz panel shows time limit, passing target, prior best, and after submit: PASS/FAIL state, coins earned, "Lecture N+1 unlocked" or retry CTA. On chapter completion → reward popup (badge + XP + coins).
+Keep it sticky at top for all student pages (already wired in `src/routes/app.tsx`).
 
-**New `src/components/lectures/ChapterProgress.tsx`** — per‑chapter card: completed/total, pass rate %, progress %, next lecture to unlock.
+## 4. Navigation model
 
-### 4. Admin UI
+- Students: campus is home. Bottom tabs (`BottomTabs` in `app.tsx`) and desktop sidebar (`NavLinks`) are kept as secondary/quick-access nav so students aren't stuck if they close a page — but the "Home" tab returns them to the campus map, not a dashboard. No sidebar changes needed beyond that.
+- Admins: unchanged.
 
-**New route `src/routes/app.admin.lecture-quizzes.tsx`** (admin‑only):
-- Subject + chapter pickers → list lectures with quiz config inline (edit marks per question, passing marks, time limit).
-- "Edit questions" dialog reusing existing question shape.
-- Stats column: attempts, pass %, most failed question id.
-- "Student progress" tab → table of students × lectures with pass/fail dots and a "Manual unlock" toggle.
+## 5. Visual style
 
-**Add tile to `src/routes/app.admin.content.tsx`** linking to the new route.
+- Modern fantasy-academy RPG: rich navy/violet night sky, warm torch/lantern glows, gold accents, subtle particle sparkles. Uses existing design tokens (`--gradient-primary`, `glass-card`, `glow-primary`) — no new color hardcoding.
+- Framer-motion for entrance, hover, and walk animations. Pure CSS/SVG for the map illustration (no new binary assets required, keeps repo light).
 
-### 5. Memory
+## Files touched
 
-Add `mem://features/lecture-progression` describing the unlock invariant + admin override behavior; reference it from `mem://index.md`.
+- Add: `src/routes/app.welcome.tsx` (intro sequence)
+- Add: `src/components/campus/CampusMap.tsx` (map + buildings + walking avatar)
+- Add: `src/components/campus/Building.tsx` (single building card w/ animations)
+- Edit: `src/routes/app.index.tsx` — replace `StudentDashboard` body with `<CampusMap />` + intro-redirect guard. Admin branch untouched.
+- Edit: `src/components/rpg/PlayerStatusBar.tsx` — add rank badge + streak.
 
-### Technical notes
+## Technical notes
 
-- Unlock state is server‑computed (RPC) so the client can't bypass by mutating local state; `submitLectureQuiz` is the only path that records a pass, and it grades server‑side using `correct_option` (already the case).
-- Chapter completion award is idempotent via `chapter_completions` unique (user_id, chapter_id) + ledger check.
-- Existing `completeVideo` (+50 XP) remains the watch reward; quiz rewards stay coin‑only (no XP), per spec.
-- Coins awarded per correct answer remain unchanged; the only new gate is unlocking the next lecture, which requires `score >= passing_marks`.
-- `manual_unlocks` allows admin to unlock without breaking the score gate.
+- Intro gating via `sessionStorage` so it plays once per browser session; a "Replay intro" link can be added later.
+- No new packages; framer-motion and lucide-react already present.
+- Building → route mapping is a static map in `CampusMap.tsx`; easy to remap later without backend work.
