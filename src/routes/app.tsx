@@ -2,8 +2,8 @@ import { createFileRoute, Link, Outlet, redirect, useNavigate, useRouterState } 
 import { useEffect, useState } from "react";
 import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
-  LayoutDashboard, Users, BookOpen, ClipboardList,
-  LogOut, Menu, Settings, Map, Swords, ShoppingBag, Home, User, Sparkles,
+  LayoutDashboard,
+  LogOut, Menu, Map, Swords, ShoppingBag, Home,
   ShieldCheck, Gamepad2, Library, ScrollText, Cog,
 } from "lucide-react";
 
@@ -13,9 +13,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { cn } from "@/lib/utils";
-import { PlayerStatusBar } from "@/components/rpg/PlayerStatusBar";
 import { LumiProvider } from "@/lib/lumi/LumiProvider";
 import { LumiCompanion } from "@/components/lumi/LumiCompanion";
+import { AcademyHUD } from "@/components/hud/AcademyHUD";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
@@ -40,23 +40,8 @@ const adminNav: NavItem[] = [
 
 const adminSecondaryNav: NavItem[] = [];
 
-// Student primary nav — 5 hero actions only
-const studentNav: NavItem[] = [
-  { to: "/app", label: "Home", icon: Home, end: true },
-  { to: "/app/journey", label: "Journey", icon: Map },
-  { to: "/app/pvp", label: "Arena", icon: Swords },
-  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/profile", label: "Residence", icon: Home },
-];
-
-// Mobile bottom tabs — same 5 primary actions
-const studentBottomTabs: NavItem[] = [
-  { to: "/app", label: "Home", icon: Home, end: true },
-  { to: "/app/journey", label: "Journey", icon: Map },
-  { to: "/app/pvp", label: "Arena", icon: Swords },
-  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/profile", label: "Residence", icon: Home },
-];
+// Student navigation now happens via the Academy World HUD (AcademyHUD).
+const studentNav: NavItem[] = [];
 
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
@@ -145,45 +130,6 @@ function Brand() {
   );
 }
 
-function BottomTabs() {
-  const path = useRouterState({ select: (s) => s.location.pathname });
-  return (
-    <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-white/10 glass-card pb-[env(safe-area-inset-bottom)]"
-      style={{ background: "color-mix(in oklab, var(--card) 88%, transparent)" }}
-    >
-      <ul className="grid grid-cols-5">
-        {studentBottomTabs.map((t) => {
-          const active = t.end ? path === t.to : path === t.to || path.startsWith(t.to + "/");
-          const Icon = t.icon;
-          return (
-            <li key={t.to}>
-              <Link
-                to={t.to}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-semibold transition-colors",
-                  active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <span
-                  className={cn(
-                    "h-9 w-9 rounded-2xl flex items-center justify-center transition-all",
-                    active
-                      ? "bg-[image:var(--gradient-primary)] glow-primary"
-                      : "bg-transparent",
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                </span>
-                <span className={active ? "text-foreground" : ""}>{t.label}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-  );
-}
 
 function AppLayout() {
   const navigate = useNavigate();
@@ -211,10 +157,22 @@ function AppLayout() {
 
   const isStudent = role === "student";
 
+  // Student — MMORPG HUD (no sidebar, no header, no bottom tabs)
+  if (isStudent) {
+    return (
+      <LumiProvider>
+        <AcademyHUD onSignOut={handleSignOut}>
+          <Outlet />
+        </AcademyHUD>
+        <LumiCompanion />
+      </LumiProvider>
+    );
+  }
+
+  // Admin — Academy Office (sidebar layout preserved)
   return (
     <LumiProvider>
     <div className="min-h-screen flex">
-      {/* Desktop sidebar */}
       <aside className="hidden md:flex md:flex-col md:w-64 border-r border-white/10 bg-sidebar/80 backdrop-blur-xl">
         <Brand />
         <div className="px-3 flex-1 overflow-y-auto">
@@ -230,7 +188,6 @@ function AppLayout() {
         </div>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-14 border-b border-white/10 flex items-center px-3 md:px-6 gap-2 bg-card/60 backdrop-blur-xl sticky top-0 z-20">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -260,29 +217,10 @@ function AppLayout() {
             </div>
             <span className="font-extrabold tracking-tight">Ingenious Academy</span>
           </div>
-          <div className="ml-auto md:hidden">
-            {isStudent && (
-              <Link
-                to="/app/profile"
-                className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center text-foreground"
-                aria-label="Profile"
-              >
-                <User className="h-4 w-4" />
-              </Link>
-            )}
-
-          </div>
         </header>
-        <main className={cn("flex-1 p-4 md:p-6 max-w-6xl w-full mx-auto", isStudent && "pb-24 md:pb-6")}>
-          {isStudent && (
-            <div className="mb-4 sticky top-14 z-10">
-              <PlayerStatusBar />
-            </div>
-          )}
+        <main className="flex-1 p-4 md:p-6 max-w-6xl w-full mx-auto">
           <Outlet />
         </main>
-        {isStudent && <BottomTabs />}
-        {isStudent && <LumiCompanion />}
       </div>
     </div>
     </LumiProvider>
