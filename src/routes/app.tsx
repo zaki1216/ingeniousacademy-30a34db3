@@ -211,10 +211,22 @@ function AppLayout() {
 
   const isStudent = role === "student";
 
+  // Student — MMORPG HUD (no sidebar, no header, no bottom tabs)
+  if (isStudent) {
+    return (
+      <LumiProvider>
+        <AcademyHUD onSignOut={handleSignOut}>
+          <Outlet />
+        </AcademyHUD>
+        <LumiCompanion />
+      </LumiProvider>
+    );
+  }
+
+  // Admin — Academy Office (sidebar layout preserved)
   return (
     <LumiProvider>
     <div className="min-h-screen flex">
-      {/* Desktop sidebar */}
       <aside className="hidden md:flex md:flex-col md:w-64 border-r border-white/10 bg-sidebar/80 backdrop-blur-xl">
         <Brand />
         <div className="px-3 flex-1 overflow-y-auto">
@@ -230,7 +242,6 @@ function AppLayout() {
         </div>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-14 border-b border-white/10 flex items-center px-3 md:px-6 gap-2 bg-card/60 backdrop-blur-xl sticky top-0 z-20">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -260,29 +271,10 @@ function AppLayout() {
             </div>
             <span className="font-extrabold tracking-tight">Ingenious Academy</span>
           </div>
-          <div className="ml-auto md:hidden">
-            {isStudent && (
-              <Link
-                to="/app/profile"
-                className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center text-foreground"
-                aria-label="Profile"
-              >
-                <User className="h-4 w-4" />
-              </Link>
-            )}
-
-          </div>
         </header>
-        <main className={cn("flex-1 p-4 md:p-6 max-w-6xl w-full mx-auto", isStudent && "pb-24 md:pb-6")}>
-          {isStudent && (
-            <div className="mb-4 sticky top-14 z-10">
-              <PlayerStatusBar />
-            </div>
-          )}
+        <main className="flex-1 p-4 md:p-6 max-w-6xl w-full mx-auto">
           <Outlet />
         </main>
-        {isStudent && <BottomTabs />}
-        {isStudent && <LumiCompanion />}
       </div>
     </div>
     </LumiProvider>
