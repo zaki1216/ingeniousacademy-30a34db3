@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -10,8 +10,9 @@ type Building = {
   name: string;
   tag: string;
   emoji: string;
-  to: string;
-  // positions in %  (desktop map coords)
+  kind: "subject" | "route";
+  match?: string[]; // subject name keywords, if kind="subject"
+  to?: string; // route target if kind="route"
   x: number;
   y: number;
   gradient: string;
@@ -24,7 +25,8 @@ const BUILDINGS: Building[] = [
     name: "Mathematics Building",
     tag: "Numeric Halls",
     emoji: "🏫",
-    to: "/app/journey",
+    kind: "subject",
+    match: ["math"],
     x: 18,
     y: 28,
     gradient: "linear-gradient(135deg,#2563eb,#38bdf8)",
@@ -35,7 +37,8 @@ const BUILDINGS: Building[] = [
     name: "Science Laboratory",
     tag: "Alchemy Wing",
     emoji: "🧪",
-    to: "/app/journey",
+    kind: "subject",
+    match: ["science", "physics", "chem", "bio"],
     x: 46,
     y: 22,
     gradient: "linear-gradient(135deg,#059669,#34d399)",
@@ -46,17 +49,31 @@ const BUILDINGS: Building[] = [
     name: "Language Library",
     tag: "Scriptorium",
     emoji: "📚",
-    to: "/app/journey",
+    kind: "subject",
+    match: ["english", "hindi", "language", "lang", "urdu", "sanskrit"],
     x: 74,
     y: 30,
     gradient: "linear-gradient(135deg,#b45309,#fbbf24)",
     glow: "rgba(251,191,36,0.6)",
   },
   {
+    id: "worlds",
+    name: "World Atlas",
+    tag: "All Subjects",
+    emoji: "🗺️",
+    kind: "route",
+    to: "/app/journey",
+    x: 50,
+    y: 38,
+    gradient: "linear-gradient(135deg,#0f766e,#22d3ee)",
+    glow: "rgba(34,211,238,0.5)",
+  },
+  {
     id: "arena",
     name: "Arena Coliseum",
     tag: "Duelists' Ring",
     emoji: "⚔️",
+    kind: "route",
     to: "/app/pvp",
     x: 22,
     y: 58,
@@ -68,6 +85,7 @@ const BUILDINGS: Building[] = [
     name: "Merchant Shop",
     tag: "Bazaar",
     emoji: "🛒",
+    kind: "route",
     to: "/app/shop",
     x: 50,
     y: 52,
@@ -79,6 +97,7 @@ const BUILDINGS: Building[] = [
     name: "Hall of Fame",
     tag: "Champions",
     emoji: "🏆",
+    kind: "route",
     to: "/app/leaderboard",
     x: 78,
     y: 58,
@@ -90,6 +109,7 @@ const BUILDINGS: Building[] = [
     name: "Residence",
     tag: "Your Quarters",
     emoji: "🏠",
+    kind: "route",
     to: "/app/profile",
     x: 50,
     y: 82,
@@ -112,20 +132,48 @@ export function CampusMap() {
       (
         await supabase
           .from("profiles")
-          .select("name, equipped_avatar")
+          .select("name, equipped_avatar, standard_id")
           .eq("id", user!.id)
           .maybeSingle()
       ).data,
     staleTime: 60_000,
   });
 
+  const standardId = profile.data?.standard_id;
+
+  const subjects = useQuery({
+    queryKey: ["campus-subjects", standardId],
+    enabled: !!standardId,
+    queryFn: async () =>
+      (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [],
+    staleTime: 60_000,
+  });
+
+  const subjectMap = useMemo(() => {
+    const list = subjects.data ?? [];
+    return (b: Building): string | null => {
+      if (b.kind !== "subject" || !b.match) return null;
+      const found = list.find((s) =>
+        b.match!.some((kw) => (s.subject_name ?? "").toLowerCase().includes(kw)),
+      );
+      return found?.id ?? null;
+    };
+  }, [subjects.data]);
+
   const avatar = (profile.data?.equipped_avatar as string | null) || "🧑‍🎓";
+
+  function resolveTarget(b: Building): string {
+    if (b.kind === "route") return b.to!;
+    const sid = subjectMap(b);
+    if (sid) return `/app/journey/${sid}`;
+    return "/app/journey";
+  }
 
   function handleEnter(b: Building) {
     if (target) return;
     setTarget(b);
     setTimeout(() => {
-      navigate({ to: b.to });
+      navigate({ to: resolveTarget(b) as any });
     }, 850);
   }
 
@@ -133,7 +181,6 @@ export function CampusMap() {
 
   return (
     <div className="relative w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
-      {/* Sky gradient background */}
       <div
         className="relative"
         style={{
@@ -164,7 +211,7 @@ export function CampusMap() {
           );
         })}
 
-        {/* Distant mountains */}
+        {/* Mountains */}
         <svg
           className="absolute bottom-[42%] left-0 right-0 w-full"
           viewBox="0 0 1000 200"
@@ -184,7 +231,7 @@ export function CampusMap() {
           </defs>
         </svg>
 
-        {/* Grass field */}
+        {/* Grass */}
         <div
           className="absolute inset-x-0 bottom-0"
           style={{
@@ -194,7 +241,7 @@ export function CampusMap() {
           }}
         />
 
-        {/* Path SVG */}
+        {/* Pathways */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
@@ -208,7 +255,7 @@ export function CampusMap() {
             strokeDasharray="1.5 1"
           />
           <path
-            d="M50,96 L50,52"
+            d="M50,96 L50,38"
             stroke="rgba(251,191,36,0.2)"
             strokeWidth="0.6"
             strokeDasharray="1 1"
@@ -216,7 +263,7 @@ export function CampusMap() {
           />
         </svg>
 
-        {/* Decorative trees / lanterns */}
+        {/* Trees / lanterns */}
         {[
           { x: 8, y: 78, e: "🌲" },
           { x: 92, y: 76, e: "🌲" },
@@ -247,7 +294,7 @@ export function CampusMap() {
           </motion.span>
         ))}
 
-        {/* Floating magical particles */}
+        {/* Particles */}
         {Array.from({ length: 22 }).map((_, i) => {
           const left = (i * 43) % 100;
           const dur = 5 + ((i * 3) % 6);
@@ -282,7 +329,7 @@ export function CampusMap() {
           />
         ))}
 
-        {/* Academy gate banner */}
+        {/* Gate banner */}
         <div
           className="absolute pointer-events-none"
           style={{
@@ -304,7 +351,7 @@ export function CampusMap() {
           </div>
         </div>
 
-        {/* Player avatar walking */}
+        {/* Avatar */}
         <motion.div
           className="absolute z-20 pointer-events-none"
           initial={false}
@@ -340,7 +387,7 @@ export function CampusMap() {
           </motion.div>
         </motion.div>
 
-        {/* Overlay caption when moving */}
+        {/* Overlay */}
         <AnimatePresence>
           {target && (
             <motion.div
@@ -395,9 +442,7 @@ function BuildingCard({
             border: "2px solid rgba(255,255,255,0.25)",
           }}
         >
-          <span
-            style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.6))" }}
-          >
+          <span style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.6))" }}>
             {b.emoji}
           </span>
           <span

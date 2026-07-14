@@ -18,6 +18,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
+import { DungeonPath } from "@/components/rpg/DungeonPath";
 import { completeVideo } from "@/lib/api/gamification.functions";
 import { getQuizForLecture, submitLectureQuiz } from "@/lib/api/lecture-quiz.functions";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
@@ -206,108 +207,29 @@ function DungeonPage() {
         </Card>
       )}
 
-      {/* Quest list */}
-      <div className="space-y-2">
-        {lectures.map((l, i) => {
-          const st = stateById.get(l.id);
-          const locked = st ? !st.unlocked : i !== 0;
-          const done = completedSet.has(l.id);
-          const passed = !!st?.quiz_passed;
-          return (
-            <Card
-              key={l.id}
-              className={cn(
-                "transition",
-                locked ? "opacity-60" : "cursor-pointer hover:bg-accent/30",
-              )}
-              onClick={() => openLecture(
-                { id: l.id, url: l.youtube_url, title: l.lecture_title, number: l.lecture_number },
-                locked,
-                st?.prev_lecture_number ?? null,
-              )}
-            >
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className={cn(
-                  "h-12 w-12 rounded-lg flex items-center justify-center shrink-0 font-orbitron font-black",
-                  locked ? "bg-muted text-muted-foreground"
-                  : passed ? "bg-emerald-500/15 text-emerald-500"
-                  : done ? "bg-cyan-500/15 text-cyan-500"
-                  : "bg-primary/10 text-primary",
-                )}>
-                  {locked ? <Lock className="h-5 w-5" /> : passed ? <CheckCircle2 className="h-5 w-5" /> : done ? <PlayCircle className="h-5 w-5" /> : String(l.lecture_number).padStart(2, "0")}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[10px] uppercase tracking-widest text-amber-300 font-bold">
-                    Quest {String(l.lecture_number).padStart(2, "0")}
-                  </div>
-                  <div className="font-medium truncate">{l.lecture_title}</div>
-                  <div className="text-xs text-muted-foreground truncate">
-                    {locked
-                      ? `Pass Quest ${st?.prev_lecture_number} quiz to unlock`
-                      : passed
-                      ? "Quiz cleared ✓"
-                      : st?.test_id
-                      ? `Quiz · pass ${st.passing_marks}/${st.total_marks}`
-                      : "Watch to earn XP"}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-        {lectures.length === 0 && !meta.isLoading && (
-          <p className="text-sm text-muted-foreground text-center py-8">No quests in this dungeon yet.</p>
-        )}
-      </div>
-
-      {/* Boss battle node */}
-      {lectures.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <button
-            type="button"
-            disabled={!allPassed && !bossDefeated}
-            onClick={() => setBossOpen(true)}
-            className={cn(
-              "block w-full text-left rounded-2xl p-4 border-2 transition relative overflow-hidden",
-              bossDefeated
-                ? "border-amber-400/60 bg-gradient-to-br from-amber-500/20 to-orange-600/20"
-                : allPassed
-                ? "border-rose-500/60 bg-gradient-to-br from-rose-600/30 to-red-900/40 animate-pulse cursor-pointer"
-                : "border-border/40 bg-card/40 opacity-70 cursor-not-allowed",
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <div className={cn(
-                "h-16 w-16 rounded-2xl grid place-items-center shrink-0 shadow-xl",
-                bossDefeated
-                  ? "bg-gradient-to-br from-amber-400 to-orange-700"
-                  : allPassed
-                  ? "bg-gradient-to-br from-rose-500 to-red-900"
-                  : "bg-muted",
-              )}>
-                {bossDefeated ? <Crown className="h-8 w-8 text-amber-100 drop-shadow" />
-                  : allPassed ? <Skull className="h-8 w-8 text-rose-100 drop-shadow" />
-                  : <Lock className="h-7 w-7 text-muted-foreground" />}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-[10px] uppercase tracking-widest text-amber-300 font-bold">
-                  Boss Battle
-                </div>
-                <div className="font-extrabold font-orbitron">
-                  {bossDefeated ? "Boss Defeated" : allPassed ? "Engage the Boss" : "Sealed Boss Room"}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {bossDefeated
-                    ? `Cleared · +${chapterCompletion.data?.xp_awarded ?? bossXp} XP · +${chapterCompletion.data?.coins_awarded ?? bossCoins} coins`
-                    : allPassed
-                    ? `Reward: +${bossXp} XP · +${bossCoins} coins`
-                    : `Clear all ${chAgg?.total ?? lectures.length} Quests to break the seal`}
-                </div>
-              </div>
-              {bossDefeated && <Trophy className="h-6 w-6 text-amber-300 shrink-0" />}
-            </div>
-          </button>
-        </motion.div>
+      {/* Dungeon Path — RPG quest map with boss node at the tail */}
+      <DungeonPath
+        lectures={lectures}
+        stateById={stateById}
+        completedSet={completedSet}
+        onSelect={(l, locked, prevNum) =>
+          openLecture(
+            { id: l.id, url: l.youtube_url, title: l.lecture_title, number: l.lecture_number },
+            locked,
+            prevNum,
+          )
+        }
+        bossReady={allPassed}
+        bossDefeated={bossDefeated}
+        bossXp={bossXp}
+        bossCoins={bossCoins}
+        bossAwardedXp={chapterCompletion.data?.xp_awarded ?? null}
+        bossAwardedCoins={chapterCompletion.data?.coins_awarded ?? null}
+        totalQuests={chAgg?.total ?? lectures.length}
+        onBossClick={() => setBossOpen(true)}
+      />
+      {lectures.length === 0 && !meta.isLoading && (
+        <p className="text-sm text-muted-foreground text-center py-8">No quests in this dungeon yet.</p>
       )}
 
       <Dialog open={bossOpen} onOpenChange={setBossOpen}>
