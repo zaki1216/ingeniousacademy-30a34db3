@@ -3,23 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
 import {
-  Users, BookOpen, FileText, ClipboardList, Megaphone, GraduationCap,
-  Map, Swords, Trophy, ShoppingBag, Award, ChevronRight, Sparkles, Target, CheckCircle2,
+  Users, BookOpen, ClipboardList, Megaphone, Target,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { CampusMap } from "@/components/campus/CampusMap";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { HeroCard } from "@/components/gamification/HeroCard";
-import { DailyChestCard } from "@/components/gamification/DailyChestCard";
-import { ActiveBonusesCard } from "@/components/gamification/ActiveBonusesCard";
-import { getGamificationDashboard, dailyCheckIn } from "@/lib/api/gamification.functions";
-import { getDailyObjectives } from "@/lib/api/rpg-collection.functions";
+import { dailyCheckIn } from "@/lib/api/gamification.functions";
 import { adminGetCommandCenterOverview } from "@/lib/api/admin-rewards.functions";
-import { nextRank } from "@/lib/rpg/ranks";
-import { getIcon } from "@/lib/gamification/icons";
 
 export const Route = createFileRoute("/app/")({
   component: Dashboard,
