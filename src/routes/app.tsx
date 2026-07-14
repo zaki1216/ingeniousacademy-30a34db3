@@ -2,8 +2,8 @@ import { createFileRoute, Link, Outlet, redirect, useNavigate, useRouterState } 
 import { useEffect, useState } from "react";
 import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
-  LayoutDashboard, Users, BookOpen, ClipboardList,
-  LogOut, Menu, Settings, Map, Swords, ShoppingBag, Home, User, Sparkles,
+  LayoutDashboard,
+  LogOut, Menu, Map, Swords, ShoppingBag, Home,
   ShieldCheck, Gamepad2, Library, ScrollText, Cog,
 } from "lucide-react";
 
@@ -13,9 +13,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { cn } from "@/lib/utils";
-import { PlayerStatusBar } from "@/components/rpg/PlayerStatusBar";
 import { LumiProvider } from "@/lib/lumi/LumiProvider";
 import { LumiCompanion } from "@/components/lumi/LumiCompanion";
+import { AcademyHUD } from "@/components/hud/AcademyHUD";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
