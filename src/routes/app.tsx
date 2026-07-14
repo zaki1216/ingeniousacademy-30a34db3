@@ -13,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { cn } from "@/lib/utils";
 import { PlayerStatusBar } from "@/components/rpg/PlayerStatusBar";
+import { LumiProvider } from "@/lib/lumi/LumiProvider";
+import { LumiCompanion } from "@/components/lumi/LumiCompanion";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: async () => {
@@ -197,6 +199,7 @@ function AppLayout() {
   const isStudent = role === "student";
 
   return (
+    <LumiProvider>
     <div className="min-h-screen flex">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:flex-col md:w-64 border-r border-white/10 bg-sidebar/80 backdrop-blur-xl">
@@ -266,7 +269,9 @@ function AppLayout() {
           <Outlet />
         </main>
         {isStudent && <BottomTabs />}
+        {isStudent && <LumiCompanion />}
       </div>
     </div>
+    </LumiProvider>
   );
 }

@@ -34,6 +34,7 @@ import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
 import { Route as AppJourneyRouteImport } from './routes/app.journey'
 import { Route as AppInventoryRouteImport } from './routes/app.inventory'
+import { Route as AppGuidebookRouteImport } from './routes/app.guidebook'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppCollectionRouteImport } from './routes/app.collection'
 import { Route as AppCoinsRouteImport } from './routes/app.coins'
@@ -187,6 +188,11 @@ const AppJourneyRoute = AppJourneyRouteImport.update({
 const AppInventoryRoute = AppInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGuidebookRoute = AppGuidebookRouteImport.update({
+  id: '/guidebook',
+  path: '/guidebook',
   getParentRoute: () => AppRoute,
 } as any)
 const AppContentRoute = AppContentRouteImport.update({
@@ -351,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/app/coins': typeof AppCoinsRoute
   '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
+  '/app/guidebook': typeof AppGuidebookRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
   '/app/leaderboard': typeof AppLeaderboardRoute
@@ -406,6 +413,7 @@ export interface FileRoutesByTo {
   '/app/coins': typeof AppCoinsRoute
   '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
+  '/app/guidebook': typeof AppGuidebookRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/notes': typeof AppNotesRoute
@@ -461,6 +469,7 @@ export interface FileRoutesById {
   '/app/coins': typeof AppCoinsRoute
   '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
+  '/app/guidebook': typeof AppGuidebookRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
   '/app/leaderboard': typeof AppLeaderboardRoute
@@ -519,6 +528,7 @@ export interface FileRouteTypes {
     | '/app/coins'
     | '/app/collection'
     | '/app/content'
+    | '/app/guidebook'
     | '/app/inventory'
     | '/app/journey'
     | '/app/leaderboard'
@@ -574,6 +584,7 @@ export interface FileRouteTypes {
     | '/app/coins'
     | '/app/collection'
     | '/app/content'
+    | '/app/guidebook'
     | '/app/inventory'
     | '/app/leaderboard'
     | '/app/notes'
@@ -628,6 +639,7 @@ export interface FileRouteTypes {
     | '/app/coins'
     | '/app/collection'
     | '/app/content'
+    | '/app/guidebook'
     | '/app/inventory'
     | '/app/journey'
     | '/app/leaderboard'
@@ -855,6 +867,13 @@ declare module '@tanstack/react-router' {
       path: '/inventory'
       fullPath: '/app/inventory'
       preLoaderRoute: typeof AppInventoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/guidebook': {
+      id: '/app/guidebook'
+      path: '/guidebook'
+      fullPath: '/app/guidebook'
+      preLoaderRoute: typeof AppGuidebookRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/content': {
@@ -1126,6 +1145,7 @@ interface AppRouteChildren {
   AppCoinsRoute: typeof AppCoinsRoute
   AppCollectionRoute: typeof AppCollectionRoute
   AppContentRoute: typeof AppContentRoute
+  AppGuidebookRoute: typeof AppGuidebookRoute
   AppInventoryRoute: typeof AppInventoryRoute
   AppJourneyRoute: typeof AppJourneyRouteWithChildren
   AppLeaderboardRoute: typeof AppLeaderboardRoute
@@ -1168,6 +1188,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCoinsRoute: AppCoinsRoute,
   AppCollectionRoute: AppCollectionRoute,
   AppContentRoute: AppContentRoute,
+  AppGuidebookRoute: AppGuidebookRoute,
   AppInventoryRoute: AppInventoryRoute,
   AppJourneyRoute: AppJourneyRouteWithChildren,
   AppLeaderboardRoute: AppLeaderboardRoute,

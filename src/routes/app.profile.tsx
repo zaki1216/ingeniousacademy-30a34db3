@@ -340,6 +340,7 @@ function ResidencePage() {
             <QuickLink to="/app/leaderboard" icon={<Trophy className="h-4 w-4" />} label="Rankings" />
             <QuickLink to="/app/attendance" icon={<CalendarCheck className="h-4 w-4" />} label="Attendance" />
             <QuickLink to="/app/announcements" icon={<FileText className="h-4 w-4" />} label="News" />
+            <QuickLink to="/app/guidebook" icon={<Scroll className="h-4 w-4" />} label="Lumi's Guidebook" />
           </div>
         </section>
       </div>
