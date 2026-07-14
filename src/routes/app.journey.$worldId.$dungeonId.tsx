@@ -18,6 +18,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
+import { DungeonPath } from "@/components/rpg/DungeonPath";
 import { completeVideo } from "@/lib/api/gamification.functions";
 import { getQuizForLecture, submitLectureQuiz } from "@/lib/api/lecture-quiz.functions";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
