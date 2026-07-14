@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import {
   Users, BookOpen, ClipboardList, TrendingUp, CalendarCheck, Award, Download, Search,
+  Plus, FileText, ListChecks, GraduationCap, Ticket, Megaphone, Crown, LayoutDashboard,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,27 +16,71 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { HeadmasterHeader } from "@/components/admin/HeadmasterHeader";
+import { getLeaderboard } from "@/lib/api/gamification.functions";
 
 import { adminGetOverview, adminGetStudentReportCard } from "@/lib/api/admin-analytics.functions";
 import { adminListStudentsForViews } from "@/lib/api/lecture-views.functions";
 
-export const Route = createFileRoute("/app/admin/dashboard")({ component: AdminDashboard });
+export const Route = createFileRoute("/app/admin/dashboard")({
+  head: () => ({ meta: [{ title: "Command Center — Academy Office" }] }),
+  component: CommandCenter,
+});
 
-function AdminDashboard() {
+const QUICK_ACTIONS: { to: string; label: string; icon: any }[] = [
+  { to: "/app/content", label: "Create Lecture", icon: Plus },
+  { to: "/app/notes", label: "Upload Notes", icon: FileText },
+  { to: "/app/admin/lecture-quizzes", label: "Create Quiz", icon: ListChecks },
+  { to: "/app/admin/offline-tests", label: "Add Offline Test", icon: GraduationCap },
+  { to: "/app/admin/passes", label: "Approve Pass", icon: Ticket },
+  { to: "/app/announcements", label: "Send Announcement", icon: Megaphone },
+];
+
+function CommandCenter() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <HeadmasterHeader
+        icon={<LayoutDashboard className="h-7 w-7" />}
+        title="Command Center"
+        tagline="Every heartbeat of Ingenious Academy — at a single glance."
+        lumi="This is your Headmaster's desk. Every Cadet, every Quest, every reward flows through the halls beyond this door."
+      />
+
+      {/* Quick Actions */}
       <div>
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Class-wide analytics and student report cards</p>
+        <div className="mb-2 text-xs font-orbitron uppercase tracking-widest text-amber-300/80">
+          Headmaster Quick Actions
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+          {QUICK_ACTIONS.map((a) => {
+            const Icon = a.icon;
+            return (
+              <Link key={a.label} to={a.to}>
+                <Card className="hover:border-amber-500/50 transition group h-full">
+                  <CardContent className="p-3 flex flex-col items-center gap-1 text-center">
+                    <div className="h-9 w-9 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center group-hover:bg-amber-500/20 transition">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="text-[11px] font-semibold leading-tight">{a.label}</div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
       <Tabs defaultValue="overview">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="overview">Live Pulse</TabsTrigger>
+          <TabsTrigger value="cadets">Top Cadets</TabsTrigger>
           <TabsTrigger value="reports">Report Cards</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="mt-4">
           <Overview />
+        </TabsContent>
+        <TabsContent value="cadets" className="mt-4">
+          <TopCadets />
         </TabsContent>
         <TabsContent value="reports" className="mt-4">
           <Reports />
@@ -49,7 +94,7 @@ function StatCard({ icon: Icon, label, value, sub }: { icon: any; label: string;
   return (
     <Card>
       <CardContent className="p-3 flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+        <div className="h-10 w-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
           <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0">
@@ -74,9 +119,9 @@ function Overview() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <StatCard icon={Users} label="Students" value={t.totalStudents} sub={`${t.activeStudents} active`} />
+        <StatCard icon={Users} label="Cadets" value={t.totalStudents} sub={`${t.activeStudents} active`} />
         <StatCard icon={TrendingUp} label="Avg Score" value={`${t.overallAvg}%`} sub={`${t.totalAttempts} attempts`} />
-        <StatCard icon={CalendarCheck} label="Attendance" value={`${t.attendanceRate}%`} />
+        <StatCard icon={CalendarCheck} label="Attendance" value={`${t.attendanceRate}%`} sub="Today's roll" />
         <StatCard icon={BookOpen} label="Library" value={t.totalLectures} sub={`${t.totalTests} tests`} />
       </div>
 
@@ -133,6 +178,36 @@ function Overview() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function TopCadets() {
+  const fn = useServerFn(getLeaderboard);
+  const { data, isLoading } = useQuery({
+    queryKey: ["hof", "hunter", "weekly", "admin"],
+    queryFn: () => fn({ data: { period: "weekly" } }),
+  });
+  if (isLoading) return <Skeleton className="h-40" />;
+  const rows: any[] = data?.rows?.slice(0, 10) ?? [];
+  if (rows.length === 0) return <p className="text-sm text-muted-foreground">No activity yet this week.</p>;
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base flex items-center gap-2"><Crown className="h-4 w-4 text-amber-400" />Today's Top Cadets (weekly XP)</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {rows.map((r) => (
+          <div key={r.user_id} className="flex items-center gap-3 text-sm">
+            <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-400 grid place-items-center font-orbitron font-bold text-xs shrink-0">
+              #{r.rank}
+            </div>
+            <div className="flex-1 min-w-0 truncate">{r.name}</div>
+            <div className="text-xs font-orbitron">Lv {r.level}</div>
+            <div className="text-sm font-bold font-orbitron w-20 text-right">{r.xp?.toLocaleString?.() ?? 0}</div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -202,9 +277,9 @@ function Reports() {
     <div className="space-y-4">
       <div className="grid md:grid-cols-[1fr_auto] gap-2 items-end">
         <div>
-          <label className="text-xs text-muted-foreground">Select student</label>
+          <label className="text-xs text-muted-foreground">Select Cadet</label>
           <Select value={studentId} onValueChange={setStudentId}>
-            <SelectTrigger><SelectValue placeholder="Pick a student" /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Pick a Cadet" /></SelectTrigger>
             <SelectContent>
               <div className="p-2">
                 <div className="relative">
@@ -223,7 +298,7 @@ function Reports() {
         </Button>
       </div>
 
-      {!studentId && <p className="text-sm text-muted-foreground">Pick a student to see their report card.</p>}
+      {!studentId && <p className="text-sm text-muted-foreground">Pick a Cadet to see their Report Card.</p>}
 
       {card.isLoading && <Skeleton className="h-40" />}
       {card.data && (
