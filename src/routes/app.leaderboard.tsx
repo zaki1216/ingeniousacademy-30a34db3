@@ -2,11 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { Trophy, Crown, CalendarCheck, Flame, Medal, ArrowUp, ArrowDown, Sparkles, Info, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  Trophy, Crown, CalendarCheck, Flame, Medal, Sparkles, TrendingUp,
+  Swords, Coins, Award, Lock, Star, ShieldCheck, ArrowUp, ArrowDown,
+} from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import { getLeaderboard } from "@/lib/api/gamification.functions";
 import { getAttendanceLeaderboard } from "@/lib/api/attendance.functions";
 import { getScholarLeaderboard } from "@/lib/api/academic.functions";
@@ -14,22 +18,80 @@ import { cn } from "@/lib/utils";
 import { rankFromLevel } from "@/lib/rpg/ranks";
 import { RankBadge } from "@/components/rpg/RankBadge";
 
-export const Route = createFileRoute("/app/leaderboard")({ component: LeaderboardPage });
+export const Route = createFileRoute("/app/leaderboard")({
+  head: () => ({
+    meta: [
+      { title: "Hall of Fame — Ingenious Academy" },
+      { name: "description", content: "The prestigious Hall of Fame — where the greatest Cadets of Ingenious Academy are honoured." },
+    ],
+  }),
+  component: HallOfFamePage,
+});
 
-const PERIOD_HELP: Record<"weekly" | "monthly" | "all", string> = {
-  weekly: "Weekly XP = sum of all XP transactions in the last 7 days. Resets each Monday at midnight.",
-  monthly: "Monthly XP = sum of all XP transactions in the current calendar month.",
-  all: "All-time XP = the total XP you have ever earned across every activity.",
-};
+type HallId = "hunter" | "scholar" | "consistency" | "arena" | "wealth" | "achievement";
 
-const BRACKET_HELP = {
-  ABOVE: "The hunter one rank above you in this period. Their XP minus yours is the gap you need to close.",
-  YOU: "Your current standing in this period — your rank number and XP earned.",
-  BELOW: "The hunter one rank below you. If your XP drops or theirs grows past you, they take your spot.",
-} as const;
+const HALLS: Array<{
+  id: HallId;
+  name: string;
+  icon: React.ReactNode;
+  tagline: string;
+  lumi: string;
+  accent: string;
+  glow: string;
+  available: boolean;
+}> = [
+  {
+    id: "hunter", name: "Hunter Rankings",
+    icon: <Swords className="h-4 w-4" />,
+    tagline: "Warriors of experience — measured in XP earned.",
+    lumi: "This hall celebrates Cadets whose relentless practice has forged them into elite hunters.",
+    accent: "from-amber-500/25 via-amber-500/10 to-transparent",
+    glow: "#fbbf24", available: true,
+  },
+  {
+    id: "scholar", name: "Scholar Rankings",
+    icon: <Award className="h-4 w-4" />,
+    tagline: "Masters of the offline examinations.",
+    lumi: "This hall honours those who mastered their offline examinations with unwavering focus.",
+    accent: "from-sky-400/25 via-sky-400/10 to-transparent",
+    glow: "#38bdf8", available: true,
+  },
+  {
+    id: "consistency", name: "Consistency",
+    icon: <Flame className="h-4 w-4" />,
+    tagline: "Highest attendance & longest streaks.",
+    lumi: "This hall celebrates Cadets who never miss an opportunity to learn.",
+    accent: "from-orange-500/25 via-orange-500/10 to-transparent",
+    glow: "#fb923c", available: true,
+  },
+  {
+    id: "arena", name: "Arena Champions",
+    icon: <ShieldCheck className="h-4 w-4" />,
+    tagline: "Duel victors and season champions.",
+    lumi: "The gates of the Arena Hall open soon — sharpen your blade, Cadet.",
+    accent: "from-rose-500/25 via-rose-500/10 to-transparent",
+    glow: "#fb7185", available: false,
+  },
+  {
+    id: "wealth", name: "Wealth",
+    icon: <Coins className="h-4 w-4" />,
+    tagline: "Coins hoarded, treasures collected.",
+    lumi: "Fortune favours the diligent. This vault will soon reveal the Academy's wealthiest Cadets.",
+    accent: "from-yellow-400/25 via-yellow-400/10 to-transparent",
+    glow: "#facc15", available: false,
+  },
+  {
+    id: "achievement", name: "Achievements",
+    icon: <Medal className="h-4 w-4" />,
+    tagline: "Badges, titles and rare collections.",
+    lumi: "Every trophy tells a story. This hall will chronicle the Academy's most decorated Cadets.",
+    accent: "from-violet-400/25 via-violet-400/10 to-transparent",
+    glow: "#a78bfa", available: false,
+  },
+];
 
-function LeaderboardPage() {
-  const [mode, setMode] = useState<"xp" | "attendance" | "scholar">("xp");
+function HallOfFamePage() {
+  const [hall, setHall] = useState<HallId>("hunter");
   const [period, setPeriod] = useState<"weekly" | "monthly" | "all">("weekly");
 
   const xpFn = useServerFn(getLeaderboard);
@@ -37,316 +99,318 @@ function LeaderboardPage() {
   const scholarFn = useServerFn(getScholarLeaderboard);
 
   const xpQ = useQuery({
-    queryKey: ["leaderboard", "xp", period],
+    queryKey: ["hof", "hunter", period],
     queryFn: () => xpFn({ data: { period } }),
-    enabled: mode === "xp",
+    enabled: hall === "hunter",
   });
-
   const attQ = useQuery({
-    queryKey: ["leaderboard", "attendance"],
+    queryKey: ["hof", "consistency"],
     queryFn: () => attFn(),
-    enabled: mode === "attendance",
+    enabled: hall === "consistency",
   });
-
   const scholarQ = useQuery({
-    queryKey: ["leaderboard", "scholar"],
+    queryKey: ["hof", "scholar"],
     queryFn: () => scholarFn(),
-    enabled: mode === "scholar",
+    enabled: hall === "scholar",
   });
 
-  const q = mode === "xp" ? xpQ : mode === "attendance" ? attQ : scholarQ;
-  const rows = q.data?.rows ?? [];
-  const myRank = q.data?.myRank ?? null;
+  const q = hall === "hunter" ? xpQ : hall === "consistency" ? attQ : hall === "scholar" ? scholarQ : null;
+  const rows: any[] = q?.data?.rows ?? [];
+  const active = HALLS.find((h) => h.id === hall)!;
 
-  // Neighbors (one rank above / below) — pure presentation derived from rows.
-  const { me, above, below, growthMsg } = useMemo(() => {
-    const meRow = rows.find((r: any) => r.isMe) as any | undefined;
-    const aboveRow = meRow ? (rows.find((r: any) => r.rank === meRow.rank - 1) as any | undefined) : undefined;
-    const belowRow = meRow ? (rows.find((r: any) => r.rank === meRow.rank + 1) as any | undefined) : undefined;
+  const podium = rows.slice(0, 3);
+  const rest = rows.slice(3);
+
+  const { me, above, growthMsg } = useMemo(() => {
+    const meRow = rows.find((r: any) => r.isMe);
+    const aboveRow = meRow ? rows.find((r: any) => r.rank === meRow.rank - 1) : undefined;
     let growthMsg = "";
-    if (mode === "xp" && meRow) {
-      const diff = aboveRow ? (aboveRow.xp ?? 0) - (meRow.xp ?? 0) : 0;
-      if (period === "weekly") {
-        growthMsg = aboveRow && diff > 0
-          ? `Earn ${diff.toLocaleString()} more XP this week to overtake #${aboveRow.rank}.`
-          : `You're holding the top of your bracket — keep it up this week!`;
-      } else if (period === "monthly") {
-        growthMsg = aboveRow && diff > 0
-          ? `${diff.toLocaleString()} XP separates you from #${aboveRow.rank} this month.`
-          : `Apex of the month so far. Defend your throne.`;
-      } else {
-        growthMsg = aboveRow && diff > 0
-          ? `${diff.toLocaleString()} all-time XP to climb to #${aboveRow.rank}.`
-          : `Legendary all-time placement.`;
+    if (meRow && aboveRow) {
+      if (hall === "hunter") {
+        const diff = (aboveRow.xp ?? 0) - (meRow.xp ?? 0);
+        if (diff > 0) growthMsg = `Only ${diff.toLocaleString()} XP separates you from Rank #${aboveRow.rank}.`;
+      } else if (hall === "scholar") {
+        const diff = (aboveRow.percentage ?? 0) - (meRow.percentage ?? 0);
+        if (diff > 0) growthMsg = `Just ${diff.toFixed(1)}% more to overtake Rank #${aboveRow.rank}.`;
+      } else if (hall === "consistency") {
+        const diff = (aboveRow.present ?? 0) - (meRow.present ?? 0);
+        if (diff > 0) growthMsg = `${diff} more days present to overtake Rank #${aboveRow.rank}.`;
       }
+    } else if (meRow && !aboveRow) {
+      growthMsg = "You stand at the summit of this hall. Defend your legacy.";
     }
-    return { me: meRow, above: aboveRow, below: belowRow, growthMsg };
-  }, [rows, mode, period]);
+    return { me: meRow, above: aboveRow, growthMsg };
+  }, [rows, hall]);
 
   return (
-    <TooltipProvider delayDuration={150}>
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold font-orbitron flex items-center gap-2">
-          <Trophy className="h-6 w-6 text-amber-500" /> Leaderboard
-        </h1>
-        <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-          {mode === "xp"
-            ? (period === "all" ? "Hunters of your class — all-time XP." : `Hunters of your class — ${period === "weekly" ? "weekly" : "monthly"} XP.`)
-            : mode === "attendance"
-            ? "Hunters of your class — attendance honor roll."
-            : "Scholars of your class — academic performance (offline tests only)."}
-          {mode === "xp" && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button aria-label="How this is computed" className="inline-flex">
-                  <Info className="h-3.5 w-3.5 text-muted-foreground/70 hover:text-foreground" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs text-xs leading-relaxed">{PERIOD_HELP[period]}</TooltipContent>
-            </Tooltip>
-          )}
-        </p>
+    <div className="space-y-6 pb-8">
+      {/* Cinematic entrance */}
+      <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-950/40 via-background to-background">
+        {/* marble sheen */}
+        <div className="absolute inset-0 opacity-40 pointer-events-none"
+             style={{ backgroundImage: "radial-gradient(ellipse at top, rgba(251,191,36,0.25), transparent 60%), radial-gradient(ellipse at bottom, rgba(120,53,15,0.2), transparent 60%)" }} />
+        {/* floating particles */}
+        {Array.from({ length: 14 }).map((_, i) => (
+          <motion.span
+            key={i}
+            className="absolute h-1 w-1 rounded-full bg-amber-300/70"
+            style={{ left: `${(i * 37) % 100}%`, top: `${(i * 53) % 100}%` }}
+            animate={{ y: [0, -14, 0], opacity: [0.2, 0.9, 0.2] }}
+            transition={{ duration: 3 + (i % 4), repeat: Infinity, delay: i * 0.2 }}
+          />
+        ))}
+        <div className="relative p-6 md:p-8 text-center">
+          <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6 }}
+            className="mx-auto h-16 w-16 md:h-20 md:w-20 rounded-full grid place-items-center bg-gradient-to-br from-amber-400 to-amber-700 shadow-[0_0_40px_-4px_rgba(251,191,36,0.6)]">
+            <Trophy className="h-8 w-8 md:h-10 md:w-10 text-amber-950" />
+          </motion.div>
+          <h1 className="mt-3 text-3xl md:text-4xl font-black font-orbitron tracking-wider bg-gradient-to-b from-amber-200 via-amber-400 to-amber-700 bg-clip-text text-transparent">
+            Hall of Fame
+          </h1>
+          <p className="mt-1 text-sm text-amber-200/70 italic max-w-xl mx-auto">
+            "Here we honour the greatest Cadets of Ingenious Academy — may their names inspire every hunter who walks these halls."
+          </p>
+          {/* Banner columns */}
+          <div className="mt-4 flex justify-center gap-6 opacity-60">
+            <div className="h-1 w-16 bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+            <Star className="h-4 w-4 text-amber-400" />
+            <div className="h-1 w-16 bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+          </div>
+        </div>
       </div>
 
-      <Tabs value={mode} onValueChange={(v) => setMode(v as typeof mode)}>
-        <TabsList className="grid grid-cols-3 w-full">
-          <TabsTrigger value="xp">Hunter Rank</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance</TabsTrigger>
-          <TabsTrigger value="scholar">Scholar Rank</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      {/* Hall selector */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        {HALLS.map((h) => (
+          <button
+            key={h.id}
+            onClick={() => h.available && setHall(h.id)}
+            className={cn(
+              "group relative rounded-xl border p-3 text-left transition-all overflow-hidden",
+              hall === h.id ? "border-amber-500/70 ring-1 ring-amber-500/40" : "border-border/60 hover:border-amber-500/40",
+              !h.available && "opacity-70",
+            )}
+          >
+            <div className={cn("absolute inset-0 bg-gradient-to-br pointer-events-none", h.accent)} />
+            <div className="relative flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg grid place-items-center bg-background/60 border border-white/10" style={{ boxShadow: `0 0 12px -2px ${h.glow}` }}>
+                {h.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-orbitron uppercase tracking-widest font-bold truncate">{h.name}</div>
+                <div className="text-[10px] text-muted-foreground truncate">{h.tagline}</div>
+              </div>
+              {!h.available && <Lock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+            </div>
+          </button>
+        ))}
+      </div>
 
-      {mode === "xp" && (
-        <Tabs value={period} onValueChange={(v) => setPeriod(v as typeof period)}>
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="weekly">Weekly</TabsTrigger>
-            <TabsTrigger value="monthly">Monthly</TabsTrigger>
-            <TabsTrigger value="all">All-time</TabsTrigger>
-          </TabsList>
-        </Tabs>
+      {/* Lumi whisper */}
+      <Card className="border-amber-500/20 bg-amber-500/5">
+        <CardContent className="p-3 flex items-start gap-3">
+          <Sparkles className="h-4 w-4 text-amber-400 mt-0.5 shrink-0" />
+          <p className="text-xs text-amber-100/80 italic leading-relaxed">
+            <span className="font-orbitron uppercase tracking-wider text-amber-300 not-italic mr-1">Lumi:</span>
+            {active.lumi}
+          </p>
+        </CardContent>
+      </Card>
+
+      {!active.available ? (
+        <ComingSoonHall name={active.name} />
+      ) : hall === "hunter" ? (
+        <>
+          <Tabs value={period} onValueChange={(v) => setPeriod(v as typeof period)}>
+            <TabsList className="grid grid-cols-3 w-full">
+              <TabsTrigger value="weekly">Weekly</TabsTrigger>
+              <TabsTrigger value="monthly">Monthly</TabsTrigger>
+              <TabsTrigger value="all">All-time</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <HallBody q={xpQ} rows={rows} podium={podium} rest={rest} me={me} above={above} growthMsg={growthMsg} kind="hunter" />
+        </>
+      ) : hall === "scholar" ? (
+        <HallBody q={scholarQ} rows={rows} podium={podium} rest={rest} me={me} above={above} growthMsg={growthMsg} kind="scholar" />
+      ) : (
+        <HallBody q={attQ} rows={rows} podium={podium} rest={rest} me={me} above={above} growthMsg={growthMsg} kind="consistency" />
       )}
+    </div>
+  );
+}
 
-      {/* Personal context card: rank above / me / rank below + growth message */}
-      {mode === "xp" && me && (
-        <Card className="rune-border bg-[image:radial-gradient(circle_at_top,hsl(var(--primary)/0.18),transparent_60%)]">
+function ComingSoonHall({ name }: { name: string }) {
+  return (
+    <Card className="border-dashed border-amber-500/30">
+      <CardContent className="p-8 text-center space-y-3">
+        <div className="mx-auto h-14 w-14 rounded-full grid place-items-center bg-amber-500/10 border border-amber-500/30">
+          <Lock className="h-6 w-6 text-amber-400" />
+        </div>
+        <div className="font-orbitron uppercase tracking-widest text-sm">{name}</div>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+          The doors to this hall are still being carved. Its trophies will be revealed in a future Season.
+        </p>
+        <Badge variant="outline" className="border-amber-500/40 text-amber-300">Coming Soon</Badge>
+      </CardContent>
+    </Card>
+  );
+}
+
+function HallBody({
+  q, rows, podium, rest, me, above, growthMsg, kind,
+}: {
+  q: any; rows: any[]; podium: any[]; rest: any[];
+  me: any; above: any; growthMsg: string;
+  kind: "hunter" | "scholar" | "consistency";
+}) {
+  if (q?.isLoading) return <p className="text-muted-foreground text-sm text-center py-8">Opening the hall…</p>;
+  if (rows.length === 0) return (
+    <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">No legends recorded here yet. Be the first.</CardContent></Card>
+  );
+
+  return (
+    <>
+      {/* Podium */}
+      {podium.length > 0 && <Podium rows={podium} kind={kind} />}
+
+      {/* Player position */}
+      {me && (
+        <Card className="border-primary/50 bg-[image:radial-gradient(circle_at_top,hsl(var(--primary)/0.18),transparent_60%)]">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-orbitron uppercase tracking-widest text-primary">
-                <Sparkles className="h-3.5 w-3.5" /> Your bracket
+                <Sparkles className="h-3.5 w-3.5" /> Your Standing
               </div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button aria-label="How your bracket works" className="inline-flex">
-                    <Info className="h-3.5 w-3.5 text-muted-foreground/70 hover:text-foreground" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs text-xs leading-relaxed">
-                  Shows the hunter directly above and below you in this period's ranking, so you can see exactly who to overtake — or who's chasing you.
-                </TooltipContent>
-              </Tooltip>
+              <Badge variant="outline" className="font-orbitron">#{me.rank}</Badge>
             </div>
-            <NeighborRow label="ABOVE" tip={BRACKET_HELP.ABOVE} row={above} icon={<ArrowUp className="h-3 w-3" />} tone="up" />
-            <NeighborRow label="YOU"   tip={BRACKET_HELP.YOU}   row={me}    highlight />
-            <NeighborRow label="BELOW" tip={BRACKET_HELP.BELOW} row={below} icon={<ArrowDown className="h-3 w-3" />} tone="down" />
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <StatMini label="Above" value={above ? `#${above.rank}` : "—"} icon={<ArrowUp className="h-3 w-3" />} tone="up" />
+              <StatMini label="You" value={`#${me.rank}`} highlight />
+              <StatMini label="Below" value={rows.find((r) => r.rank === me.rank + 1) ? `#${me.rank + 1}` : "—"} icon={<ArrowDown className="h-3 w-3" />} tone="down" />
+            </div>
             {growthMsg && (
-              <div className="text-xs text-muted-foreground border-t pt-2 leading-relaxed flex items-start gap-1.5">
+              <div className="text-xs text-amber-200/90 border-t border-amber-500/20 pt-2 flex items-start gap-1.5 leading-relaxed">
                 <TrendingUp className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                <span className="flex-1">
-                  <b className="text-foreground font-orbitron uppercase tracking-wider text-[10px] mr-1">
-                    {period === "weekly" ? "This week:" : period === "monthly" ? "This month:" : "All-time:"}
-                  </b>
-                  {growthMsg}
-                </span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button aria-label="How growth is computed" className="inline-flex shrink-0">
-                      <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs text-xs leading-relaxed">
-                    Growth is the XP gap between you and the hunter above. Earning that much more {period === "weekly" ? "before the week resets on Monday" : period === "monthly" ? "before the month ends" : "any time"} bumps you up one rank.
-                  </TooltipContent>
-                </Tooltip>
+                <span>{growthMsg}</span>
               </div>
             )}
           </CardContent>
         </Card>
       )}
 
-      {q.isLoading && <p className="text-muted-foreground text-sm">Loading…</p>}
-
-      {rows.length === 0 && !q.isLoading && (
-        <Card><CardContent className="p-6 text-center text-sm text-muted-foreground">No data yet.</CardContent></Card>
-      )}
-
-      {mode === "xp" ? (
-        <div className="space-y-2">
-          {rows.map((r: any) => {
-            const tier = rankFromLevel(r.level ?? 1);
-            return (
-              <Card key={r.user_id} className={cn(r.isMe && "border-primary ring-1 ring-primary monarch-glow")}>
-                <CardContent className="p-3 flex items-center gap-3">
-                  <div className={cn(
-                    "h-10 w-10 rounded-xl flex items-center justify-center font-bold font-orbitron shrink-0",
-                    r.rank === 1 && "bg-amber-500/15 text-amber-500",
-                    r.rank === 2 && "bg-slate-400/20 text-slate-300",
-                    r.rank === 3 && "bg-orange-500/15 text-orange-500",
-                    r.rank > 3 && "bg-muted text-muted-foreground",
-                  )}>
-                    {r.rank === 1 ? <Crown className="h-5 w-5" /> : `#${r.rank}`}
-                  </div>
-                  <RankBadge tier={tier.tier} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold truncate flex items-center gap-2">
-                      {r.name}
-                      {r.isMe && <span className="text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded">YOU</span>}
-                    </div>
-                    <div className="text-[11px] text-muted-foreground truncate">
-                      {tier.label} · Lv {r.level}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-bold font-orbitron">{r.xp.toLocaleString()}</div>
-                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">XP</div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      ) : mode === "attendance" ? (
-        <div className="space-y-2">
-          {rows.map((r: any) => (
-            <Card key={r.user_id} className={cn(r.isMe && "border-primary ring-1 ring-primary")}>
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className={cn(
-                  "h-10 w-10 rounded-xl flex items-center justify-center font-bold font-orbitron shrink-0",
-                  r.rank === 1 && "bg-amber-500/15 text-amber-500",
-                  r.rank === 2 && "bg-slate-400/20 text-slate-300",
-                  r.rank === 3 && "bg-orange-500/15 text-orange-500",
-                  r.rank > 3 && "bg-muted text-muted-foreground",
-                )}>
-                  {r.rank === 1 ? <Crown className="h-5 w-5" /> : `#${r.rank}`}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-semibold truncate flex items-center gap-2">
-                    {r.name}
-                    {r.isMe && <span className="text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded">YOU</span>}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                    <span className="inline-flex items-center gap-1">
-                      <CalendarCheck className="h-3 w-3 text-green-500" /> {r.present}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Flame className="h-3 w-3 text-orange-500" /> {r.currentStreak}d
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Medal className="h-3 w-3 text-amber-500" /> {r.percentage}%
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold font-orbitron">{r.present}</div>
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Present</div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {rows.map((r: any) => (
-            <Card key={r.user_id} className={cn(r.isMe && "border-primary ring-1 ring-primary")}>
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className={cn(
-                  "h-10 w-10 rounded-xl flex items-center justify-center font-bold font-orbitron shrink-0",
-                  r.rank === 1 && "bg-amber-500/15 text-amber-500",
-                  r.rank === 2 && "bg-slate-400/20 text-slate-300",
-                  r.rank === 3 && "bg-orange-500/15 text-orange-500",
-                  r.rank > 3 && "bg-muted text-muted-foreground",
-                )}>
-                  {r.rank === 1 ? <Crown className="h-5 w-5" /> : `#${r.rank}`}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-semibold truncate flex items-center gap-2">
-                    {r.name}
-                    {r.isMe && <span className="text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded">YOU</span>}
-                  </div>
-                  <div className="text-[11px] text-muted-foreground truncate">
-                    Scholar · {r.obtained}/{r.max} marks
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold font-orbitron">{r.percentage}%</div>
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Academic</div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {myRank && myRank > 50 && (
-        <p className="text-xs text-center text-muted-foreground">Your rank: #{myRank}</p>
-      )}
-    </div>
-    </TooltipProvider>
+      {/* Rest of hall */}
+      <div className="space-y-2">
+        {rest.map((r) => (
+          <RankRow key={r.user_id} row={r} kind={kind} />
+        ))}
+      </div>
+    </>
   );
 }
 
-function NeighborRow({
-  label,
-  tip,
-  row,
-  icon,
-  tone,
-  highlight,
-}: {
-  label: string;
-  tip?: string;
-  row: any;
-  icon?: React.ReactNode;
-  tone?: "up" | "down";
-  highlight?: boolean;
-}) {
-  const LabelEl = (
-    <span className={cn(
-      "w-12 text-[10px] font-orbitron tracking-wider flex items-center gap-1 cursor-help",
-      tone === "up" && "text-emerald-400",
-      tone === "down" && "text-rose-400",
-      highlight && "text-primary",
-      !row && "text-muted-foreground/70",
-    )}>
-      {icon}{label}
-    </span>
+function Podium({ rows, kind }: { rows: any[]; kind: "hunter" | "scholar" | "consistency" }) {
+  const order = [rows[1], rows[0], rows[2]].filter(Boolean);
+  const heights = ["h-24", "h-32", "h-20"];
+  const medals = ["🥈", "🥇", "🥉"];
+  return (
+    <div className="grid grid-cols-3 gap-3 items-end">
+      {order.map((r, i) => {
+        const isFirst = i === 1;
+        return (
+          <motion.div
+            key={r.user_id}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: i * 0.1 }}
+            className="text-center"
+          >
+            <div className="text-2xl mb-1">{medals[i]}</div>
+            <div className={cn(
+              "rounded-t-xl border border-b-0 px-2 py-2 flex flex-col items-center justify-end",
+              heights[i],
+              isFirst
+                ? "border-amber-400/70 bg-gradient-to-b from-amber-400/30 to-amber-600/10 shadow-[0_0_30px_-4px_rgba(251,191,36,0.5)]"
+                : "border-white/10 bg-gradient-to-b from-white/10 to-transparent",
+            )}>
+              {isFirst && <Crown className="h-5 w-5 text-amber-300 mb-1" />}
+              <div className="text-[11px] font-bold font-orbitron truncate w-full">{r.name}</div>
+              <div className="text-[10px] text-muted-foreground truncate w-full">
+                {kind === "hunter" && `${r.xp?.toLocaleString?.() ?? 0} XP`}
+                {kind === "scholar" && `${r.percentage}%`}
+                {kind === "consistency" && `${r.present} days`}
+              </div>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
   );
-  const Labeled = tip ? (
-    <Tooltip>
-      <TooltipTrigger asChild>{LabelEl}</TooltipTrigger>
-      <TooltipContent className="max-w-xs text-xs leading-relaxed">{tip}</TooltipContent>
-    </Tooltip>
-  ) : LabelEl;
+}
 
-  if (!row) {
-    return (
-      <div className="flex items-center gap-3 text-xs text-muted-foreground/70">
-        {Labeled}
-        <span>— none —</span>
-      </div>
-    );
-  }
-  const tier = rankFromLevel(row.level ?? 1);
+function RankRow({ row: r, kind }: { row: any; kind: "hunter" | "scholar" | "consistency" }) {
+  return (
+    <Card className={cn(r.isMe && "border-primary ring-1 ring-primary monarch-glow")}>
+      <CardContent className="p-3 flex items-center gap-3">
+        <div className={cn(
+          "h-10 w-10 rounded-xl flex items-center justify-center font-bold font-orbitron shrink-0 bg-muted text-muted-foreground",
+        )}>
+          #{r.rank}
+        </div>
+        {kind === "hunter" && <RankBadge tier={rankFromLevel(r.level ?? 1).tier} size="sm" />}
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold truncate flex items-center gap-2">
+            {r.name}
+            {r.isMe && <span className="text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded">YOU</span>}
+          </div>
+          {kind === "hunter" && (
+            <div className="text-[11px] text-muted-foreground truncate">
+              {rankFromLevel(r.level ?? 1).label} · Lv {r.level}
+            </div>
+          )}
+          {kind === "consistency" && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+              <span className="inline-flex items-center gap-1"><CalendarCheck className="h-3 w-3 text-green-500" />{r.present}</span>
+              <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3 text-orange-500" />{r.currentStreak}d</span>
+              <span className="inline-flex items-center gap-1"><Medal className="h-3 w-3 text-amber-500" />{r.percentage}%</span>
+            </div>
+          )}
+          {kind === "scholar" && (
+            <div className="text-[11px] text-muted-foreground truncate">Scholar · {r.obtained}/{r.max} marks</div>
+          )}
+        </div>
+        <div className="text-right">
+          <div className="font-bold font-orbitron">
+            {kind === "hunter" && r.xp?.toLocaleString?.()}
+            {kind === "scholar" && `${r.percentage}%`}
+            {kind === "consistency" && r.present}
+          </div>
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wide">
+            {kind === "hunter" ? "XP" : kind === "scholar" ? "Score" : "Present"}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function StatMini({ label, value, icon, tone, highlight }: {
+  label: string; value: string; icon?: React.ReactNode;
+  tone?: "up" | "down"; highlight?: boolean;
+}) {
   return (
     <div className={cn(
-      "flex items-center gap-3 rounded-lg p-2",
-      highlight && "bg-primary/10 ring-1 ring-primary/40",
+      "rounded-lg p-2 border",
+      highlight ? "border-primary/50 bg-primary/10" : "border-border/50",
     )}>
-      {Labeled}
-      <span className="font-orbitron text-sm text-muted-foreground w-8">#{row.rank}</span>
-      <RankBadge tier={tier.tier} size="sm" />
-      <span className="flex-1 min-w-0 truncate text-sm font-semibold">{row.name}</span>
-      <span className="text-sm font-bold font-orbitron tabular-nums">{row.xp?.toLocaleString?.() ?? row.xp}</span>
+      <div className={cn(
+        "text-[10px] font-orbitron uppercase tracking-wider flex items-center justify-center gap-1",
+        tone === "up" && "text-emerald-400",
+        tone === "down" && "text-rose-400",
+        highlight && "text-primary",
+      )}>
+        {icon}{label}
+      </div>
+      <div className="font-orbitron font-bold text-sm">{value}</div>
     </div>
   );
 }

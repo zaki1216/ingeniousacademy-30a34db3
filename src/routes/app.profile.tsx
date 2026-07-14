@@ -337,7 +337,7 @@ function ResidencePage() {
           <SectionHeader eyebrow="Quick paths" title="Hunter Menu" />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
             <QuickLink to="/app/talents" icon={<Target className="h-4 w-4" />} label="Talents" />
-            <QuickLink to="/app/leaderboard" icon={<Trophy className="h-4 w-4" />} label="Rankings" />
+            <QuickLink to="/app/leaderboard" icon={<Trophy className="h-4 w-4" />} label="Hall of Fame" />
             <QuickLink to="/app/attendance" icon={<CalendarCheck className="h-4 w-4" />} label="Attendance" />
             <QuickLink to="/app/announcements" icon={<FileText className="h-4 w-4" />} label="News" />
             <QuickLink to="/app/guidebook" icon={<Scroll className="h-4 w-4" />} label="Lumi's Guidebook" />
