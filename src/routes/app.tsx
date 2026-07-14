@@ -130,45 +130,6 @@ function Brand() {
   );
 }
 
-function BottomTabs() {
-  const path = useRouterState({ select: (s) => s.location.pathname });
-  return (
-    <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-white/10 glass-card pb-[env(safe-area-inset-bottom)]"
-      style={{ background: "color-mix(in oklab, var(--card) 88%, transparent)" }}
-    >
-      <ul className="grid grid-cols-5">
-        {studentBottomTabs.map((t) => {
-          const active = t.end ? path === t.to : path === t.to || path.startsWith(t.to + "/");
-          const Icon = t.icon;
-          return (
-            <li key={t.to}>
-              <Link
-                to={t.to}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-semibold transition-colors",
-                  active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <span
-                  className={cn(
-                    "h-9 w-9 rounded-2xl flex items-center justify-center transition-all",
-                    active
-                      ? "bg-[image:var(--gradient-primary)] glow-primary"
-                      : "bg-transparent",
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                </span>
-                <span className={active ? "text-foreground" : ""}>{t.label}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-  );
-}
 
 function AppLayout() {
   const navigate = useNavigate();
