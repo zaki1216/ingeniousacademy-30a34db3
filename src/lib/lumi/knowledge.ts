@@ -427,11 +427,15 @@ export const LUMI_ENTRIES: LumiEntry[] = [
   },
 ];
 
+import { applyLumiOverride, readLumiOverrides } from "./overrides";
+
 export function searchLumi(query: string, limit = 12): LumiEntry[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
+  const overrides = readLumiOverrides();
   const tokens = q.split(/\s+/).filter(Boolean);
-  const scored = LUMI_ENTRIES.map((e) => {
+  const scored = LUMI_ENTRIES.map((raw) => {
+    const e = applyLumiOverride(raw, overrides);
     const hay = [e.title, e.summary, e.category, ...e.keywords, ...e.body].join(" ").toLowerCase();
     let score = 0;
     for (const t of tokens) {
@@ -447,9 +451,12 @@ export function searchLumi(query: string, limit = 12): LumiEntry[] {
 }
 
 export function entryForCategory(cat: LumiCategoryId): LumiEntry[] {
-  return LUMI_ENTRIES.filter((e) => e.category === cat);
+  const overrides = readLumiOverrides();
+  return LUMI_ENTRIES.filter((e) => e.category === cat).map((e) => applyLumiOverride(e, overrides));
 }
 
 export function findEntry(id: string): LumiEntry | undefined {
-  return LUMI_ENTRIES.find((e) => e.id === id);
+  const raw = LUMI_ENTRIES.find((e) => e.id === id);
+  return raw ? applyLumiOverride(raw) : undefined;
 }
+
