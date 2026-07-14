@@ -40,23 +40,8 @@ const adminNav: NavItem[] = [
 
 const adminSecondaryNav: NavItem[] = [];
 
-// Student primary nav — 5 hero actions only
-const studentNav: NavItem[] = [
-  { to: "/app", label: "Home", icon: Home, end: true },
-  { to: "/app/journey", label: "Journey", icon: Map },
-  { to: "/app/pvp", label: "Arena", icon: Swords },
-  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/profile", label: "Residence", icon: Home },
-];
-
-// Mobile bottom tabs — same 5 primary actions
-const studentBottomTabs: NavItem[] = [
-  { to: "/app", label: "Home", icon: Home, end: true },
-  { to: "/app/journey", label: "Journey", icon: Map },
-  { to: "/app/pvp", label: "Arena", icon: Swords },
-  { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/profile", label: "Residence", icon: Home },
-];
+// Student navigation now happens via the Academy World HUD (AcademyHUD).
+const studentNav: NavItem[] = [];
 
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
