@@ -43,7 +43,7 @@ const studentNav: NavItem[] = [
   { to: "/app/journey", label: "Journey", icon: Map },
   { to: "/app/pvp", label: "Arena", icon: Swords },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/profile", label: "Profile", icon: User },
+  { to: "/app/profile", label: "Residence", icon: Home },
 ];
 
 // Mobile bottom tabs — same 5 primary actions
@@ -52,7 +52,7 @@ const studentBottomTabs: NavItem[] = [
   { to: "/app/journey", label: "Journey", icon: Map },
   { to: "/app/pvp", label: "Arena", icon: Swords },
   { to: "/app/shop", label: "Shop", icon: ShoppingBag },
-  { to: "/app/profile", label: "Profile", icon: User },
+  { to: "/app/profile", label: "Residence", icon: Home },
 ];
 
 
