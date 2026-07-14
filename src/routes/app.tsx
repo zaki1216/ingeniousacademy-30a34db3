@@ -4,6 +4,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard, Users, BookOpen, ClipboardList,
   LogOut, Menu, Settings, Map, Swords, ShoppingBag, Home, User, Sparkles,
+  ShieldCheck, Gamepad2, Library, ScrollText, Cog,
 } from "lucide-react";
 
 
@@ -27,14 +28,14 @@ export const Route = createFileRoute("/app")({
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean };
 
-// Admin primary nav — 6 hubs only
+// Academy Office — 6 hubs only
 const adminNav: NavItem[] = [
-  { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/app/students", label: "Students", icon: Users },
-  { to: "/app/admin/content", label: "Content", icon: BookOpen },
-  { to: "/app/admin/assessment", label: "Assessment", icon: ClipboardList },
-  { to: "/app/admin/gamification", label: "Gamification", icon: Sparkles },
-  { to: "/app/admin/settings", label: "Settings", icon: Settings },
+  { to: "/app/admin/dashboard", label: "Command Center", icon: LayoutDashboard },
+  { to: "/app/admin/cadets", label: "Cadets", icon: ShieldCheck },
+  { to: "/app/admin/content", label: "Academy Content", icon: Library },
+  { to: "/app/admin/assessment", label: "Assessments", icon: ScrollText },
+  { to: "/app/admin/gamification", label: "Academy Systems", icon: Gamepad2 },
+  { to: "/app/admin/settings", label: "Academy Settings", icon: Cog },
 ];
 
 const adminSecondaryNav: NavItem[] = [];
@@ -119,14 +120,26 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function Brand() {
+  const { role } = useAuth();
+  const isAdmin = role === "admin";
   return (
     <div className="flex items-center gap-2 px-2 py-3">
-      <div className="h-10 w-10 rounded-2xl bg-white/90 flex items-center justify-center overflow-hidden glow-primary">
+      <div className={cn(
+        "h-10 w-10 rounded-2xl flex items-center justify-center overflow-hidden",
+        isAdmin ? "bg-gradient-to-br from-amber-400 to-amber-700 shadow-[0_0_20px_-4px_rgba(251,191,36,0.6)]" : "bg-white/90 glow-primary",
+      )}>
         <img src={logoAsset.url} alt="Ingenious Academy" className="h-9 w-9 object-contain" />
       </div>
       <div>
-        <div className="text-sm font-extrabold leading-tight">Ingenious Academy</div>
-        <div className="text-[11px] text-muted-foreground leading-tight">Learn Smart. Score Higher.</div>
+        <div className={cn(
+          "text-sm font-extrabold leading-tight",
+          isAdmin && "bg-gradient-to-b from-amber-200 via-amber-400 to-amber-700 bg-clip-text text-transparent font-orbitron tracking-wider",
+        )}>
+          {isAdmin ? "Academy Office" : "Ingenious Academy"}
+        </div>
+        <div className="text-[11px] text-muted-foreground leading-tight">
+          {isAdmin ? "Headmaster Control Center" : "Learn Smart. Score Higher."}
+        </div>
       </div>
     </div>
   );

@@ -1,33 +1,33 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ClipboardList, BarChart3, TrendingUp, GraduationCap, ListChecks, FileSpreadsheet, ScrollText } from "lucide-react";
+import { Users, CalendarCheck, Ticket, Award, ClipboardList, GraduationCap, ShieldCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { HeadmasterHeader } from "@/components/admin/HeadmasterHeader";
 
-export const Route = createFileRoute("/app/admin/assessment")({
-  head: () => ({ meta: [{ title: "Assessments — Academy Office" }] }),
-  component: AssessmentHub,
+export const Route = createFileRoute("/app/admin/cadets")({
+  head: () => ({ meta: [{ title: "Cadets — Academy Office" }] }),
+  component: CadetsHub,
 });
 
 const tiles = [
-  { to: "/app/admin/lecture-quizzes", label: "Lecture Quizzes", desc: "Per-lecture quiz management", icon: ListChecks },
-  { to: "/app/admin/quiz-import", label: "Quiz Import", desc: "Bulk upload questions", icon: FileSpreadsheet },
-  { to: "/app/admin/offline-tests", label: "Offline Tests", desc: "Enter marks · updates Report Cards & Scholar Rank", icon: GraduationCap },
-  { to: "/app/tests", label: "Test Library", desc: "Browse and preview all tests", icon: ClipboardList },
-  { to: "/app/results", label: "Quiz Results", desc: "Every attempt across the Academy", icon: BarChart3 },
-  { to: "/app/analytics", label: "Question Analytics", desc: "Hardest questions, pass rates, averages", icon: TrendingUp },
+  { to: "/app/students", label: "All Cadets", desc: "Roster, profiles, progression", icon: Users },
+  { to: "/app/admin/attendance", label: "Attendance", desc: "Mark present or absent · daily rolls", icon: CalendarCheck },
+  { to: "/app/admin/passes", label: "Passes", desc: "Review and approve pass requests", icon: Ticket },
+  { to: "/app/admin/dashboard", label: "Report Cards", desc: "Per-Cadet analytics and exports", icon: ClipboardList },
+  { to: "/app/admin/lecture-views", label: "Learning Timeline", desc: "Watch history & engagement", icon: GraduationCap },
+  { to: "/app/admin/gamification", label: "Achievements & Titles", desc: "Award badges, titles, unlocks", icon: Award },
 ];
 
-function AssessmentHub() {
+function CadetsHub() {
   const { role } = useAuth();
   if (role !== "admin") return <p className="text-muted-foreground">Admins only.</p>;
   return (
     <div className="space-y-5">
       <HeadmasterHeader
-        icon={<ScrollText className="h-7 w-7" />}
-        title="Assessments"
-        tagline="Trials, examinations and the marks that shape every Cadet's Report Card."
-        lumi="Offline Tests never touch the game economy — they belong to the Scholar Ranking. Lecture Quizzes power progression."
+        icon={<ShieldCheck className="h-7 w-7" />}
+        title="Cadets"
+        tagline="Every Cadet of the Academy — their journey, records and honours."
+        lumi="This wing is where the Headmaster keeps watch over every Cadet. Click any tile to command a facet of their journey."
       />
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {tiles.map((t) => {
