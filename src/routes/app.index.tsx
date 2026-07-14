@@ -44,14 +44,6 @@ function AdminDashboard() {
   return <AcademyCommandCenter />;
 }
 
-const QUICK_ACTIONS: { to: string; label: string; sub: string; icon: typeof Map; gradient: string }[] = [
-  { to: "/app/journey",     label: "Journey",    sub: "Worlds & dungeons",  icon: Map,        gradient: "from-blue-500 to-indigo-600" },
-  { to: "/app/pvp",         label: "Arena",      sub: "PvP battles",        icon: Swords,     gradient: "from-rose-500 to-orange-500" },
-  { to: "/app/leaderboard", label: "Rankings",   sub: "Climb the ladder",   icon: Trophy,     gradient: "from-amber-400 to-yellow-600" },
-  { to: "/app/shop",        label: "Hero Shop",  sub: "Spend coins",        icon: ShoppingBag, gradient: "from-fuchsia-500 to-purple-600" },
-  { to: "/app/collection",  label: "Collection", sub: "Shadows & titles",   icon: Sparkles,   gradient: "from-violet-500 to-fuchsia-600" },
-  { to: "/app/profile",     label: "Profile",    sub: "Your hunter",        icon: Award,      gradient: "from-emerald-400 to-teal-600" },
-];
 
 function StudentDashboard({ userId }: { userId?: string }) {
   const navigate = useNavigate();
