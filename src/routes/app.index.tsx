@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
@@ -7,6 +7,7 @@ import {
   Map, Swords, Trophy, ShoppingBag, Award, ChevronRight, Sparkles, Target, CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { CampusMap } from "@/components/campus/CampusMap";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";

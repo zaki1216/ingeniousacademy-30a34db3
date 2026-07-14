@@ -17,6 +17,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppWelcomeRouteImport } from './routes/app.welcome'
 import { Route as AppTestsRouteImport } from './routes/app.tests'
 import { Route as AppTalentsRouteImport } from './routes/app.talents'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
@@ -101,6 +102,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWelcomeRoute = AppWelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => AppRoute,
 } as any)
 const AppTestsRoute = AppTestsRouteImport.update({
@@ -361,6 +367,7 @@ export interface FileRoutesByFullPath {
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
+  '/app/welcome': typeof AppWelcomeRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
@@ -413,6 +420,7 @@ export interface FileRoutesByTo {
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
+  '/app/welcome': typeof AppWelcomeRoute
   '/app': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
@@ -469,6 +477,7 @@ export interface FileRoutesById {
   '/app/students': typeof AppStudentsRoute
   '/app/talents': typeof AppTalentsRoute
   '/app/tests': typeof AppTestsRouteWithChildren
+  '/app/welcome': typeof AppWelcomeRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
@@ -526,6 +535,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
+    | '/app/welcome'
     | '/app/'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
@@ -578,6 +588,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
+    | '/app/welcome'
     | '/app'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
@@ -633,6 +644,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/talents'
     | '/app/tests'
+    | '/app/welcome'
     | '/app/'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
@@ -724,6 +736,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/welcome': {
+      id: '/app/welcome'
+      path: '/welcome'
+      fullPath: '/app/welcome'
+      preLoaderRoute: typeof AppWelcomeRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/tests': {
@@ -1123,6 +1142,7 @@ interface AppRouteChildren {
   AppStudentsRoute: typeof AppStudentsRoute
   AppTalentsRoute: typeof AppTalentsRoute
   AppTestsRoute: typeof AppTestsRouteWithChildren
+  AppWelcomeRoute: typeof AppWelcomeRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminAssessmentRoute: typeof AppAdminAssessmentRoute
   AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
@@ -1164,6 +1184,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppStudentsRoute: AppStudentsRoute,
   AppTalentsRoute: AppTalentsRoute,
   AppTestsRoute: AppTestsRouteWithChildren,
+  AppWelcomeRoute: AppWelcomeRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminAssessmentRoute: AppAdminAssessmentRoute,
   AppAdminAttendanceRoute: AppAdminAttendanceRoute,
