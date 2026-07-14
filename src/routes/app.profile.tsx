@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Award, BookOpen, CalendarCheck, Coins, Flame, Sparkles, Swords, Trophy, Zap,
   PawPrint, Backpack, FileText, Settings, Target, GraduationCap, Home, Shirt, Ghost,
-  Scroll, Crown,
+  Scroll, Crown, BookOpen,
 } from "lucide-react";
 
 import { useAuth } from "@/lib/auth/AuthContext";
