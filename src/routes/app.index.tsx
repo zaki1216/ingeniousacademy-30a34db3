@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import {
   Users, BookOpen, ClipboardList, Megaphone, Target,
 } from "lucide-react";
-import { CampusMap } from "@/components/campus/CampusMap";
+import { AcademyWorld } from "@/components/campus/AcademyWorld";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,22 +64,7 @@ function StudentDashboard({ userId }: { userId?: string }) {
     }
   }, [navigate]);
 
-  return (
-    <div className="space-y-4">
-      <div className="text-center">
-        <div className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-amber-300/80 font-orbitron font-bold">
-          Ingenious Academy
-        </div>
-        <h1 className="text-2xl md:text-3xl font-black mt-1">
-          The Campus Awaits
-        </h1>
-        <p className="text-xs md:text-sm text-muted-foreground mt-1">
-          Click any building to begin your quest.
-        </p>
-      </div>
-      <CampusMap />
-    </div>
-  );
+  return <AcademyWorld />;
 }
 
 function AcademyCommandCenter() {
