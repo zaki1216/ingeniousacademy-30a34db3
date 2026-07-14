@@ -52,11 +52,13 @@ import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.setting
 import { Route as AppAdminQuizImportRouteImport } from './routes/app.admin.quiz-import'
 import { Route as AppAdminPassesRouteImport } from './routes/app.admin.passes'
 import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
+import { Route as AppAdminLumiRouteImport } from './routes/app.admin.lumi'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
 import { Route as AppAdminLectureQuizzesRouteImport } from './routes/app.admin.lecture-quizzes'
 import { Route as AppAdminGamificationRouteImport } from './routes/app.admin.gamification'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
 import { Route as AppAdminContentRouteImport } from './routes/app.admin.content'
+import { Route as AppAdminCadetsRouteImport } from './routes/app.admin.cadets'
 import { Route as AppAdminAttendanceRouteImport } from './routes/app.admin.attendance'
 import { Route as AppAdminAssessmentRouteImport } from './routes/app.admin.assessment'
 import { Route as AppJourneyWorldIdIndexRouteImport } from './routes/app.journey.$worldId.index'
@@ -280,6 +282,11 @@ const AppAdminOfflineTestsRoute = AppAdminOfflineTestsRouteImport.update({
   path: '/admin/offline-tests',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminLumiRoute = AppAdminLumiRouteImport.update({
+  id: '/admin/lumi',
+  path: '/admin/lumi',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
   id: '/admin/lecture-views',
   path: '/admin/lecture-views',
@@ -303,6 +310,11 @@ const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
 const AppAdminContentRoute = AppAdminContentRouteImport.update({
   id: '/admin/content',
   path: '/admin/content',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminCadetsRoute = AppAdminCadetsRouteImport.update({
+  id: '/admin/cadets',
+  path: '/admin/cadets',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminAttendanceRoute = AppAdminAttendanceRouteImport.update({
@@ -378,11 +390,13 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-quizzes': typeof AppAdminLectureQuizzesRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/quiz-import': typeof AppAdminQuizImportRoute
@@ -432,11 +446,13 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-quizzes': typeof AppAdminLectureQuizzesRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/quiz-import': typeof AppAdminQuizImportRoute
@@ -490,11 +506,13 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/app/admin/assessment': typeof AppAdminAssessmentRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
+  '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-quizzes': typeof AppAdminLectureQuizzesRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
+  '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/quiz-import': typeof AppAdminQuizImportRoute
@@ -549,11 +567,13 @@ export interface FileRouteTypes {
     | '/app/'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
+    | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
     | '/app/admin/lecture-quizzes'
     | '/app/admin/lecture-views'
+    | '/app/admin/lumi'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
     | '/app/admin/quiz-import'
@@ -603,11 +623,13 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
+    | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
     | '/app/admin/lecture-quizzes'
     | '/app/admin/lecture-views'
+    | '/app/admin/lumi'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
     | '/app/admin/quiz-import'
@@ -660,11 +682,13 @@ export interface FileRouteTypes {
     | '/app/'
     | '/app/admin/assessment'
     | '/app/admin/attendance'
+    | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/gamification'
     | '/app/admin/lecture-quizzes'
     | '/app/admin/lecture-views'
+    | '/app/admin/lumi'
     | '/app/admin/offline-tests'
     | '/app/admin/passes'
     | '/app/admin/quiz-import'
@@ -995,6 +1019,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminOfflineTestsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/lumi': {
+      id: '/app/admin/lumi'
+      path: '/admin/lumi'
+      fullPath: '/app/admin/lumi'
+      preLoaderRoute: typeof AppAdminLumiRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/lecture-views': {
       id: '/app/admin/lecture-views'
       path: '/admin/lecture-views'
@@ -1028,6 +1059,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/content'
       fullPath: '/app/admin/content'
       preLoaderRoute: typeof AppAdminContentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/cadets': {
+      id: '/app/admin/cadets'
+      path: '/admin/cadets'
+      fullPath: '/app/admin/cadets'
+      preLoaderRoute: typeof AppAdminCadetsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/admin/attendance': {
@@ -1166,11 +1204,13 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppAdminAssessmentRoute: typeof AppAdminAssessmentRoute
   AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
+  AppAdminCadetsRoute: typeof AppAdminCadetsRoute
   AppAdminContentRoute: typeof AppAdminContentRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminGamificationRoute: typeof AppAdminGamificationRoute
   AppAdminLectureQuizzesRoute: typeof AppAdminLectureQuizzesRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
+  AppAdminLumiRoute: typeof AppAdminLumiRoute
   AppAdminOfflineTestsRoute: typeof AppAdminOfflineTestsRoute
   AppAdminPassesRoute: typeof AppAdminPassesRoute
   AppAdminQuizImportRoute: typeof AppAdminQuizImportRoute
@@ -1209,11 +1249,13 @@ const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppAdminAssessmentRoute: AppAdminAssessmentRoute,
   AppAdminAttendanceRoute: AppAdminAttendanceRoute,
+  AppAdminCadetsRoute: AppAdminCadetsRoute,
   AppAdminContentRoute: AppAdminContentRoute,
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminGamificationRoute: AppAdminGamificationRoute,
   AppAdminLectureQuizzesRoute: AppAdminLectureQuizzesRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
+  AppAdminLumiRoute: AppAdminLumiRoute,
   AppAdminOfflineTestsRoute: AppAdminOfflineTestsRoute,
   AppAdminPassesRoute: AppAdminPassesRoute,
   AppAdminQuizImportRoute: AppAdminQuizImportRoute,
