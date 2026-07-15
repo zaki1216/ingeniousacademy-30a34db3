@@ -45,6 +45,7 @@ import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
 import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppJourneyIndexRouteImport } from './routes/app.journey.index'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
+import { Route as AppBuildingMathRouteImport } from './routes/app.building.math'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
 import { Route as AppAdminSpinRouteImport } from './routes/app.admin.spin'
@@ -247,6 +248,11 @@ const AppTestsTestIdRoute = AppTestsTestIdRouteImport.update({
   path: '/$testId',
   getParentRoute: () => AppTestsRoute,
 } as any)
+const AppBuildingMathRoute = AppBuildingMathRouteImport.update({
+  id: '/building/math',
+  path: '/building/math',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAnalyticsTestIdRoute = AppAnalyticsTestIdRouteImport.update({
   id: '/$testId',
   path: '/$testId',
@@ -404,6 +410,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
+  '/app/building/math': typeof AppBuildingMathRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/pvp/': typeof AppPvpIndexRoute
@@ -460,6 +467,7 @@ export interface FileRoutesByTo {
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
+  '/app/building/math': typeof AppBuildingMathRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/journey': typeof AppJourneyIndexRoute
   '/app/pvp': typeof AppPvpIndexRoute
@@ -520,6 +528,7 @@ export interface FileRoutesById {
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
+  '/app/building/math': typeof AppBuildingMathRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/pvp/': typeof AppPvpIndexRoute
@@ -581,6 +590,7 @@ export interface FileRouteTypes {
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
+    | '/app/building/math'
     | '/app/tests/$testId'
     | '/app/journey/'
     | '/app/pvp/'
@@ -637,6 +647,7 @@ export interface FileRouteTypes {
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
+    | '/app/building/math'
     | '/app/tests/$testId'
     | '/app/journey'
     | '/app/pvp'
@@ -696,6 +707,7 @@ export interface FileRouteTypes {
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
+    | '/app/building/math'
     | '/app/tests/$testId'
     | '/app/journey/'
     | '/app/pvp/'
@@ -970,6 +982,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTestsTestIdRouteImport
       parentRoute: typeof AppTestsRoute
     }
+    '/app/building/math': {
+      id: '/app/building/math'
+      path: '/building/math'
+      fullPath: '/app/building/math'
+      preLoaderRoute: typeof AppBuildingMathRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/analytics/$testId': {
       id: '/app/analytics/$testId'
       path: '/$testId'
@@ -1217,6 +1236,7 @@ interface AppRouteChildren {
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppAdminSpinRoute: typeof AppAdminSpinRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
+  AppBuildingMathRoute: typeof AppBuildingMathRoute
   AppAdminStudentsIdRoute: typeof AppAdminStudentsIdRoute
 }
 
@@ -1262,6 +1282,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppAdminSpinRoute: AppAdminSpinRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
+  AppBuildingMathRoute: AppBuildingMathRoute,
   AppAdminStudentsIdRoute: AppAdminStudentsIdRoute,
 }
 
