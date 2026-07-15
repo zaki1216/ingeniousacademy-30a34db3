@@ -79,6 +79,8 @@ export function AcademyWorld() {
     () => (b: Building): string => {
       if (b.locked) return "";
       if (b.route) return b.route;
+      // Math building has a dedicated immersive interior scene.
+      if (b.kind === "math") return "/app/building/math";
       const list = subjects.data ?? [];
       const found = list.find((s) =>
         (b.match ?? []).some((kw) => (s.subject_name ?? "").toLowerCase().includes(kw)),
