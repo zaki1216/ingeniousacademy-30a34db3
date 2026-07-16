@@ -108,17 +108,29 @@ function MathematicsBuildingInterior() {
     try { sessionStorage.setItem("mathBuildingSeen", "1"); } catch { /* ignore */ }
   };
 
+  const { algebraChs, geometryChs } = useMemo(() => {
+    const chs = world?.chs ?? [];
+    const { algebra, geometry } = splitMathChapters(chs);
+    return { algebraChs: algebra, geometryChs: geometry };
+  }, [world]);
+
+  const activeChapters = useMemo(() => {
+    if (wing === "geometry") return geometryChs;
+    if (wing === "algebra") return algebraChs;
+    return [];
+  }, [wing, algebraChs, geometryChs]);
+
   const dungeons = useMemo(() => {
     if (!world) return [];
     const doneChs = new Set(world.chapterCompletions.map((c) => c.chapter_id));
     const aggMap = new Map((progress?.chapters ?? []).map((c) => [c.chapter_id, c]));
-    return world.chs.map((c, i) => {
+    return activeChapters.map((c, i) => {
       const agg = aggMap.get(c.id);
       const total = agg?.total ?? 0;
       const passed = agg?.passed ?? 0;
       const pct = agg?.percent ?? 0;
       const bossCleared = doneChs.has(c.id);
-      const prevBossCleared = i === 0 ? true : doneChs.has(world.chs[i - 1].id);
+      const prevBossCleared = i === 0 ? true : doneChs.has(activeChapters[i - 1].id);
       const anyStarted = passed > 0;
       const unlocked = i === 0 || prevBossCleared || anyStarted;
       const difficulty = Math.min(3, Math.floor(i / 2));
@@ -132,7 +144,7 @@ function MathematicsBuildingInterior() {
         nextQuest: agg?.next_to_unlock?.lecture_number ?? null,
       };
     });
-  }, [world, progress]);
+  }, [world, progress, activeChapters]);
 
   const stats = useMemo(() => {
     const totalDungeons = dungeons.length;
