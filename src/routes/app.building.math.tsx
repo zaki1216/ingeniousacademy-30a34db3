@@ -10,6 +10,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
+import { WingChooser } from "@/components/building/WingChooser";
+import { splitMathChapters } from "@/lib/building/wings";
 
 export const Route = createFileRoute("/app/building/math")({
   component: MathematicsBuildingInterior,
@@ -80,6 +82,7 @@ function MathematicsBuildingInterior() {
   const { profile, subject, world, progress } = useMathData();
   const [entering, setEntering] = useState(true);
   const [exiting, setExiting] = useState(false);
+  const [wing, setWing] = useState<"algebra" | "geometry" | null>(null);
   const [targetDungeon, setTargetDungeon] = useState<{ id: string; name: string } | null>(null);
   const [showLumi, setShowLumi] = useState(false);
 
