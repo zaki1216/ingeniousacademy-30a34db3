@@ -168,6 +168,10 @@ function MathematicsBuildingInterior() {
 
   function exitBuilding() {
     if (exiting) return;
+    if (wing) {
+      setWing(null);
+      return;
+    }
     setExiting(true);
     setTimeout(() => navigate({ to: "/app" }), reduced ? 350 : 1100);
   }
