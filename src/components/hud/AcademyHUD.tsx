@@ -403,12 +403,14 @@ export function AcademyHUD({
       </main>
 
       {/* HUD overlays — fixed to viewport */}
-      <div className="fixed top-3 left-3 z-40 pointer-events-none">
+      <div className="fixed top-2 left-2 sm:top-3 sm:left-3 z-40 pointer-events-none max-w-[70vw]">
         <PlayerHUD />
       </div>
-      <div className="fixed top-3 right-3 z-40 flex flex-col items-end gap-2 pointer-events-none">
+      <div className="fixed top-2 right-2 sm:top-3 sm:right-3 z-40 flex flex-col items-end gap-2 pointer-events-none">
         <ResourceHUD onSignOut={onSignOut} />
-        <Minimap />
+        <div className="hidden md:block">
+          <Minimap />
+        </div>
       </div>
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
         <AdventureBar />
