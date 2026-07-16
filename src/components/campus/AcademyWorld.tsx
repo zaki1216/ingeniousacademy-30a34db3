@@ -4,6 +4,8 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 
 /* --------------------------------- Types --------------------------------- */
 type BuildingKind =
@@ -29,10 +31,10 @@ type Building = {
   locked?: boolean;
 };
 
-const BUILDINGS: Building[] = [
-  { id: "library",   kind: "library",   name: "Language Library",   tag: "Scriptorium",   route: undefined, match: ["english","hindi","language","urdu","sanskrit","lang"], x: 12, y: 58, scale: 0.9 },
+const DESKTOP_BUILDINGS: Building[] = [
+  { id: "library",   kind: "library",   name: "Language Library",   tag: "Scriptorium",   route: "/app/building/library", match: ["english","hindi","language","urdu","sanskrit","lang"], x: 12, y: 58, scale: 0.9 },
   { id: "math",      kind: "math",      name: "Mathematics Building", tag: "Numeric Halls", match: ["math"],   x: 30, y: 52, scale: 1 },
-  { id: "science",   kind: "science",   name: "Science Laboratory", tag: "Alchemy Wing",  match: ["science","physics","chem","bio"], x: 50, y: 46, scale: 1.05 },
+  { id: "science",   kind: "science",   name: "Science Laboratory", tag: "Alchemy Wing",  route: "/app/building/science", match: ["science","physics","chem","bio"], x: 50, y: 46, scale: 1.05 },
   { id: "hall",      kind: "hall",      name: "Hall of Fame",       tag: "Champions",     route: "/app/leaderboard", x: 70, y: 52, scale: 1 },
   { id: "residence", kind: "residence", name: "Residence",          tag: "Your Quarters", route: "/app/profile", x: 87, y: 58, scale: 0.85 },
   { id: "arena",     kind: "arena",     name: "Arena Coliseum",     tag: "Duelists' Ring", route: "/app/pvp", x: 22, y: 74, scale: 1 },
@@ -40,7 +42,20 @@ const BUILDINGS: Building[] = [
   { id: "future",    kind: "future",    name: "Observatory",        tag: "Coming Soon",   locked: true, x: 50, y: 78, scale: 0.9 },
 ];
 
-const PLAYER_HOME = { x: 50, y: 90 }; // Courtyard spawn
+// Portrait-optimized layout for phones — 2 columns, tighter grid.
+const MOBILE_BUILDINGS: Building[] = [
+  { id: "math",      kind: "math",      name: "Mathematics Building", tag: "Numeric Halls", match: ["math"],   x: 30, y: 30, scale: 0.85 },
+  { id: "science",   kind: "science",   name: "Science Laboratory", tag: "Alchemy Wing", route: "/app/building/science", match: ["science","physics","chem","bio"], x: 70, y: 30, scale: 0.9 },
+  { id: "library",   kind: "library",   name: "Language Library",   tag: "Scriptorium",   route: "/app/building/library", match: ["english","hindi","language","urdu","sanskrit","lang"], x: 30, y: 50, scale: 0.8 },
+  { id: "hall",      kind: "hall",      name: "Hall of Fame",       tag: "Champions",     route: "/app/leaderboard", x: 70, y: 50, scale: 0.85 },
+  { id: "arena",     kind: "arena",     name: "Arena Coliseum",     tag: "Duelists' Ring", route: "/app/pvp", x: 30, y: 70, scale: 0.85 },
+  { id: "merchant",  kind: "merchant",  name: "Merchant's Emporium", tag: "Bazaar",       route: "/app/shop", x: 70, y: 70, scale: 0.8 },
+  { id: "residence", kind: "residence", name: "Residence",          tag: "Your Quarters", route: "/app/profile", x: 30, y: 87, scale: 0.75 },
+  { id: "future",    kind: "future",    name: "Observatory",        tag: "Coming Soon",   locked: true, x: 70, y: 87, scale: 0.75 },
+];
+
+const PLAYER_HOME_DESKTOP = { x: 50, y: 90 };
+const PLAYER_HOME_MOBILE = { x: 50, y: 96 };
 
 /* -------------------------------- Component ------------------------------- */
 export function AcademyWorld() {
