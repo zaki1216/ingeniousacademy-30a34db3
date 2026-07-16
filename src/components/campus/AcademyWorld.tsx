@@ -62,6 +62,9 @@ export function AcademyWorld() {
   const navigate = useNavigate();
   const reduced = useReducedMotion();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const BUILDINGS = isMobile ? MOBILE_BUILDINGS : DESKTOP_BUILDINGS;
+  const PLAYER_HOME = isMobile ? PLAYER_HOME_MOBILE : PLAYER_HOME_DESKTOP;
   const [target, setTarget] = useState<Building | null>(null);
   const [entering, setEntering] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -124,8 +127,11 @@ export function AcademyWorld() {
   return (
     <div className="relative w-full">
       <div
-        className="relative overflow-hidden rounded-3xl border border-amber-400/15 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.9)]"
-        style={{ aspectRatio: "16 / 10", minHeight: 520 }}
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-400/15 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.9)]"
+        style={{
+          aspectRatio: isMobile ? "3 / 5" : "16 / 10",
+          minHeight: isMobile ? 560 : 520,
+        }}
       >
         <Sky />
         <CloudLayer />
