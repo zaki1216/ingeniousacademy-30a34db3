@@ -89,21 +89,21 @@ export function PlayerHUD() {
   return (
     <Link
       to="/app/profile"
-      className="pointer-events-auto group flex items-center gap-2.5 rounded-2xl border border-amber-400/25 bg-black/55 backdrop-blur-xl px-2.5 py-2 shadow-[0_10px_40px_-15px_rgba(251,191,36,0.5)] hover:border-amber-300/60 transition"
-      style={{ maxWidth: 300 }}
+      className="pointer-events-auto group flex items-center gap-2 rounded-2xl border border-amber-400/25 bg-black/55 backdrop-blur-xl px-2 py-1.5 sm:px-2.5 sm:py-2 shadow-[0_10px_40px_-15px_rgba(251,191,36,0.5)] hover:border-amber-300/60 transition"
+      style={{ maxWidth: 260 }}
     >
       {/* Portrait */}
       <div className="relative shrink-0">
         <div
-          className="h-12 w-12 rounded-xl p-[2px]"
+          className="h-9 w-9 sm:h-12 sm:w-12 rounded-xl p-[2px]"
           style={{ background: rank?.gradient ?? "linear-gradient(135deg,#78350f,#f59e0b)" }}
         >
-          <div className="h-full w-full rounded-[10px] bg-black/80 grid place-items-center text-2xl">
+          <div className="h-full w-full rounded-[10px] bg-black/80 grid place-items-center text-lg sm:text-2xl">
             {avatar}
           </div>
         </div>
         <div
-          className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-5 min-w-[26px] px-1 rounded-md text-[10px] font-black grid place-items-center text-white ring-2 ring-black/80"
+          className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-4 sm:h-5 min-w-[22px] sm:min-w-[26px] px-1 rounded-md text-[9px] sm:text-[10px] font-black grid place-items-center text-white ring-2 ring-black/80"
           style={{
             background: rank?.gradient ?? "#f59e0b",
             boxShadow: `0 0 10px ${rank?.glow ?? "rgba(251,191,36,0.6)"}`,
@@ -113,22 +113,22 @@ export function PlayerHUD() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="min-w-0 flex-1">
+      {/* Stats — condensed on mobile */}
+      <div className="min-w-0 flex-1 hidden xs:block sm:block">
         <div
           className="text-[9px] font-bold tracking-[0.22em] uppercase truncate leading-none"
           style={{ color: rank?.color ?? "#fbbf24", fontFamily: "'Cinzel', serif" }}
         >
           {title}
         </div>
-        <div className="text-sm font-extrabold text-amber-50 leading-tight truncate">{name}</div>
-        <div className="mt-1 flex items-center justify-between text-[9px] font-bold text-amber-200/70">
+        <div className="text-xs sm:text-sm font-extrabold text-amber-50 leading-tight truncate">{name}</div>
+        <div className="mt-1 hidden sm:flex items-center justify-between text-[9px] font-bold text-amber-200/70">
           <span className="flex items-center gap-1">
             <Zap className="h-2.5 w-2.5" />
             XP {p?.xpIntoLevel ?? 0}/{p?.xpForNextLevel ?? "—"}
           </span>
         </div>
-        <div className="mt-0.5 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+        <div className="mt-1 h-1 sm:h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
           <motion.div
             className="h-full"
             style={{ background: "linear-gradient(90deg,#fde68a,#f59e0b,#7c2d12)" }}
@@ -177,7 +177,7 @@ export function ResourceHUD({ onSignOut }: { onSignOut: () => void }) {
   const stats = dash.data?.stats;
 
   return (
-    <div className="pointer-events-auto flex items-center gap-1.5">
+    <div className="pointer-events-auto flex items-center gap-1 sm:gap-1.5">
       <ResourceChip
         icon={<Coins className="h-3.5 w-3.5 text-amber-300" />}
         value={stats ? stats.coins.toLocaleString() : "—"}
@@ -188,11 +188,13 @@ export function ResourceHUD({ onSignOut }: { onSignOut: () => void }) {
         value={`${stats?.streak_days ?? 0}`}
         glow="rgba(251,146,60,0.25)"
       />
-      <ResourceChip
-        icon={<KeyRound className="h-3.5 w-3.5 text-slate-200" />}
-        value="0"
-        glow="rgba(148,163,184,0.2)"
-      />
+      <div className="hidden sm:block">
+        <ResourceChip
+          icon={<KeyRound className="h-3.5 w-3.5 text-slate-200" />}
+          value="0"
+          glow="rgba(148,163,184,0.2)"
+        />
+      </div>
       <button
         className="h-8 w-8 rounded-lg flex items-center justify-center bg-black/55 border border-white/10 backdrop-blur-xl text-amber-100/80 hover:text-amber-100 hover:border-amber-400/40"
         aria-label="Notifications"
