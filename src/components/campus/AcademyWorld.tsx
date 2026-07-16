@@ -4,6 +4,8 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 
 /* --------------------------------- Types --------------------------------- */
 type BuildingKind =
@@ -29,10 +31,10 @@ type Building = {
   locked?: boolean;
 };
 
-const BUILDINGS: Building[] = [
-  { id: "library",   kind: "library",   name: "Language Library",   tag: "Scriptorium",   route: undefined, match: ["english","hindi","language","urdu","sanskrit","lang"], x: 12, y: 58, scale: 0.9 },
+const DESKTOP_BUILDINGS: Building[] = [
+  { id: "library",   kind: "library",   name: "Language Library",   tag: "Scriptorium",   route: "/app/building/library", match: ["english","hindi","language","urdu","sanskrit","lang"], x: 12, y: 58, scale: 0.9 },
   { id: "math",      kind: "math",      name: "Mathematics Building", tag: "Numeric Halls", match: ["math"],   x: 30, y: 52, scale: 1 },
-  { id: "science",   kind: "science",   name: "Science Laboratory", tag: "Alchemy Wing",  match: ["science","physics","chem","bio"], x: 50, y: 46, scale: 1.05 },
+  { id: "science",   kind: "science",   name: "Science Laboratory", tag: "Alchemy Wing",  route: "/app/building/science", match: ["science","physics","chem","bio"], x: 50, y: 46, scale: 1.05 },
   { id: "hall",      kind: "hall",      name: "Hall of Fame",       tag: "Champions",     route: "/app/leaderboard", x: 70, y: 52, scale: 1 },
   { id: "residence", kind: "residence", name: "Residence",          tag: "Your Quarters", route: "/app/profile", x: 87, y: 58, scale: 0.85 },
   { id: "arena",     kind: "arena",     name: "Arena Coliseum",     tag: "Duelists' Ring", route: "/app/pvp", x: 22, y: 74, scale: 1 },
@@ -40,13 +42,29 @@ const BUILDINGS: Building[] = [
   { id: "future",    kind: "future",    name: "Observatory",        tag: "Coming Soon",   locked: true, x: 50, y: 78, scale: 0.9 },
 ];
 
-const PLAYER_HOME = { x: 50, y: 90 }; // Courtyard spawn
+// Portrait-optimized layout for phones — 2 columns, tighter grid.
+const MOBILE_BUILDINGS: Building[] = [
+  { id: "math",      kind: "math",      name: "Mathematics Building", tag: "Numeric Halls", match: ["math"],   x: 30, y: 30, scale: 0.85 },
+  { id: "science",   kind: "science",   name: "Science Laboratory", tag: "Alchemy Wing", route: "/app/building/science", match: ["science","physics","chem","bio"], x: 70, y: 30, scale: 0.9 },
+  { id: "library",   kind: "library",   name: "Language Library",   tag: "Scriptorium",   route: "/app/building/library", match: ["english","hindi","language","urdu","sanskrit","lang"], x: 30, y: 50, scale: 0.8 },
+  { id: "hall",      kind: "hall",      name: "Hall of Fame",       tag: "Champions",     route: "/app/leaderboard", x: 70, y: 50, scale: 0.85 },
+  { id: "arena",     kind: "arena",     name: "Arena Coliseum",     tag: "Duelists' Ring", route: "/app/pvp", x: 30, y: 70, scale: 0.85 },
+  { id: "merchant",  kind: "merchant",  name: "Merchant's Emporium", tag: "Bazaar",       route: "/app/shop", x: 70, y: 70, scale: 0.8 },
+  { id: "residence", kind: "residence", name: "Residence",          tag: "Your Quarters", route: "/app/profile", x: 30, y: 87, scale: 0.75 },
+  { id: "future",    kind: "future",    name: "Observatory",        tag: "Coming Soon",   locked: true, x: 70, y: 87, scale: 0.75 },
+];
+
+const PLAYER_HOME_DESKTOP = { x: 50, y: 90 };
+const PLAYER_HOME_MOBILE = { x: 50, y: 96 };
 
 /* -------------------------------- Component ------------------------------- */
 export function AcademyWorld() {
   const navigate = useNavigate();
   const reduced = useReducedMotion();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const BUILDINGS = isMobile ? MOBILE_BUILDINGS : DESKTOP_BUILDINGS;
+  const PLAYER_HOME = isMobile ? PLAYER_HOME_MOBILE : PLAYER_HOME_DESKTOP;
   const [target, setTarget] = useState<Building | null>(null);
   const [entering, setEntering] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -109,8 +127,11 @@ export function AcademyWorld() {
   return (
     <div className="relative w-full">
       <div
-        className="relative overflow-hidden rounded-3xl border border-amber-400/15 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.9)]"
-        style={{ aspectRatio: "16 / 10", minHeight: 520 }}
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-400/15 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.9)]"
+        style={{
+          aspectRatio: isMobile ? "3 / 5" : "16 / 10",
+          minHeight: isMobile ? 560 : 520,
+        }}
       >
         <Sky />
         <CloudLayer />
@@ -557,7 +578,7 @@ function BuildingSprite({
       onMouseLeave={() => onHover(false)}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0, scale: focused ? 1.08 : 1 }}
-      transition={{ delay: 0.1 + BUILDINGS.indexOf(b) * 0.06, duration: 0.5 }}
+      transition={{ delay: 0.1 + DESKTOP_BUILDINGS.findIndex((x) => x.id === b.id) * 0.06, duration: 0.5 }}
       whileHover={!disabled && !b.locked ? { y: -4 } : {}}
       className="absolute z-10 focus:outline-none disabled:cursor-not-allowed"
       style={{

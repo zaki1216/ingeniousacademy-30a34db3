@@ -10,6 +10,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
+import { WingChooser } from "@/components/building/WingChooser";
+import { splitMathChapters } from "@/lib/building/wings";
 
 export const Route = createFileRoute("/app/building/math")({
   component: MathematicsBuildingInterior,
@@ -80,6 +82,7 @@ function MathematicsBuildingInterior() {
   const { profile, subject, world, progress } = useMathData();
   const [entering, setEntering] = useState(true);
   const [exiting, setExiting] = useState(false);
+  const [wing, setWing] = useState<"algebra" | "geometry" | null>(null);
   const [targetDungeon, setTargetDungeon] = useState<{ id: string; name: string } | null>(null);
   const [showLumi, setShowLumi] = useState(false);
 
@@ -105,17 +108,29 @@ function MathematicsBuildingInterior() {
     try { sessionStorage.setItem("mathBuildingSeen", "1"); } catch { /* ignore */ }
   };
 
+  const { algebraChs, geometryChs } = useMemo(() => {
+    const chs = world?.chs ?? [];
+    const { algebra, geometry } = splitMathChapters(chs);
+    return { algebraChs: algebra, geometryChs: geometry };
+  }, [world]);
+
+  const activeChapters = useMemo(() => {
+    if (wing === "geometry") return geometryChs;
+    if (wing === "algebra") return algebraChs;
+    return [];
+  }, [wing, algebraChs, geometryChs]);
+
   const dungeons = useMemo(() => {
     if (!world) return [];
     const doneChs = new Set(world.chapterCompletions.map((c) => c.chapter_id));
     const aggMap = new Map((progress?.chapters ?? []).map((c) => [c.chapter_id, c]));
-    return world.chs.map((c, i) => {
+    return activeChapters.map((c, i) => {
       const agg = aggMap.get(c.id);
       const total = agg?.total ?? 0;
       const passed = agg?.passed ?? 0;
       const pct = agg?.percent ?? 0;
       const bossCleared = doneChs.has(c.id);
-      const prevBossCleared = i === 0 ? true : doneChs.has(world.chs[i - 1].id);
+      const prevBossCleared = i === 0 ? true : doneChs.has(activeChapters[i - 1].id);
       const anyStarted = passed > 0;
       const unlocked = i === 0 || prevBossCleared || anyStarted;
       const difficulty = Math.min(3, Math.floor(i / 2));
@@ -129,7 +144,7 @@ function MathematicsBuildingInterior() {
         nextQuest: agg?.next_to_unlock?.lecture_number ?? null,
       };
     });
-  }, [world, progress]);
+  }, [world, progress, activeChapters]);
 
   const stats = useMemo(() => {
     const totalDungeons = dungeons.length;
@@ -153,6 +168,10 @@ function MathematicsBuildingInterior() {
 
   function exitBuilding() {
     if (exiting) return;
+    if (wing) {
+      setWing(null);
+      return;
+    }
     setExiting(true);
     setTimeout(() => navigate({ to: "/app" }), reduced ? 350 : 1100);
   }
@@ -164,10 +183,46 @@ function MathematicsBuildingInterior() {
     return "Today's adventure awaits, Cadet.";
   }, [dungeons.length, stats]);
 
+  // Show wing selection screen first
+  if (!wing) {
+    return (
+      <WingChooser
+        title="Mathematics Building"
+        subtitle="The Numeric Halls await — choose the wing you wish to master."
+        onExit={exitBuilding}
+        wings={[
+          {
+            id: "algebra",
+            name: "Algebra Wing",
+            tag: "Hall of Numbers",
+            emoji: "📘",
+            description: "Master equations, polynomials and the arcane laws of number.",
+            gradient: "linear-gradient(135deg,#1e3a8a,#3b5aa8,#0f1e40)",
+            glow: "rgba(59,130,246,0.5)",
+            count: algebraChs.length,
+            onEnter: () => setWing("algebra"),
+          },
+          {
+            id: "geometry",
+            name: "Geometry Wing",
+            tag: "Chamber of Shapes",
+            emoji: "📐",
+            description: "Bend space, angles and form to your will inside the geometric fortress.",
+            gradient: "linear-gradient(135deg,#7c2d12,#c2410c,#78350f)",
+            glow: "rgba(251,146,60,0.5)",
+            count: geometryChs.length,
+            onEnter: () => setWing("geometry"),
+          },
+        ]}
+      />
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black">
       {/* Hall backdrop */}
       <HallEnvironment />
+
 
       {/* Floating equations */}
       <FloatingEquations />

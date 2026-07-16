@@ -45,7 +45,9 @@ import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
 import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppJourneyIndexRouteImport } from './routes/app.journey.index'
 import { Route as AppTestsTestIdRouteImport } from './routes/app.tests.$testId'
+import { Route as AppBuildingScienceRouteImport } from './routes/app.building.science'
 import { Route as AppBuildingMathRouteImport } from './routes/app.building.math'
+import { Route as AppBuildingLibraryRouteImport } from './routes/app.building.library'
 import { Route as AppAnalyticsTestIdRouteImport } from './routes/app.analytics.$testId'
 import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
 import { Route as AppAdminSpinRouteImport } from './routes/app.admin.spin'
@@ -248,9 +250,19 @@ const AppTestsTestIdRoute = AppTestsTestIdRouteImport.update({
   path: '/$testId',
   getParentRoute: () => AppTestsRoute,
 } as any)
+const AppBuildingScienceRoute = AppBuildingScienceRouteImport.update({
+  id: '/building/science',
+  path: '/building/science',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppBuildingMathRoute = AppBuildingMathRouteImport.update({
   id: '/building/math',
   path: '/building/math',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBuildingLibraryRoute = AppBuildingLibraryRouteImport.update({
+  id: '/building/library',
+  path: '/building/library',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAnalyticsTestIdRoute = AppAnalyticsTestIdRouteImport.update({
@@ -410,7 +422,9 @@ export interface FileRoutesByFullPath {
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
+  '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
+  '/app/building/science': typeof AppBuildingScienceRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/pvp/': typeof AppPvpIndexRoute
@@ -467,7 +481,9 @@ export interface FileRoutesByTo {
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
+  '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
+  '/app/building/science': typeof AppBuildingScienceRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/journey': typeof AppJourneyIndexRoute
   '/app/pvp': typeof AppPvpIndexRoute
@@ -528,7 +544,9 @@ export interface FileRoutesById {
   '/app/admin/spin': typeof AppAdminSpinRoute
   '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/analytics/$testId': typeof AppAnalyticsTestIdRoute
+  '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
+  '/app/building/science': typeof AppBuildingScienceRoute
   '/app/tests/$testId': typeof AppTestsTestIdRoute
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/pvp/': typeof AppPvpIndexRoute
@@ -590,7 +608,9 @@ export interface FileRouteTypes {
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
+    | '/app/building/library'
     | '/app/building/math'
+    | '/app/building/science'
     | '/app/tests/$testId'
     | '/app/journey/'
     | '/app/pvp/'
@@ -647,7 +667,9 @@ export interface FileRouteTypes {
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
+    | '/app/building/library'
     | '/app/building/math'
+    | '/app/building/science'
     | '/app/tests/$testId'
     | '/app/journey'
     | '/app/pvp'
@@ -707,7 +729,9 @@ export interface FileRouteTypes {
     | '/app/admin/spin'
     | '/app/admin/talents'
     | '/app/analytics/$testId'
+    | '/app/building/library'
     | '/app/building/math'
+    | '/app/building/science'
     | '/app/tests/$testId'
     | '/app/journey/'
     | '/app/pvp/'
@@ -982,11 +1006,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTestsTestIdRouteImport
       parentRoute: typeof AppTestsRoute
     }
+    '/app/building/science': {
+      id: '/app/building/science'
+      path: '/building/science'
+      fullPath: '/app/building/science'
+      preLoaderRoute: typeof AppBuildingScienceRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/building/math': {
       id: '/app/building/math'
       path: '/building/math'
       fullPath: '/app/building/math'
       preLoaderRoute: typeof AppBuildingMathRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/building/library': {
+      id: '/app/building/library'
+      path: '/building/library'
+      fullPath: '/app/building/library'
+      preLoaderRoute: typeof AppBuildingLibraryRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/analytics/$testId': {
@@ -1236,7 +1274,9 @@ interface AppRouteChildren {
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppAdminSpinRoute: typeof AppAdminSpinRoute
   AppAdminTalentsRoute: typeof AppAdminTalentsRoute
+  AppBuildingLibraryRoute: typeof AppBuildingLibraryRoute
   AppBuildingMathRoute: typeof AppBuildingMathRoute
+  AppBuildingScienceRoute: typeof AppBuildingScienceRoute
   AppAdminStudentsIdRoute: typeof AppAdminStudentsIdRoute
 }
 
@@ -1282,7 +1322,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppAdminSpinRoute: AppAdminSpinRoute,
   AppAdminTalentsRoute: AppAdminTalentsRoute,
+  AppBuildingLibraryRoute: AppBuildingLibraryRoute,
   AppBuildingMathRoute: AppBuildingMathRoute,
+  AppBuildingScienceRoute: AppBuildingScienceRoute,
   AppAdminStudentsIdRoute: AppAdminStudentsIdRoute,
 }
 
