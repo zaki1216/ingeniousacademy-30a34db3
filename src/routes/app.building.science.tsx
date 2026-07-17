@@ -189,8 +189,17 @@ function ScienceBuildingInterior() {
     );
   }
 
-  return <LabInterior title={wing === "sci01" ? (twoSubjectSplit?.sci01.subject_name ?? "Science 01") : (twoSubjectSplit?.sci02.subject_name ?? "Science 02")} dungeons={dungeons} onExit={exitBuilding} onEnter={enterDungeon} />;
+  return (
+    <LabInterior
+      title={wing === "sci01" ? (twoSubjectSplit?.sci01.subject_name ?? "Science 01") : (twoSubjectSplit?.sci02.subject_name ?? "Science 02")}
+      dungeons={dungeons}
+      onExit={exitBuilding}
+      onEnter={enterDungeon}
+      objective={recommended}
+    />
+  );
 }
+
 
 /* -------------------- Shared lab / hall interior view -------------------- */
 
