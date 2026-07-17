@@ -599,7 +599,7 @@ function InfoPanel({ stats }: { stats: { totalDungeons: number; cleared: number;
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }}
-      className="relative rounded-2xl border border-amber-400/25 bg-gradient-to-br from-black/70 to-stone-950/80 backdrop-blur-md px-4 py-3 text-amber-100 min-w-[260px]"
+      className="relative rounded-2xl border border-amber-400/25 bg-gradient-to-br from-black/70 to-stone-950/80 backdrop-blur-md px-3 sm:px-4 py-3 text-amber-100 w-full sm:min-w-[260px] sm:w-auto"
       style={{ boxShadow: "0 20px 60px -20px rgba(251,191,36,0.35), inset 0 1px 0 rgba(255,255,255,0.08)" }}
     >
       <div className="text-[9px] uppercase tracking-[0.35em] text-amber-300/80 font-bold">Mathematics Building</div>
