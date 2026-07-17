@@ -899,15 +899,15 @@ function ObjectiveBar({
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1, duration: 0.7 }}
-      className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center px-4 z-20"
+      className="pointer-events-none absolute inset-x-0 bottom-3 sm:bottom-6 flex justify-center px-3 sm:px-4 z-20"
     >
       <div
-        className="pointer-events-auto relative w-full max-w-xl rounded-2xl border border-amber-400/40 bg-gradient-to-r from-black/85 via-stone-950/85 to-black/85 backdrop-blur-md p-4 flex items-center gap-4"
+        className="pointer-events-auto relative w-full max-w-xl rounded-2xl border border-amber-400/40 bg-gradient-to-r from-black/85 via-stone-950/85 to-black/85 backdrop-blur-md p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3"
         style={{ boxShadow: "0 20px 60px -15px rgba(251,191,36,0.45), inset 0 1px 0 rgba(255,255,255,0.1)" }}
       >
         <div className="min-w-0 flex-1">
           <div className="text-[9px] uppercase tracking-[0.4em] text-amber-300 font-bold">Current Objective</div>
-          <div className="font-serif text-base md:text-lg font-black text-amber-50 truncate">
+          <div className="font-serif text-base sm:text-lg font-black text-amber-50 break-words leading-tight">
             ⚔ Continue {objective.name}
           </div>
           {objective.nextQuest !== null && (
@@ -918,7 +918,7 @@ function ObjectiveBar({
         </div>
         <button
           onClick={() => onEnter(objective)}
-          className="shrink-0 relative overflow-hidden rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-black transition-transform hover:scale-105 active:scale-95"
+          className="w-full sm:w-auto shrink-0 relative overflow-hidden rounded-xl px-4 py-2.5 text-[11px] sm:text-xs font-black uppercase tracking-[0.2em] text-black transition-transform hover:scale-105 active:scale-95"
           style={{
             background: "linear-gradient(135deg,#fde68a,#f59e0b,#c2410c)",
             boxShadow: "0 8px 20px -6px rgba(251,191,36,0.7), inset 0 1px 0 rgba(255,255,255,0.55)",
@@ -926,6 +926,7 @@ function ObjectiveBar({
         >
           Enter Dungeon
         </button>
+
       </div>
     </motion.div>
   );
