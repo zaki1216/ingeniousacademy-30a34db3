@@ -112,9 +112,26 @@ function LibraryBuildingInterior() {
         total, passed, pct, bossCleared, unlocked,
         rewardXp: c.completion_xp ?? 100,
         rewardCoins: c.completion_coins ?? 20,
+        nextQuest: agg?.next_to_unlock?.lecture_number ?? null,
       };
     });
   }, [chapters.data, progress.data]);
+
+  const recommended = useMemo<BuildingObjective | null>(() => {
+    const cand =
+      dungeons.find((d) => d.unlocked && !d.bossCleared && d.nextQuest !== null) ??
+      dungeons.find((d) => d.unlocked && !d.bossCleared) ??
+      null;
+    if (!cand) return null;
+    return {
+      id: cand.id,
+      subjectId: cand.subjectId,
+      name: cand.name,
+      nextQuest: cand.nextQuest,
+      bossReady: cand.total > 0 && cand.passed >= cand.total,
+    };
+  }, [dungeons]);
+
 
   function exitBuilding() {
     if (selectedSubjectId) {
