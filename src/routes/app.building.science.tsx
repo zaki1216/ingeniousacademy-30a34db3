@@ -9,7 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser } from "@/components/building/WingChooser";
+import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
 import { splitScienceChapters } from "@/lib/building/wings";
+
 
 export const Route = createFileRoute("/app/building/science")({
   component: ScienceBuildingInterior,
