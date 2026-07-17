@@ -269,7 +269,7 @@ export function LabInterior({
           </h1>
         </div>
 
-        <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-24">
+        <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-40">
           {dungeons.map((d, i) => (
             <DungeonCard key={d.id} d={d} index={i} onEnter={() => onEnter(d.subjectId, d.id)} accent="emerald" />
           ))}
@@ -280,9 +280,16 @@ export function LabInterior({
           )}
         </div>
       </div>
+
+      <BuildingObjectiveBar
+        objective={objective ?? null}
+        accent="emerald"
+        onEnter={(o) => onEnter(o.subjectId, o.id)}
+      />
     </div>
   );
 }
+
 
 export function DungeonCard({
   d,
