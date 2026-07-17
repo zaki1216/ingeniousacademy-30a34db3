@@ -208,6 +208,7 @@ export function LabInterior({
   dungeons,
   onExit,
   onEnter,
+  objective,
 }: {
   title: string;
   dungeons: Array<{
@@ -217,7 +218,9 @@ export function LabInterior({
   }>;
   onExit: () => void;
   onEnter: (subjectId: string, id: string) => void;
+  objective?: BuildingObjective | null;
 }) {
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050a08]">
       <div
