@@ -324,7 +324,8 @@ function MathematicsBuildingInterior() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
+
   );
 }
 
