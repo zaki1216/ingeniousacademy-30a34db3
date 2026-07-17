@@ -234,7 +234,7 @@ function LibraryBuildingInterior() {
           </h1>
         </div>
 
-        <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-24">
+        <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-40">
           {dungeons.map((d, i) => (
             <DungeonCard
               key={d.id}
@@ -253,6 +253,15 @@ function LibraryBuildingInterior() {
           )}
         </div>
       </div>
+
+      <BuildingObjectiveBar
+        objective={recommended}
+        accent="amber"
+        onEnter={(o) =>
+          navigate({ to: "/app/journey/$worldId/$dungeonId", params: { worldId: o.subjectId, dungeonId: o.id } })
+        }
+      />
     </div>
   );
 }
+
