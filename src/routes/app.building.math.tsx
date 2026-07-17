@@ -578,14 +578,18 @@ function ExitBanner({ onExit }: { onExit: () => void }) {
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       onClick={onExit}
-      className="group relative flex items-center gap-2 rounded-full pl-2 pr-4 py-1.5 border border-amber-400/30 bg-black/60 backdrop-blur-md text-amber-100 hover:border-amber-400/70 transition-colors"
+      className="group relative flex items-center gap-2 rounded-full pl-2 pr-3 sm:pr-4 py-1.5 border border-amber-400/30 bg-black/60 backdrop-blur-md text-amber-100 hover:border-amber-400/70 transition-colors"
       style={{ boxShadow: "0 8px 24px -8px rgba(0,0,0,0.8)" }}
     >
-      <span className="h-7 w-7 rounded-full grid place-items-center bg-amber-500/20 border border-amber-400/40">
-        <DoorOpen className="h-4 w-4" />
+      <span className="h-6 w-6 sm:h-7 sm:w-7 rounded-full grid place-items-center bg-amber-500/20 border border-amber-400/40">
+        <DoorOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
       </span>
-      <span className="text-xs font-bold tracking-[0.2em] uppercase font-serif">Return to Courtyard</span>
+      <span className="text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase font-serif">
+        <span className="sm:hidden">Back</span>
+        <span className="hidden sm:inline">Return to Courtyard</span>
+      </span>
     </motion.button>
+
   );
 }
 
