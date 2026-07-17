@@ -9,7 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser } from "@/components/building/WingChooser";
+import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
 import { splitScienceChapters } from "@/lib/building/wings";
+
 
 export const Route = createFileRoute("/app/building/science")({
   component: ScienceBuildingInterior,
@@ -120,9 +122,26 @@ function ScienceBuildingInterior() {
         total, passed, pct, bossCleared, unlocked,
         rewardXp: c.completion_xp ?? 100,
         rewardCoins: c.completion_coins ?? 20,
+        nextQuest: agg?.next_to_unlock?.lecture_number ?? null,
       };
     });
   }, [activeChs, world, progress]);
+
+  const recommended = useMemo<BuildingObjective | null>(() => {
+    const cand =
+      dungeons.find((d) => d.unlocked && !d.bossCleared && d.nextQuest !== null) ??
+      dungeons.find((d) => d.unlocked && !d.bossCleared) ??
+      null;
+    if (!cand) return null;
+    return {
+      id: cand.id,
+      subjectId: cand.subjectId,
+      name: cand.name,
+      nextQuest: cand.nextQuest,
+      bossReady: cand.total > 0 && cand.passed >= cand.total,
+    };
+  }, [dungeons]);
+
 
   function exitBuilding() {
     if (wing) {
@@ -170,8 +189,17 @@ function ScienceBuildingInterior() {
     );
   }
 
-  return <LabInterior title={wing === "sci01" ? (twoSubjectSplit?.sci01.subject_name ?? "Science 01") : (twoSubjectSplit?.sci02.subject_name ?? "Science 02")} dungeons={dungeons} onExit={exitBuilding} onEnter={enterDungeon} />;
+  return (
+    <LabInterior
+      title={wing === "sci01" ? (twoSubjectSplit?.sci01.subject_name ?? "Science 01") : (twoSubjectSplit?.sci02.subject_name ?? "Science 02")}
+      dungeons={dungeons}
+      onExit={exitBuilding}
+      onEnter={enterDungeon}
+      objective={recommended}
+    />
+  );
 }
+
 
 /* -------------------- Shared lab / hall interior view -------------------- */
 
@@ -180,6 +208,7 @@ export function LabInterior({
   dungeons,
   onExit,
   onEnter,
+  objective,
 }: {
   title: string;
   dungeons: Array<{
@@ -189,7 +218,9 @@ export function LabInterior({
   }>;
   onExit: () => void;
   onEnter: (subjectId: string, id: string) => void;
+  objective?: BuildingObjective | null;
 }) {
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050a08]">
       <div
@@ -238,7 +269,7 @@ export function LabInterior({
           </h1>
         </div>
 
-        <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-24">
+        <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-40">
           {dungeons.map((d, i) => (
             <DungeonCard key={d.id} d={d} index={i} onEnter={() => onEnter(d.subjectId, d.id)} accent="emerald" />
           ))}
@@ -249,9 +280,16 @@ export function LabInterior({
           )}
         </div>
       </div>
+
+      <BuildingObjectiveBar
+        objective={objective ?? null}
+        accent="emerald"
+        onEnter={(o) => onEnter(o.subjectId, o.id)}
+      />
     </div>
   );
 }
+
 
 export function DungeonCard({
   d,

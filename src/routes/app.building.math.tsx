@@ -183,43 +183,59 @@ function MathematicsBuildingInterior() {
     return "Today's adventure awaits, Cadet.";
   }, [dungeons.length, stats]);
 
-  // Show wing selection screen first
+  // Show wing selection screen first (with smooth crossfade to hall interior)
   if (!wing) {
     return (
-      <WingChooser
-        title="Mathematics Building"
-        subtitle="The Numeric Halls await — choose the wing you wish to master."
-        onExit={exitBuilding}
-        wings={[
-          {
-            id: "algebra",
-            name: "Algebra Wing",
-            tag: "Hall of Numbers",
-            emoji: "📘",
-            description: "Master equations, polynomials and the arcane laws of number.",
-            gradient: "linear-gradient(135deg,#1e3a8a,#3b5aa8,#0f1e40)",
-            glow: "rgba(59,130,246,0.5)",
-            count: algebraChs.length,
-            onEnter: () => setWing("algebra"),
-          },
-          {
-            id: "geometry",
-            name: "Geometry Wing",
-            tag: "Chamber of Shapes",
-            emoji: "📐",
-            description: "Bend space, angles and form to your will inside the geometric fortress.",
-            gradient: "linear-gradient(135deg,#7c2d12,#c2410c,#78350f)",
-            glow: "rgba(251,146,60,0.5)",
-            count: geometryChs.length,
-            onEnter: () => setWing("geometry"),
-          },
-        ]}
-      />
+      <motion.div
+        key="wing-chooser"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <WingChooser
+          title="Mathematics Building"
+          subtitle="The Numeric Halls await — choose the wing you wish to master."
+          onExit={exitBuilding}
+          wings={[
+            {
+              id: "algebra",
+              name: "Algebra Wing",
+              tag: "Hall of Numbers",
+              emoji: "📘",
+              description: "Master equations, polynomials and the arcane laws of number.",
+              gradient: "linear-gradient(135deg,#1e3a8a,#3b5aa8,#0f1e40)",
+              glow: "rgba(59,130,246,0.5)",
+              count: algebraChs.length,
+              onEnter: () => setWing("algebra"),
+            },
+            {
+              id: "geometry",
+              name: "Geometry Wing",
+              tag: "Chamber of Shapes",
+              emoji: "📐",
+              description: "Bend space, angles and form to your will inside the geometric fortress.",
+              gradient: "linear-gradient(135deg,#7c2d12,#c2410c,#78350f)",
+              glow: "rgba(251,146,60,0.5)",
+              count: geometryChs.length,
+              onEnter: () => setWing("geometry"),
+            },
+          ]}
+        />
+      </motion.div>
     );
   }
 
+
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black">
+    <motion.div
+      key={`hall-${wing}`}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+      className="fixed inset-0 z-50 overflow-hidden bg-black"
+    >
       {/* Hall backdrop */}
       <HallEnvironment />
 
@@ -237,11 +253,14 @@ function MathematicsBuildingInterior() {
         transition={{ duration: 0.8 }}
         className="absolute inset-0 flex flex-col"
       >
-        {/* Top bar */}
-        <div className="relative flex items-start justify-between p-4 md:p-6 gap-3">
+        {/* Top bar — wraps on narrow screens so nothing clips */}
+        <div className="relative flex flex-wrap items-start justify-between gap-3 p-3 sm:p-4 md:p-6">
           <ExitBanner onExit={exitBuilding} />
-          <InfoPanel stats={stats} />
+          <div className="w-full sm:w-auto order-3 sm:order-none">
+            <InfoPanel stats={stats} />
+          </div>
         </div>
+
 
         {/* Middle scroll region */}
         <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-40">
@@ -305,7 +324,8 @@ function MathematicsBuildingInterior() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
+
   );
 }
 
@@ -558,14 +578,18 @@ function ExitBanner({ onExit }: { onExit: () => void }) {
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       onClick={onExit}
-      className="group relative flex items-center gap-2 rounded-full pl-2 pr-4 py-1.5 border border-amber-400/30 bg-black/60 backdrop-blur-md text-amber-100 hover:border-amber-400/70 transition-colors"
+      className="group relative flex items-center gap-2 rounded-full pl-2 pr-3 sm:pr-4 py-1.5 border border-amber-400/30 bg-black/60 backdrop-blur-md text-amber-100 hover:border-amber-400/70 transition-colors"
       style={{ boxShadow: "0 8px 24px -8px rgba(0,0,0,0.8)" }}
     >
-      <span className="h-7 w-7 rounded-full grid place-items-center bg-amber-500/20 border border-amber-400/40">
-        <DoorOpen className="h-4 w-4" />
+      <span className="h-6 w-6 sm:h-7 sm:w-7 rounded-full grid place-items-center bg-amber-500/20 border border-amber-400/40">
+        <DoorOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
       </span>
-      <span className="text-xs font-bold tracking-[0.2em] uppercase font-serif">Return to Courtyard</span>
+      <span className="text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase font-serif">
+        <span className="sm:hidden">Back</span>
+        <span className="hidden sm:inline">Return to Courtyard</span>
+      </span>
     </motion.button>
+
   );
 }
 
@@ -575,7 +599,7 @@ function InfoPanel({ stats }: { stats: { totalDungeons: number; cleared: number;
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }}
-      className="relative rounded-2xl border border-amber-400/25 bg-gradient-to-br from-black/70 to-stone-950/80 backdrop-blur-md px-4 py-3 text-amber-100 min-w-[260px]"
+      className="relative rounded-2xl border border-amber-400/25 bg-gradient-to-br from-black/70 to-stone-950/80 backdrop-blur-md px-3 sm:px-4 py-3 text-amber-100 w-full sm:min-w-[260px] sm:w-auto"
       style={{ boxShadow: "0 20px 60px -20px rgba(251,191,36,0.35), inset 0 1px 0 rgba(255,255,255,0.08)" }}
     >
       <div className="text-[9px] uppercase tracking-[0.35em] text-amber-300/80 font-bold">Mathematics Building</div>
@@ -879,15 +903,15 @@ function ObjectiveBar({
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1, duration: 0.7 }}
-      className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center px-4 z-20"
+      className="pointer-events-none absolute inset-x-0 bottom-3 sm:bottom-6 flex justify-center px-3 sm:px-4 z-20"
     >
       <div
-        className="pointer-events-auto relative w-full max-w-xl rounded-2xl border border-amber-400/40 bg-gradient-to-r from-black/85 via-stone-950/85 to-black/85 backdrop-blur-md p-4 flex items-center gap-4"
+        className="pointer-events-auto relative w-full max-w-xl rounded-2xl border border-amber-400/40 bg-gradient-to-r from-black/85 via-stone-950/85 to-black/85 backdrop-blur-md p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3"
         style={{ boxShadow: "0 20px 60px -15px rgba(251,191,36,0.45), inset 0 1px 0 rgba(255,255,255,0.1)" }}
       >
         <div className="min-w-0 flex-1">
           <div className="text-[9px] uppercase tracking-[0.4em] text-amber-300 font-bold">Current Objective</div>
-          <div className="font-serif text-base md:text-lg font-black text-amber-50 truncate">
+          <div className="font-serif text-base sm:text-lg font-black text-amber-50 break-words leading-tight">
             ⚔ Continue {objective.name}
           </div>
           {objective.nextQuest !== null && (
@@ -898,7 +922,7 @@ function ObjectiveBar({
         </div>
         <button
           onClick={() => onEnter(objective)}
-          className="shrink-0 relative overflow-hidden rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-black transition-transform hover:scale-105 active:scale-95"
+          className="w-full sm:w-auto shrink-0 relative overflow-hidden rounded-xl px-4 py-2.5 text-[11px] sm:text-xs font-black uppercase tracking-[0.2em] text-black transition-transform hover:scale-105 active:scale-95"
           style={{
             background: "linear-gradient(135deg,#fde68a,#f59e0b,#c2410c)",
             boxShadow: "0 8px 20px -6px rgba(251,191,36,0.7), inset 0 1px 0 rgba(255,255,255,0.55)",
@@ -906,6 +930,7 @@ function ObjectiveBar({
         >
           Enter Dungeon
         </button>
+
       </div>
     </motion.div>
   );

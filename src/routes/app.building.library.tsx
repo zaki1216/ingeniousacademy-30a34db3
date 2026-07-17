@@ -9,8 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser, type WingOption } from "@/components/building/WingChooser";
+import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
 import { isLanguageSubject, languageOf } from "@/lib/building/wings";
 import { DungeonCard } from "@/routes/app.building.science";
+
 
 export const Route = createFileRoute("/app/building/library")({
   component: LibraryBuildingInterior,
@@ -110,9 +112,26 @@ function LibraryBuildingInterior() {
         total, passed, pct, bossCleared, unlocked,
         rewardXp: c.completion_xp ?? 100,
         rewardCoins: c.completion_coins ?? 20,
+        nextQuest: agg?.next_to_unlock?.lecture_number ?? null,
       };
     });
   }, [chapters.data, progress.data]);
+
+  const recommended = useMemo<BuildingObjective | null>(() => {
+    const cand =
+      dungeons.find((d) => d.unlocked && !d.bossCleared && d.nextQuest !== null) ??
+      dungeons.find((d) => d.unlocked && !d.bossCleared) ??
+      null;
+    if (!cand) return null;
+    return {
+      id: cand.id,
+      subjectId: cand.subjectId,
+      name: cand.name,
+      nextQuest: cand.nextQuest,
+      bossReady: cand.total > 0 && cand.passed >= cand.total,
+    };
+  }, [dungeons]);
+
 
   function exitBuilding() {
     if (selectedSubjectId) {
@@ -215,7 +234,7 @@ function LibraryBuildingInterior() {
           </h1>
         </div>
 
-        <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-24">
+        <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-40">
           {dungeons.map((d, i) => (
             <DungeonCard
               key={d.id}
@@ -234,6 +253,15 @@ function LibraryBuildingInterior() {
           )}
         </div>
       </div>
+
+      <BuildingObjectiveBar
+        objective={recommended}
+        accent="amber"
+        onEnter={(o) =>
+          navigate({ to: "/app/journey/$worldId/$dungeonId", params: { worldId: o.subjectId, dungeonId: o.id } })
+        }
+      />
     </div>
   );
 }
+
