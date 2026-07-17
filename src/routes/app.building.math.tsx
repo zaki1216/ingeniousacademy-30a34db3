@@ -228,7 +228,14 @@ function MathematicsBuildingInterior() {
 
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black">
+    <motion.div
+      key={`hall-${wing}`}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+      className="fixed inset-0 z-50 overflow-hidden bg-black"
+    >
       {/* Hall backdrop */}
       <HallEnvironment />
 
@@ -246,11 +253,14 @@ function MathematicsBuildingInterior() {
         transition={{ duration: 0.8 }}
         className="absolute inset-0 flex flex-col"
       >
-        {/* Top bar */}
-        <div className="relative flex items-start justify-between p-4 md:p-6 gap-3">
+        {/* Top bar — wraps on narrow screens so nothing clips */}
+        <div className="relative flex flex-wrap items-start justify-between gap-3 p-3 sm:p-4 md:p-6">
           <ExitBanner onExit={exitBuilding} />
-          <InfoPanel stats={stats} />
+          <div className="w-full sm:w-auto order-3 sm:order-none">
+            <InfoPanel stats={stats} />
+          </div>
         </div>
+
 
         {/* Middle scroll region */}
         <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-40">
