@@ -9,8 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser, type WingOption } from "@/components/building/WingChooser";
+import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
 import { isLanguageSubject, languageOf } from "@/lib/building/wings";
 import { DungeonCard } from "@/routes/app.building.science";
+
 
 export const Route = createFileRoute("/app/building/library")({
   component: LibraryBuildingInterior,
