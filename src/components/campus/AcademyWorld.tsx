@@ -98,10 +98,11 @@ export function AcademyWorld() {
         <Torches />
 
         {/* Buildings */}
-        {BUILDINGS.map((b) => (
+        {BUILDINGS.map((b, i) => (
           <BuildingSprite
             key={b.id}
             b={b}
+            index={i}
             hovered={hovered === b.id}
             focused={target?.id === b.id}
             disabled={!!target}
