@@ -510,6 +510,7 @@ function PlayerAndLumi({
 /* ------------------------------ Buildings ------------------------------- */
 function BuildingSprite({
   b,
+  index,
   hovered,
   focused,
   disabled,
@@ -517,6 +518,7 @@ function BuildingSprite({
   onHover,
 }: {
   b: Building;
+  index: number;
   hovered: boolean;
   focused: boolean;
   disabled: boolean;
@@ -532,7 +534,7 @@ function BuildingSprite({
       onMouseLeave={() => onHover(false)}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0, scale: focused ? 1.08 : 1 }}
-      transition={{ delay: 0.1 + DESKTOP_BUILDINGS.findIndex((x) => x.id === b.id) * 0.06, duration: 0.5 }}
+      transition={{ delay: 0.1 + index * 0.06, duration: 0.5 }}
       whileHover={!disabled && !b.locked ? { y: -4 } : {}}
       className="absolute z-10 focus:outline-none disabled:cursor-not-allowed"
       style={{
