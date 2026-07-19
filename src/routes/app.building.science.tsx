@@ -151,40 +151,27 @@ function ScienceBuildingInterior() {
   if (!wing) {
     return (
       <WingChooser
-        title="Science Laboratory"
-        subtitle="The Alchemy Wing — choose your laboratory to begin experimentation."
+        title={BUILDING_CFG.title}
+        subtitle={BUILDING_CFG.subtitle}
         onExit={exitBuilding}
-        wings={[
-          {
-            id: "sci01",
-            name: twoSubjectSplit?.sci01.subject_name ?? "Science 01 Laboratory",
-            tag: "First Laboratory",
-            emoji: "🧪",
-            description: "Foundational experiments and elemental studies.",
-            gradient: "linear-gradient(135deg,#065f46,#0f766e,#134e4a)",
-            glow: "rgba(52,211,153,0.5)",
-            count: sci01Chs.length,
-            onEnter: () => setWing("sci01"),
-          },
-          {
-            id: "sci02",
-            name: twoSubjectSplit?.sci02.subject_name ?? "Science 02 Laboratory",
-            tag: "Second Laboratory",
-            emoji: "⚗️",
-            description: "Advanced reactions, forces and living systems.",
-            gradient: "linear-gradient(135deg,#3b0764,#7c3aed,#4c1d95)",
-            glow: "rgba(167,139,250,0.5)",
-            count: sci02Chs.length,
-            onEnter: () => setWing("sci02"),
-          },
-        ]}
+        wings={wingsRuntime.map((w) => ({
+          id: w.id,
+          name: w.subject?.subject_name ?? w.name,
+          tag: w.tag,
+          emoji: w.emoji,
+          description: w.description,
+          gradient: w.gradient,
+          glow: w.glow,
+          count: w.chapters.length,
+          onEnter: () => setWing(w.id),
+        }))}
       />
     );
   }
 
   return (
     <LabInterior
-      title={wing === "sci01" ? (twoSubjectSplit?.sci01.subject_name ?? "Science 01") : (twoSubjectSplit?.sci02.subject_name ?? "Science 02")}
+      title={activeWing?.subject?.subject_name ?? activeWing?.name ?? BUILDING_CFG.title}
       dungeons={dungeons}
       onExit={exitBuilding}
       onEnter={enterDungeon}
