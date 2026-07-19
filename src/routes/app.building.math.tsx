@@ -11,7 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser } from "@/components/building/WingChooser";
-import { splitMathChapters } from "@/lib/building/wings";
+import { getBuilding, resolveWings } from "@/lib/curriculum";
+
+const BUILDING_CFG = getBuilding("math")!;
 
 export const Route = createFileRoute("/app/building/math")({
   component: MathematicsBuildingInterior,
@@ -44,7 +46,7 @@ function useMathData() {
     enabled: !!standardId,
     queryFn: async () => {
       const list = (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [];
-      return list.find((s) => (s.subject_name ?? "").toLowerCase().includes("math")) ?? null;
+      return list.find((s) => BUILDING_CFG.subjectMatcher({ subject_name: s.subject_name ?? "" })) ?? null;
     },
     staleTime: 60_000,
   });
@@ -82,7 +84,7 @@ function MathematicsBuildingInterior() {
   const { profile, subject, world, progress } = useMathData();
   const [entering, setEntering] = useState(true);
   const [exiting, setExiting] = useState(false);
-  const [wing, setWing] = useState<"algebra" | "geometry" | null>(null);
+  const [wing, setWing] = useState<string | null>(null);
   const [targetDungeon, setTargetDungeon] = useState<{ id: string; name: string } | null>(null);
   const [showLumi, setShowLumi] = useState(false);
 
@@ -108,17 +110,18 @@ function MathematicsBuildingInterior() {
     try { sessionStorage.setItem("mathBuildingSeen", "1"); } catch { /* ignore */ }
   };
 
-  const { algebraChs, geometryChs } = useMemo(() => {
+  const wingsRuntime = useMemo(() => {
     const chs = world?.chs ?? [];
-    const { algebra, geometry } = splitMathChapters(chs);
-    return { algebraChs: algebra, geometryChs: geometry };
-  }, [world]);
+    const subj = subject ? [{ id: subject.id, subject_name: subject.subject_name ?? "" }] : [];
+    const chsWithSubject = chs.map((c) => ({ ...c, subject_id: subject?.id ?? "" }));
+    return resolveWings(BUILDING_CFG, subj, chsWithSubject);
+  }, [world, subject]);
 
-  const activeChapters = useMemo(() => {
-    if (wing === "geometry") return geometryChs;
-    if (wing === "algebra") return algebraChs;
-    return [];
-  }, [wing, algebraChs, geometryChs]);
+  const activeChapters = useMemo(
+    () => wingsRuntime.find((w) => w.id === wing)?.chapters ?? [],
+    [wingsRuntime, wing],
+  );
+
 
   const dungeons = useMemo(() => {
     if (!world) return [];
@@ -194,33 +197,20 @@ function MathematicsBuildingInterior() {
         transition={{ duration: 0.4 }}
       >
         <WingChooser
-          title="Mathematics Building"
-          subtitle="The Numeric Halls await — choose the wing you wish to master."
+          title={BUILDING_CFG.title}
+          subtitle={BUILDING_CFG.subtitle}
           onExit={exitBuilding}
-          wings={[
-            {
-              id: "algebra",
-              name: "Algebra Wing",
-              tag: "Hall of Numbers",
-              emoji: "📘",
-              description: "Master equations, polynomials and the arcane laws of number.",
-              gradient: "linear-gradient(135deg,#1e3a8a,#3b5aa8,#0f1e40)",
-              glow: "rgba(59,130,246,0.5)",
-              count: algebraChs.length,
-              onEnter: () => setWing("algebra"),
-            },
-            {
-              id: "geometry",
-              name: "Geometry Wing",
-              tag: "Chamber of Shapes",
-              emoji: "📐",
-              description: "Bend space, angles and form to your will inside the geometric fortress.",
-              gradient: "linear-gradient(135deg,#7c2d12,#c2410c,#78350f)",
-              glow: "rgba(251,146,60,0.5)",
-              count: geometryChs.length,
-              onEnter: () => setWing("geometry"),
-            },
-          ]}
+          wings={wingsRuntime.map((w) => ({
+            id: w.id,
+            name: w.name,
+            tag: w.tag,
+            emoji: w.emoji,
+            description: w.description,
+            gradient: w.gradient,
+            glow: w.glow,
+            count: w.chapters.length,
+            onEnter: () => setWing(w.id),
+          }))}
         />
       </motion.div>
     );

@@ -10,8 +10,10 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser, type WingOption } from "@/components/building/WingChooser";
 import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
-import { isLanguageSubject, languageOf } from "@/lib/building/wings";
+import { getBuilding, resolveWings } from "@/lib/curriculum";
 import { DungeonCard } from "@/routes/app.building.science";
+
+const BUILDING_CFG = getBuilding("library")!;
 
 
 export const Route = createFileRoute("/app/building/library")({
@@ -24,23 +26,7 @@ export const Route = createFileRoute("/app/building/library")({
   }),
 });
 
-const HALL_STYLES: Record<string, { emoji: string; gradient: string; glow: string; tag: string }> = {
-  english:  { emoji: "📖", gradient: "linear-gradient(135deg,#7c2d12,#b45309,#78350f)",  glow: "rgba(251,191,36,0.5)", tag: "English Hall" },
-  hindi:    { emoji: "📖", gradient: "linear-gradient(135deg,#7f1d1d,#c2410c,#7c2d12)",  glow: "rgba(248,113,113,0.5)", tag: "Hindi Hall" },
-  marathi:  { emoji: "📖", gradient: "linear-gradient(135deg,#134e4a,#0f766e,#065f46)",  glow: "rgba(45,212,191,0.5)", tag: "Marathi Hall" },
-  urdu:     { emoji: "📖", gradient: "linear-gradient(135deg,#3b0764,#6d28d9,#4c1d95)",  glow: "rgba(167,139,250,0.5)", tag: "Urdu Hall" },
-  sanskrit: { emoji: "📖", gradient: "linear-gradient(135deg,#78350f,#f59e0b,#b45309)",  glow: "rgba(253,224,71,0.5)", tag: "Sanskrit Hall" },
-};
-
-function styleFor(name: string) {
-  const key = name.toLowerCase();
-  return HALL_STYLES[key] ?? {
-    emoji: "📖",
-    gradient: "linear-gradient(135deg,#334155,#475569,#1e293b)",
-    glow: "rgba(148,163,184,0.5)",
-    tag: `${name} Hall`,
-  };
-}
+/* Wing visuals & language labels now live in `src/lib/curriculum/config.ts`. */
 
 function LibraryBuildingInterior() {
   const navigate = useNavigate();
@@ -63,7 +49,7 @@ function LibraryBuildingInterior() {
     enabled: !!standardId,
     queryFn: async () => {
       const list = (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [];
-      return list.filter((s) => isLanguageSubject(s.subject_name ?? ""));
+      return list.filter((s) => BUILDING_CFG.subjectMatcher({ subject_name: s.subject_name ?? "" }));
     },
     staleTime: 60_000,
   });
@@ -142,25 +128,26 @@ function LibraryBuildingInterior() {
   }
 
   if (!selectedSubjectId) {
-    const wings: WingOption[] = languageSubjects.map((s) => {
-      const lang = languageOf(s.subject_name ?? "");
-      const style = styleFor(lang);
-      return {
-        id: s.id,
-        name: `${lang} Hall`,
-        tag: style.tag,
-        emoji: style.emoji,
-        description: `Enter the ${lang} scriptorium — quests of grammar, verse and story.`,
-        gradient: style.gradient,
-        glow: style.glow,
-        onEnter: () => setSelectedSubjectId(s.id),
-      };
-    });
+    const runtimeWings = resolveWings(
+      BUILDING_CFG,
+      languageSubjects.map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
+      [],
+    );
+    const wings: WingOption[] = runtimeWings.map((w) => ({
+      id: w.id,
+      name: w.name,
+      tag: w.tag,
+      emoji: w.emoji,
+      description: w.description,
+      gradient: w.gradient,
+      glow: w.glow,
+      onEnter: () => setSelectedSubjectId(w.id),
+    }));
 
     return (
       <WingChooser
-        title="Language Library"
-        subtitle="The Scriptorium — every tongue has its own hall. Choose one to begin."
+        title={BUILDING_CFG.title}
+        subtitle={BUILDING_CFG.subtitle}
         onExit={exitBuilding}
         wings={
           wings.length
@@ -184,7 +171,9 @@ function LibraryBuildingInterior() {
   }
 
   const subj = languageSubjects.find((s) => s.id === selectedSubjectId);
-  const title = subj ? `${languageOf(subj.subject_name ?? "")} Hall` : "Language Hall";
+  const title = subj
+    ? (BUILDING_CFG.perSubjectStyle?.({ subject_name: subj.subject_name ?? "" }).name ?? subj.subject_name)
+    : "Language Hall";
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#0a0604]">

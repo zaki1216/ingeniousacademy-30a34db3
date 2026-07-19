@@ -10,7 +10,9 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser } from "@/components/building/WingChooser";
 import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
-import { splitScienceChapters } from "@/lib/building/wings";
+import { getBuilding, resolveWings } from "@/lib/curriculum";
+
+const BUILDING_CFG = getBuilding("science")!;
 
 
 export const Route = createFileRoute("/app/building/science")({
@@ -42,7 +44,7 @@ function useScienceData() {
     enabled: !!standardId,
     queryFn: async () => {
       const list = (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [];
-      return list.filter((s) => /science|physic|chem|bio/i.test(s.subject_name ?? ""));
+      return list.filter((s) => BUILDING_CFG.subjectMatcher({ subject_name: s.subject_name ?? "" }));
     },
     staleTime: 60_000,
   });
@@ -76,31 +78,22 @@ function useScienceData() {
 function ScienceBuildingInterior() {
   const navigate = useNavigate();
   const { scienceSubjects, world, progress } = useScienceData();
-  const [wing, setWing] = useState<"sci01" | "sci02" | null>(null);
-
-  // Determine wing structure: prefer subject split when 2 science subjects exist.
-  const twoSubjectSplit =
-    scienceSubjects.length >= 2
-      ? {
-          sci01: scienceSubjects[0],
-          sci02: scienceSubjects[1],
-        }
-      : null;
+  const [wing, setWing] = useState<string | null>(null);
 
   const chapters = world?.chs ?? [];
 
-  const { sci01Chs, sci02Chs } = useMemo(() => {
-    if (twoSubjectSplit) {
-      return {
-        sci01Chs: chapters.filter((c) => c.subject_id === twoSubjectSplit.sci01.id),
-        sci02Chs: chapters.filter((c) => c.subject_id === twoSubjectSplit.sci02.id),
-      };
-    }
-    const { sci01, sci02 } = splitScienceChapters(chapters);
-    return { sci01Chs: sci01, sci02Chs: sci02 };
-  }, [chapters, twoSubjectSplit]);
+  const wingsRuntime = useMemo(
+    () =>
+      resolveWings(
+        BUILDING_CFG,
+        scienceSubjects.map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
+        chapters.map((c) => ({ ...c, chapter_name: c.chapter_name ?? "" })),
+      ),
+    [scienceSubjects, chapters],
+  );
 
-  const activeChs = wing === "sci02" ? sci02Chs : wing === "sci01" ? sci01Chs : [];
+  const activeWing = wingsRuntime.find((w) => w.id === wing);
+  const activeChs = activeWing?.chapters ?? [];
 
   const dungeons = useMemo(() => {
     const doneChs = new Set((world?.chapterCompletions ?? []).map((c) => c.chapter_id));
@@ -158,40 +151,27 @@ function ScienceBuildingInterior() {
   if (!wing) {
     return (
       <WingChooser
-        title="Science Laboratory"
-        subtitle="The Alchemy Wing — choose your laboratory to begin experimentation."
+        title={BUILDING_CFG.title}
+        subtitle={BUILDING_CFG.subtitle}
         onExit={exitBuilding}
-        wings={[
-          {
-            id: "sci01",
-            name: twoSubjectSplit?.sci01.subject_name ?? "Science 01 Laboratory",
-            tag: "First Laboratory",
-            emoji: "🧪",
-            description: "Foundational experiments and elemental studies.",
-            gradient: "linear-gradient(135deg,#065f46,#0f766e,#134e4a)",
-            glow: "rgba(52,211,153,0.5)",
-            count: sci01Chs.length,
-            onEnter: () => setWing("sci01"),
-          },
-          {
-            id: "sci02",
-            name: twoSubjectSplit?.sci02.subject_name ?? "Science 02 Laboratory",
-            tag: "Second Laboratory",
-            emoji: "⚗️",
-            description: "Advanced reactions, forces and living systems.",
-            gradient: "linear-gradient(135deg,#3b0764,#7c3aed,#4c1d95)",
-            glow: "rgba(167,139,250,0.5)",
-            count: sci02Chs.length,
-            onEnter: () => setWing("sci02"),
-          },
-        ]}
+        wings={wingsRuntime.map((w) => ({
+          id: w.id,
+          name: w.subject?.subject_name ?? w.name,
+          tag: w.tag,
+          emoji: w.emoji,
+          description: w.description,
+          gradient: w.gradient,
+          glow: w.glow,
+          count: w.chapters.length,
+          onEnter: () => setWing(w.id),
+        }))}
       />
     );
   }
 
   return (
     <LabInterior
-      title={wing === "sci01" ? (twoSubjectSplit?.sci01.subject_name ?? "Science 01") : (twoSubjectSplit?.sci02.subject_name ?? "Science 02")}
+      title={activeWing?.subject?.subject_name ?? activeWing?.name ?? BUILDING_CFG.title}
       dungeons={dungeons}
       onExit={exitBuilding}
       onEnter={enterDungeon}
