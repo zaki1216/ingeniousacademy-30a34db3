@@ -197,33 +197,20 @@ function MathematicsBuildingInterior() {
         transition={{ duration: 0.4 }}
       >
         <WingChooser
-          title="Mathematics Building"
-          subtitle="The Numeric Halls await — choose the wing you wish to master."
+          title={BUILDING_CFG.title}
+          subtitle={BUILDING_CFG.subtitle}
           onExit={exitBuilding}
-          wings={[
-            {
-              id: "algebra",
-              name: "Algebra Wing",
-              tag: "Hall of Numbers",
-              emoji: "📘",
-              description: "Master equations, polynomials and the arcane laws of number.",
-              gradient: "linear-gradient(135deg,#1e3a8a,#3b5aa8,#0f1e40)",
-              glow: "rgba(59,130,246,0.5)",
-              count: algebraChs.length,
-              onEnter: () => setWing("algebra"),
-            },
-            {
-              id: "geometry",
-              name: "Geometry Wing",
-              tag: "Chamber of Shapes",
-              emoji: "📐",
-              description: "Bend space, angles and form to your will inside the geometric fortress.",
-              gradient: "linear-gradient(135deg,#7c2d12,#c2410c,#78350f)",
-              glow: "rgba(251,146,60,0.5)",
-              count: geometryChs.length,
-              onEnter: () => setWing("geometry"),
-            },
-          ]}
+          wings={wingsRuntime.map((w) => ({
+            id: w.id,
+            name: w.name,
+            tag: w.tag,
+            emoji: w.emoji,
+            description: w.description,
+            gradient: w.gradient,
+            glow: w.glow,
+            count: w.chapters.length,
+            onEnter: () => setWing(w.id),
+          }))}
         />
       </motion.div>
     );
