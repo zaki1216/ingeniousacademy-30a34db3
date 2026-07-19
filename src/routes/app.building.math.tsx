@@ -46,7 +46,7 @@ function useMathData() {
     enabled: !!standardId,
     queryFn: async () => {
       const list = (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [];
-      return list.find((s) => (s.subject_name ?? "").toLowerCase().includes("math")) ?? null;
+      return list.find((s) => BUILDING_CFG.subjectMatcher({ subject_name: s.subject_name ?? "" })) ?? null;
     },
     staleTime: 60_000,
   });
