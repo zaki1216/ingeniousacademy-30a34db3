@@ -10,7 +10,9 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser } from "@/components/building/WingChooser";
 import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
-import { splitScienceChapters } from "@/lib/building/wings";
+import { getBuilding, resolveWings } from "@/lib/curriculum";
+
+const BUILDING_CFG = getBuilding("science")!;
 
 
 export const Route = createFileRoute("/app/building/science")({
@@ -42,7 +44,7 @@ function useScienceData() {
     enabled: !!standardId,
     queryFn: async () => {
       const list = (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [];
-      return list.filter((s) => /science|physic|chem|bio/i.test(s.subject_name ?? ""));
+      return list.filter((s) => BUILDING_CFG.subjectMatcher({ subject_name: s.subject_name ?? "" }));
     },
     staleTime: 60_000,
   });
@@ -76,31 +78,22 @@ function useScienceData() {
 function ScienceBuildingInterior() {
   const navigate = useNavigate();
   const { scienceSubjects, world, progress } = useScienceData();
-  const [wing, setWing] = useState<"sci01" | "sci02" | null>(null);
-
-  // Determine wing structure: prefer subject split when 2 science subjects exist.
-  const twoSubjectSplit =
-    scienceSubjects.length >= 2
-      ? {
-          sci01: scienceSubjects[0],
-          sci02: scienceSubjects[1],
-        }
-      : null;
+  const [wing, setWing] = useState<string | null>(null);
 
   const chapters = world?.chs ?? [];
 
-  const { sci01Chs, sci02Chs } = useMemo(() => {
-    if (twoSubjectSplit) {
-      return {
-        sci01Chs: chapters.filter((c) => c.subject_id === twoSubjectSplit.sci01.id),
-        sci02Chs: chapters.filter((c) => c.subject_id === twoSubjectSplit.sci02.id),
-      };
-    }
-    const { sci01, sci02 } = splitScienceChapters(chapters);
-    return { sci01Chs: sci01, sci02Chs: sci02 };
-  }, [chapters, twoSubjectSplit]);
+  const wingsRuntime = useMemo(
+    () =>
+      resolveWings(
+        BUILDING_CFG,
+        scienceSubjects.map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
+        chapters.map((c) => ({ ...c, chapter_name: c.chapter_name ?? "" })),
+      ),
+    [scienceSubjects, chapters],
+  );
 
-  const activeChs = wing === "sci02" ? sci02Chs : wing === "sci01" ? sci01Chs : [];
+  const activeWing = wingsRuntime.find((w) => w.id === wing);
+  const activeChs = activeWing?.chapters ?? [];
 
   const dungeons = useMemo(() => {
     const doneChs = new Set((world?.chapterCompletions ?? []).map((c) => c.chapter_id));
