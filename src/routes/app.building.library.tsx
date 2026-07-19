@@ -49,7 +49,7 @@ function LibraryBuildingInterior() {
     enabled: !!standardId,
     queryFn: async () => {
       const list = (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [];
-      return list.filter((s) => isLanguageSubject(s.subject_name ?? ""));
+      return list.filter((s) => BUILDING_CFG.subjectMatcher({ subject_name: s.subject_name ?? "" }));
     },
     staleTime: 60_000,
   });
@@ -128,25 +128,26 @@ function LibraryBuildingInterior() {
   }
 
   if (!selectedSubjectId) {
-    const wings: WingOption[] = languageSubjects.map((s) => {
-      const lang = languageOf(s.subject_name ?? "");
-      const style = styleFor(lang);
-      return {
-        id: s.id,
-        name: `${lang} Hall`,
-        tag: style.tag,
-        emoji: style.emoji,
-        description: `Enter the ${lang} scriptorium — quests of grammar, verse and story.`,
-        gradient: style.gradient,
-        glow: style.glow,
-        onEnter: () => setSelectedSubjectId(s.id),
-      };
-    });
+    const runtimeWings = resolveWings(
+      BUILDING_CFG,
+      languageSubjects.map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
+      [],
+    );
+    const wings: WingOption[] = runtimeWings.map((w) => ({
+      id: w.id,
+      name: w.name,
+      tag: w.tag,
+      emoji: w.emoji,
+      description: w.description,
+      gradient: w.gradient,
+      glow: w.glow,
+      onEnter: () => setSelectedSubjectId(w.id),
+    }));
 
     return (
       <WingChooser
-        title="Language Library"
-        subtitle="The Scriptorium — every tongue has its own hall. Choose one to begin."
+        title={BUILDING_CFG.title}
+        subtitle={BUILDING_CFG.subtitle}
         onExit={exitBuilding}
         wings={
           wings.length
@@ -170,7 +171,9 @@ function LibraryBuildingInterior() {
   }
 
   const subj = languageSubjects.find((s) => s.id === selectedSubjectId);
-  const title = subj ? `${languageOf(subj.subject_name ?? "")} Hall` : "Language Hall";
+  const title = subj
+    ? (BUILDING_CFG.perSubjectStyle?.({ subject_name: subj.subject_name ?? "" }).name ?? subj.subject_name)
+    : "Language Hall";
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#0a0604]">
