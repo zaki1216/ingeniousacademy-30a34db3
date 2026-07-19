@@ -11,7 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { WingChooser } from "@/components/building/WingChooser";
-import { splitMathChapters } from "@/lib/building/wings";
+import { getBuilding, resolveWings } from "@/lib/curriculum";
+
+const BUILDING_CFG = getBuilding("math")!;
 
 export const Route = createFileRoute("/app/building/math")({
   component: MathematicsBuildingInterior,
@@ -82,7 +84,7 @@ function MathematicsBuildingInterior() {
   const { profile, subject, world, progress } = useMathData();
   const [entering, setEntering] = useState(true);
   const [exiting, setExiting] = useState(false);
-  const [wing, setWing] = useState<"algebra" | "geometry" | null>(null);
+  const [wing, setWing] = useState<string | null>(null);
   const [targetDungeon, setTargetDungeon] = useState<{ id: string; name: string } | null>(null);
   const [showLumi, setShowLumi] = useState(false);
 
@@ -108,17 +110,18 @@ function MathematicsBuildingInterior() {
     try { sessionStorage.setItem("mathBuildingSeen", "1"); } catch { /* ignore */ }
   };
 
-  const { algebraChs, geometryChs } = useMemo(() => {
+  const wingsRuntime = useMemo(() => {
     const chs = world?.chs ?? [];
-    const { algebra, geometry } = splitMathChapters(chs);
-    return { algebraChs: algebra, geometryChs: geometry };
-  }, [world]);
+    const subj = subject ? [{ id: subject.id, subject_name: subject.subject_name ?? "" }] : [];
+    const chsWithSubject = chs.map((c) => ({ ...c, subject_id: subject?.id ?? "" }));
+    return resolveWings(BUILDING_CFG, subj, chsWithSubject);
+  }, [world, subject]);
 
-  const activeChapters = useMemo(() => {
-    if (wing === "geometry") return geometryChs;
-    if (wing === "algebra") return algebraChs;
-    return [];
-  }, [wing, algebraChs, geometryChs]);
+  const activeChapters = useMemo(
+    () => wingsRuntime.find((w) => w.id === wing)?.chapters ?? [],
+    [wingsRuntime, wing],
+  );
+
 
   const dungeons = useMemo(() => {
     if (!world) return [];
