@@ -108,6 +108,80 @@ export interface PerSubjectStyleFn {
   };
 }
 
+/* ------------------------------ Rendering / Theme ------------------------------ */
+
+/** UI variant used by the generic Building Engine. */
+export type RenderVariant = "hall" | "simple";
+
+/** Theme tokens consumed by the generic renderers. */
+export interface BuildingTheme {
+  accent: AccentTheme;
+  /** CSS color used for particles, highlights and the primary CTA glow. */
+  primary: string;
+  /** Full-screen backdrop CSS (radial-gradient recommended). */
+  background: string;
+  /** Particle base color (rgba/hex). */
+  particle: string;
+  /** Particle soft-shadow CSS value. */
+  particleShadow: string;
+}
+
+/**
+ * Represents an in-world mentor NPC that lives in a building. Optional; only
+ * variants that render an NPC (currently the "hall" variant) will use it.
+ */
+export interface MentorDefinition {
+  id: string;
+  name: string;
+  /** Short label rendered above dialogue bubbles ("Professor", "Curator"…). */
+  title: string;
+  /** Copy used the first time the cadet visits this building. */
+  welcome?: (cadetName: string) => string;
+  /**
+   * Dynamic dialogue line — receives progress summary and returns a phrase.
+   */
+  line?: (ctx: {
+    cadetName: string;
+    hasDungeons: boolean;
+    recommendedName: string | null;
+    cleared: number;
+    totalDungeons: number;
+  }) => string;
+}
+
+/** How dungeon unlock state is derived from persisted progress. */
+export type ProgressStrategy = "chapter-completion";
+
+/** How the "Current Objective" is picked from the current wing's dungeons. */
+export type ObjectiveStrategy = "next-unstarted-dungeon";
+
+/** Everything the generic Building Engine needs to render a building. */
+export interface BuildingRenderConfig {
+  variant: RenderVariant;
+  /** Small label above the hall title ("Laboratory", "Scriptorium"). */
+  tagLabel: string;
+  /** Header title on the info panel (defaults to building.title). */
+  infoTitle?: string;
+  /** Subtitle on the info panel (defaults to building.subtitle). */
+  infoSubtitle?: string;
+  /** Optional mentor NPC. */
+  mentor?: MentorDefinition;
+  /** How progress is computed. */
+  progressStrategy?: ProgressStrategy;
+  /** How the current objective is chosen. */
+  objectiveStrategy?: ObjectiveStrategy;
+  /** Theme tokens. */
+  theme: BuildingTheme;
+}
+
+/**
+ * Reusable interface describing a full building definition. Building-agnostic
+ * routes and the Building Engine only depend on this type.
+ */
+export interface BuildingDefinition extends BuildingCurriculum {
+  render: BuildingRenderConfig;
+}
+
 export interface BuildingCurriculum {
   /** Stable id (matches route slug and campus building id). */
   id: string;
@@ -129,6 +203,8 @@ export interface BuildingCurriculum {
   labelSubject?: (subjectName: string) => string;
   /** Copy shown when there are zero wings/dungeons. */
   emptyText?: string;
+  /** Renderer configuration used by BuildingEngine. */
+  render?: BuildingRenderConfig;
 }
 
 /* ------------------------------ Class / Board (skeleton) ------------------------------ */
