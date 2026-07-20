@@ -175,6 +175,36 @@ export const BUILDINGS: BuildingCurriculum[] = [
       },
     ],
     emptyText: "No dungeons prepared in this wing yet.",
+    render: {
+      variant: "hall",
+      tagLabel: "Numeric Halls",
+      infoTitle: "Mathematics Building",
+      infoSubtitle: "The Numeric Halls",
+      progressStrategy: "chapter-completion",
+      objectiveStrategy: "next-unstarted-dungeon",
+      theme: {
+        accent: "amber",
+        primary: "#fbbf24",
+        background:
+          "radial-gradient(ellipse at 50% 30%, #3d2a1a 0%, #1a1108 50%, #0a0604 100%)",
+        particle: "rgba(251,191,36,0.6)",
+        particleShadow: "0 0 6px rgba(251,191,36,0.6)",
+      },
+      mentor: {
+        id: "professor-euler",
+        name: "Professor Euler",
+        title: "Professor",
+        welcome: (name) =>
+          `Welcome to the Mathematics Building, ${name}. Each gate leads to a dungeon full of quests. Clear them to earn coins, XP and badges. I'll only whisper again when you truly need me.`,
+        line: ({ hasDungeons, recommendedName, cleared, totalDungeons }) => {
+          if (!hasDungeons) return "Welcome, Cadet. The Hall of Mathematics awaits its first raid.";
+          if (recommendedName) return `Welcome back, Cadet. The ${recommendedName} awaits your return.`;
+          if (totalDungeons > 0 && cleared === totalDungeons)
+            return "You have conquered every dungeon here. A rare feat, Cadet.";
+          return "Today's adventure awaits, Cadet.";
+        },
+      },
+    },
   },
 
   {
@@ -212,6 +242,20 @@ export const BUILDINGS: BuildingCurriculum[] = [
       },
     ],
     emptyText: "No dungeons prepared in this laboratory yet.",
+    render: {
+      variant: "simple",
+      tagLabel: "Laboratory",
+      progressStrategy: "chapter-completion",
+      objectiveStrategy: "next-unstarted-dungeon",
+      theme: {
+        accent: "emerald",
+        primary: "#34d399",
+        background:
+          "radial-gradient(ellipse at 50% 20%, #0f3d2e 0%, #071a12 55%, #020606 100%)",
+        particle: "rgba(52,211,153,0.6)",
+        particleShadow: "0 0 6px rgba(52,211,153,0.6)",
+      },
+    },
   },
 
   {
@@ -241,6 +285,20 @@ export const BUILDINGS: BuildingCurriculum[] = [
       };
     },
     emptyText: "This hall's tomes are being prepared.",
+    render: {
+      variant: "simple",
+      tagLabel: "Scriptorium",
+      progressStrategy: "chapter-completion",
+      objectiveStrategy: "next-unstarted-dungeon",
+      theme: {
+        accent: "amber",
+        primary: "#fbbf24",
+        background:
+          "radial-gradient(ellipse at 50% 20%, #3d2a1a 0%, #1a1108 55%, #050301 100%)",
+        particle: "rgba(251,191,36,0.6)",
+        particleShadow: "0 0 6px rgba(251,191,36,0.6)",
+      },
+    },
   },
 ];
 
