@@ -12,17 +12,38 @@
  * route file that renders `<BuildingEngine buildingId="..." />`.
  */
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { getBuilding } from "@/lib/curriculum";
 import { useBuildingData } from "@/lib/building/useBuildingData";
 import { WingChooser, type WingOption } from "@/components/building/WingChooser";
 import { SimpleRenderer } from "@/components/building/renderers/SimpleRenderer";
 import { HallRenderer } from "@/components/building/renderers/HallRenderer";
+import { BuildingArrival } from "@/components/building/BuildingArrival";
 
 export function BuildingEngine({ buildingId }: { buildingId: string }) {
   const navigate = useNavigate();
+  const reduced = useReducedMotion();
   const building = getBuilding(buildingId);
+
+  // Arrival sequence: brief overlay + staggered reveal of the interior.
+  // Only played on the very first mount for a given building id.
+  const [arrivalVisible, setArrivalVisible] = useState(true);
+  const [interiorRevealed, setInteriorRevealed] = useState(false);
+
+  useEffect(() => {
+    if (!building) return;
+    const overlayMs = reduced ? 250 : 1200;
+    const revealMs = reduced ? 200 : 900;
+    const t1 = window.setTimeout(() => setInteriorRevealed(true), revealMs);
+    const t2 = window.setTimeout(() => setArrivalVisible(false), overlayMs);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [building, reduced]);
 
   if (!building) {
     return (
@@ -68,60 +89,81 @@ export function BuildingEngine({ buildingId }: { buildingId: string }) {
     });
   }
 
-  // 1) Wing selection — every building funnels through the same chooser.
-  if (!activeWing) {
-    const options: WingOption[] =
-      wingOptions.length > 0
-        ? wingOptions.map((w) => ({ ...w, onEnter: () => selectWing(w.id) }))
-        : [
-            {
-              id: "empty",
-              name: "No Halls Yet",
-              tag: "Awaiting",
-              emoji: "🕯️",
-              description:
-                building.emptyText ??
-                "Content will appear here once configured for your class.",
-              gradient: "linear-gradient(135deg,#334155,#0f172a)",
-              glow: "rgba(148,163,184,0.3)",
-              locked: true,
-              onEnter: () => {},
-            },
-          ];
+  // Build the interior tree. It sits under the arrival overlay and fades
+  // in with a staggered reveal so titles/mentor/wings land smoothly.
+  const interior = (() => {
+    if (!activeWing) {
+      const options: WingOption[] =
+        wingOptions.length > 0
+          ? wingOptions.map((w) => ({ ...w, onEnter: () => selectWing(w.id) }))
+          : [
+              {
+                id: "empty",
+                name: "No Halls Yet",
+                tag: "Awaiting",
+                emoji: "🕯️",
+                description:
+                  building.emptyText ??
+                  "Content will appear here once configured for your class.",
+                gradient: "linear-gradient(135deg,#334155,#0f172a)",
+                glow: "rgba(148,163,184,0.3)",
+                locked: true,
+                onEnter: () => {},
+              },
+            ];
+
+      return (
+        <WingChooser
+          title={building.title}
+          subtitle={building.subtitle}
+          onExit={exitBuilding}
+          wings={options}
+        />
+      );
+    }
+
+    const variant = building.render!.variant;
+    if (variant === "hall") {
+      return (
+        <HallRenderer
+          building={building}
+          title={interiorTitle}
+          cadetName={cadetName}
+          dungeons={dungeons}
+          stats={stats}
+          onExit={exitBuilding}
+        />
+      );
+    }
 
     return (
-      <WingChooser
-        title={building.title}
-        subtitle={building.subtitle}
-        onExit={exitBuilding}
-        wings={options}
-      />
-    );
-  }
-
-  // 2) Interior — dispatch to the configured variant.
-  const variant = building.render.variant;
-  if (variant === "hall") {
-    return (
-      <HallRenderer
+      <SimpleRenderer
         building={building}
         title={interiorTitle}
-        cadetName={cadetName}
         dungeons={dungeons}
-        stats={stats}
+        recommended={recommended}
         onExit={exitBuilding}
+        onEnterDungeon={enterDungeon}
       />
     );
-  }
+  })();
 
   return (
-    <SimpleRenderer
-      building={building}
-      title={interiorTitle}
-      dungeons={dungeons}
-      recommended={recommended}
-      onExit={exitBuilding}
-      onEnterDungeon={enterDungeon}
-    />
+    <>
+      <AnimatePresence>
+        {interiorRevealed && (
+          <motion.div
+            key="building-interior"
+            initial={{ opacity: 0, y: reduced ? 0 : 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduced ? 0.15 : 0.5, ease: "easeOut" }}
+          >
+            {interior}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <BuildingArrival building={building} visible={arrivalVisible} />
+    </>
   );
 }
