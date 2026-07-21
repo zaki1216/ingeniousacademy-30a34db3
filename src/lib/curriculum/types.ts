@@ -172,6 +172,10 @@ export interface BuildingRenderConfig {
   objectiveStrategy?: ObjectiveStrategy;
   /** Theme tokens. */
   theme: BuildingTheme;
+  /** Icon/emoji shown in the arrival sequence overlay. */
+  icon?: string;
+  /** Short welcome line shown during the arrival sequence. */
+  welcome?: string;
 }
 
 /**
