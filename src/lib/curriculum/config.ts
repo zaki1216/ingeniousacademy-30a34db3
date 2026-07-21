@@ -257,6 +257,8 @@ export const BUILDINGS: BuildingCurriculum[] = [
         particle: "rgba(52,211,153,0.6)",
         particleShadow: "0 0 6px rgba(52,211,153,0.6)",
       },
+      icon: "🧪",
+      welcome: "Welcome to the laboratory. Let's discover something new.",
     },
   },
 
