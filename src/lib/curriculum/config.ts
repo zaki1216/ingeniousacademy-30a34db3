@@ -190,6 +190,8 @@ export const BUILDINGS: BuildingCurriculum[] = [
         particle: "rgba(251,191,36,0.6)",
         particleShadow: "0 0 6px rgba(251,191,36,0.6)",
       },
+      icon: "📐",
+      welcome: "Welcome back. Today we continue your mathematical journey.",
       mentor: {
         id: "professor-euler",
         name: "Professor Euler",
