@@ -212,7 +212,7 @@ function EditQuestionsDialog({ testId, lectureTitle, onClose, onSaved }: { testI
 
   async function save(q: any) {
     try {
-      await upsertQ({ data: q });
+      await upsertQ({ data: { ...q, test_id: testId } });
       toast.success("Saved");
       qc.invalidateQueries({ queryKey: ["admin-qs", testId] });
       onSaved();
