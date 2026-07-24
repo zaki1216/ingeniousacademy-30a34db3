@@ -79,7 +79,7 @@ export function AcademyWorld() {
     );
   };
 
-  const worldContext: WorldRuntimeContext = { breakpoint };
+  const worldContext: WorldRuntimeContext = { breakpoint, reducedMotion: !!reduced };
 
   // Slots feed interactive/state-driven content into the engine's layer order.
   const slots = {

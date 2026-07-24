@@ -268,6 +268,254 @@ export const Vignette = memo(function Vignette() {
   );
 });
 
+/* ------------------------- New ambient / decor ------------------------- */
+
+export const LightRays = memo(function LightRays() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 mix-blend-screen"
+      style={{
+        background:
+          "conic-gradient(from 210deg at 60% 15%, transparent 0deg, rgba(253,224,71,0.10) 8deg, transparent 20deg, rgba(253,224,71,0.08) 30deg, transparent 45deg)",
+        maskImage: "linear-gradient(180deg, black 0%, black 55%, transparent 85%)",
+        WebkitMaskImage: "linear-gradient(180deg, black 0%, black 55%, transparent 85%)",
+      }}
+    />
+  );
+});
+
+export const Banners = memo(function Banners() {
+  const banners = [
+    { x: 12, y: 46 }, { x: 88, y: 46 }, { x: 30, y: 44 }, { x: 70, y: 44 },
+  ];
+  return (
+    <>
+      {banners.map((b, i) => (
+        <div key={i} className="absolute" style={{ left: `${b.x}%`, top: `${b.y}%`, transform: "translate(-50%,-100%)" }}>
+          <svg width="18" height="34" viewBox="0 0 18 34">
+            <rect x="8" y="0" width="2" height="34" fill="#3a2418" />
+            <motion.path
+              d="M10,4 L18,6 L16,12 L18,18 L10,20 Z"
+              fill="#7f1d1d"
+              stroke="#fbbf24"
+              strokeWidth="0.4"
+              animate={{ d: [
+                "M10,4 L18,6 L16,12 L18,18 L10,20 Z",
+                "M10,4 L17,7 L18,12 L17,17 L10,20 Z",
+                "M10,4 L18,6 L16,12 L18,18 L10,20 Z",
+              ] }}
+              transition={{ duration: 3 + (i % 2), repeat: Infinity, ease: "easeInOut" }}
+            />
+            <circle cx="14" cy="12" r="1.4" fill="#fbbf24" />
+          </svg>
+        </div>
+      ))}
+    </>
+  );
+});
+
+export const Lanterns = memo(function Lanterns() {
+  const lanterns = [
+    { x: 20, y: 60 }, { x: 80, y: 60 }, { x: 50, y: 58 },
+  ];
+  return (
+    <>
+      {lanterns.map((l, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{ left: `${l.x}%`, top: `${l.y}%`, transform: "translate(-50%,-50%)" }}
+          animate={{ rotate: [-2, 2, -2] }}
+          transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <svg width="16" height="22" viewBox="0 0 16 22">
+            <line x1="8" y1="0" x2="8" y2="4" stroke="#3a2418" strokeWidth="0.6" />
+            <rect x="3" y="4" width="10" height="12" rx="2" fill="#7a4820" stroke="#3a2418" strokeWidth="0.4" />
+            <motion.rect
+              x="5" y="6" width="6" height="8" rx="1" fill="#fbbf24"
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2 + i * 0.3, repeat: Infinity }}
+              style={{ filter: "drop-shadow(0 0 4px rgba(251,191,36,0.9))" }}
+            />
+          </svg>
+        </motion.div>
+      ))}
+    </>
+  );
+});
+
+export const FlowerBeds = memo(function FlowerBeds() {
+  const beds = [
+    { x: 25, y: 86 }, { x: 75, y: 86 }, { x: 45, y: 94 }, { x: 55, y: 94 },
+  ];
+  const petals = ["#f472b6", "#fcd34d", "#f9a8d4", "#a5f3fc", "#fda4af"];
+  return (
+    <>
+      {beds.map((b, i) => (
+        <div key={i} className="absolute" style={{ left: `${b.x}%`, top: `${b.y}%`, transform: "translate(-50%,-50%)" }}>
+          <svg width="32" height="14" viewBox="0 0 32 14">
+            <ellipse cx="16" cy="10" rx="14" ry="3.5" fill="#2a1a10" />
+            {[4, 10, 16, 22, 28].map((cx, j) => (
+              <circle key={j} cx={cx} cy={7 - (j % 2)} r="1.6" fill={petals[(i + j) % petals.length]} />
+            ))}
+          </svg>
+        </div>
+      ))}
+    </>
+  );
+});
+
+export const Bushes = memo(function Bushes() {
+  const bushes = [
+    { x: 10, y: 74 }, { x: 90, y: 74 }, { x: 22, y: 96 }, { x: 78, y: 96 },
+  ];
+  return (
+    <>
+      {bushes.map((b, i) => (
+        <div key={i} className="absolute" style={{ left: `${b.x}%`, top: `${b.y}%`, transform: "translate(-50%,-50%)" }}>
+          <svg width="28" height="14" viewBox="0 0 28 14">
+            <ellipse cx="8" cy="9" rx="7" ry="5" fill="#1f4a24" />
+            <ellipse cx="18" cy="9" rx="8" ry="5" fill="#2d6b32" />
+            <ellipse cx="24" cy="10" rx="4" ry="3" fill="#1f4a24" />
+          </svg>
+        </div>
+      ))}
+    </>
+  );
+});
+
+export const Benches = memo(function Benches() {
+  const benches = [
+    { x: 32, y: 90 }, { x: 68, y: 90 },
+  ];
+  return (
+    <>
+      {benches.map((b, i) => (
+        <div key={i} className="absolute" style={{ left: `${b.x}%`, top: `${b.y}%`, transform: "translate(-50%,-50%)" }}>
+          <svg width="22" height="10" viewBox="0 0 22 10">
+            <rect x="1" y="2" width="20" height="2" rx="1" fill="#7a4820" />
+            <rect x="2" y="4" width="2" height="5" fill="#3a2418" />
+            <rect x="18" y="4" width="2" height="5" fill="#3a2418" />
+          </svg>
+        </div>
+      ))}
+    </>
+  );
+});
+
+export const Signboards = memo(function Signboards() {
+  const signs = [
+    { x: 8, y: 82, label: "N" }, { x: 92, y: 82, label: "S" },
+  ];
+  return (
+    <>
+      {signs.map((s, i) => (
+        <div key={i} className="absolute" style={{ left: `${s.x}%`, top: `${s.y}%`, transform: "translate(-50%,-100%)" }}>
+          <svg width="20" height="26" viewBox="0 0 20 26">
+            <rect x="9" y="10" width="2" height="16" fill="#3a2418" />
+            <rect x="2" y="4" width="16" height="8" rx="1" fill="#7a4820" stroke="#3a2418" strokeWidth="0.5" />
+            <text x="10" y="10" textAnchor="middle" fontSize="6" fontWeight="900" fill="#fde68a" fontFamily="'Cinzel', serif">
+              {s.label}
+            </text>
+          </svg>
+        </div>
+      ))}
+    </>
+  );
+});
+
+export const Butterflies = memo(function Butterflies() {
+  return (
+    <>
+      {Array.from({ length: 3 }).map((_, i) => {
+        const baseX = 35 + i * 15;
+        const baseY = 78 + (i % 2) * 4;
+        const tint = ["#f9a8d4", "#fcd34d", "#a5f3fc"][i];
+        return (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{ left: `${baseX}%`, top: `${baseY}%` }}
+            animate={{
+              x: [0, 10, -6, 8, 0],
+              y: [0, -8, -4, -10, 0],
+            }}
+            transition={{ duration: 12 + i * 3, repeat: Infinity, ease: "easeInOut", delay: i * 1.5 }}
+          >
+            <motion.svg
+              width="10" height="8" viewBox="0 0 10 8"
+              animate={{ scaleX: [1, 0.3, 1] }}
+              transition={{ duration: 0.3, repeat: Infinity }}
+            >
+              <ellipse cx="3" cy="4" rx="3" ry="2.5" fill={tint} opacity="0.9" />
+              <ellipse cx="7" cy="4" rx="3" ry="2.5" fill={tint} opacity="0.9" />
+              <rect x="4.6" y="3" width="0.8" height="3" fill="#1a1024" />
+            </motion.svg>
+          </motion.div>
+        );
+      })}
+    </>
+  );
+});
+
+export const DriftingLeaves = memo(function DriftingLeaves() {
+  return (
+    <>
+      {Array.from({ length: 5 }).map((_, i) => {
+        const left = (i * 23 + 8) % 100;
+        const dur = 14 + (i * 3) % 6;
+        return (
+          <motion.span
+            key={i}
+            className="absolute"
+            style={{ left: `${left}%`, top: "-4%", fontSize: 10 }}
+            animate={{
+              top: ["-4%", "104%"],
+              x: [0, 20, -10, 25, 0],
+              rotate: [0, 180, 360],
+            }}
+            transition={{ duration: dur, repeat: Infinity, ease: "linear", delay: i * 2 }}
+          >
+            <svg width="8" height="10" viewBox="0 0 8 10">
+              <path d="M4,0 Q8,4 4,10 Q0,4 4,0 Z" fill="#7a4820" opacity="0.75" />
+            </svg>
+          </motion.span>
+        );
+      })}
+    </>
+  );
+});
+
+export const Fireflies = memo(function Fireflies() {
+  return (
+    <>
+      {Array.from({ length: 10 }).map((_, i) => {
+        const left = (i * 41 + 12) % 100;
+        const top = 55 + ((i * 13) % 35);
+        const dur = 4 + (i % 4);
+        return (
+          <motion.span
+            key={i}
+            className="absolute h-1 w-1 rounded-full"
+            style={{
+              left: `${left}%`,
+              top: `${top}%`,
+              background: "#fef08a",
+              boxShadow: "0 0 6px rgba(253,224,71,0.95), 0 0 12px rgba(253,224,71,0.6)",
+            }}
+            animate={{
+              x: [0, 12, -8, 6, 0],
+              y: [0, -10, 4, -6, 0],
+              opacity: [0.2, 1, 0.4, 1, 0.2],
+            }}
+            transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay: (i % 5) * 0.4 }}
+          />
+        );
+      })}
+    </>
+  );
+});
+
 /** Registry keyed by WorldObject.renderer. */
 export const worldRenderers: Record<string, React.ComponentType> = {
   sky: Sky,
@@ -282,4 +530,14 @@ export const worldRenderers: Record<string, React.ComponentType> = {
   birds: Birds,
   sparkles: Sparkles,
   vignette: Vignette,
+  lightRays: LightRays,
+  banners: Banners,
+  lanterns: Lanterns,
+  flowerBeds: FlowerBeds,
+  bushes: Bushes,
+  benches: Benches,
+  signboards: Signboards,
+  butterflies: Butterflies,
+  driftingLeaves: DriftingLeaves,
+  fireflies: Fireflies,
 };
