@@ -148,7 +148,8 @@ export const BUILDINGS: BuildingCurriculum[] = [
     title: "Mathematics Building",
     subtitle: "The Numeric Halls await — choose the wing you wish to master.",
     accent: "amber",
-    subjectMatcher: subjectIncludes("math"),
+    subjectMatcher: (s) =>
+      includesAny(s.subject_name, ["math", ...ALGEBRA_KEYS, ...GEOMETRY_KEYS]),
     wingStrategy: "split-chapters",
     wings: [
       {
@@ -159,6 +160,7 @@ export const BUILDINGS: BuildingCurriculum[] = [
         description: "Master equations, polynomials and the arcane laws of number.",
         gradient: "linear-gradient(135deg,#1e3a8a,#3b5aa8,#0f1e40)",
         glow: "rgba(59,130,246,0.5)",
+        subjectMatcher: subjectIncludes(...ALGEBRA_KEYS),
         chapterMatcher: chapterIncludes(...ALGEBRA_KEYS),
         fallback: true,
       },
@@ -171,6 +173,7 @@ export const BUILDINGS: BuildingCurriculum[] = [
           "Bend space, angles and form to your will inside the geometric fortress.",
         gradient: "linear-gradient(135deg,#7c2d12,#c2410c,#78350f)",
         glow: "rgba(251,146,60,0.5)",
+        subjectMatcher: subjectIncludes(...GEOMETRY_KEYS),
         chapterMatcher: chapterIncludes(...GEOMETRY_KEYS),
       },
     ],
