@@ -395,10 +395,16 @@ export function resolveWings<
   // split-chapters
   const wingDefs = building.wings ?? [];
   const fallback = wingDefs.find((w) => w.fallback);
+  const subjectById = new Map(subjects.map((s) => [s.id, s]));
   const buckets = new Map<string, C[]>();
   wingDefs.forEach((w) => buckets.set(w.id, []));
   for (const c of chapters) {
+    const subj = subjectById.get(c.subject_id);
+    const bySubject = subj
+      ? wingDefs.find((w) => w.subjectMatcher?.({ subject_name: subj.subject_name }))
+      : undefined;
     const w =
+      bySubject ??
       wingDefs.find((w) => w.chapterMatcher?.({ chapter_name: c.chapter_name })) ??
       fallback;
     if (w) buckets.get(w.id)!.push(c);
