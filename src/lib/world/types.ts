@@ -53,6 +53,8 @@ export type WorldVisibilityRule = {
 
 export type WorldRuntimeContext = {
   breakpoint: Breakpoint;
+  /** True when the user prefers reduced motion — engine dims ambient effects. */
+  reducedMotion?: boolean;
   /** Reserved fields for future features. */
   timeOfDay?: "dawn" | "day" | "dusk" | "night";
   weather?: "clear" | "rain" | "snow" | "fog";
