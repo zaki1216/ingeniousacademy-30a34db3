@@ -1,86 +1,52 @@
-# Academy World — Responsive Layout Engine Refactor
+# Adventure Dashboard + Quiz Removal
 
-Architectural refactor only. No visual redesign, no route changes, no HUD/animation/gameplay changes. Buildings keep their identities, kinds, routes, tags, match keywords, and locked states.
+Two parallel workstreams. Preserve Academy World, HUD, Building Engine, Curriculum Engine, routes (except quiz), progress, XP/coins, Guardian system.
 
-## Goal
+## Part A — Building Adventure Dashboard
 
-Replace the two hardcoded position arrays (`DESKTOP_BUILDINGS` and `MOBILE_BUILDINGS` inside `src/components/campus/AcademyWorld.tsx`) with:
+Extend the Generic Building Engine so every building interior (Math/Science/Library and any future building) renders a reusable dashboard above the existing wing/dungeon content.
 
-1. A **building registry** — one config entry per building, no coordinates.
-2. A **layout engine** — computes `{ x, y, scale }` per building for the current breakpoint from a lane/slot description.
-3. A thin **renderer** — `AcademyWorld.tsx` reads the resolved positions and renders exactly as today.
+### New components (in `src/components/building/adventure/`)
+- `AdventureHero.tsx` — building name, icon, mentor avatar, subtitle, overall completion %, student's rank within the building.
+- `TodaysAdventureCard.tsx` — computes next action from progress: Continue previous quest / Start next unlocked / Continue campaign / Prepare for Guardian. Renders the primary CTA (`Continue Adventure` / `Begin Quest` / `Challenge Guardian` / `Resume Campaign`) that deep-links into the correct dungeon + quest.
+- `ObjectivePanel.tsx` — three objective rows driven by data: "Watch today's lesson", "Earn XP (today)", "Defeat Guardian" (only when a boss is available/unlocked). Each shows status + progress.
+- `RewardsPreview.tsx` — upcoming XP, coins, chapter/building completion rewards, guardian reward, next achievement progress.
+- `ProgressPanel.tsx` — reusable animated bars/rings for building, wing, campaign, current quest.
+- `MentorGuidance.tsx` — mentor portrait + contextual message chosen from config rules based on progress state.
 
-Buildings preserved with unchanged routes: Language Library, Mathematics, Science, Hall of Fame, Residence, Arena, Merchant, Observatory (locked "Coming Soon").
+### Data layer
+- New selector hook `src/lib/building/useAdventureState.ts` — builds a normalized `AdventureState` from existing `useBuildingData` + gamification + lecture progression (no new server fns unless needed). Determines: nextQuest, currentCampaign, guardianAvailable, buildingCompletionPct, wingPct, mentorMessageKey.
+- Extend `BuildingRenderConfig` in `src/lib/curriculum/types.ts` with:
+  - `mentor.guidance: Record<GuidanceKey, string>` (config-driven messages).
+  - `subtitle`, `heroBadge`, optional `rewardHints`.
+- Extend `src/lib/curriculum/config.ts` with guidance strings per building.
 
-## New files
+### Integration
+- Update `HallRenderer.tsx` and `SimpleRenderer.tsx` to render `<AdventureDashboard />` above their existing wing/dungeon UI. Dashboard is a single composed component that arranges the six pieces responsively (desktop grid, tablet stack with hierarchy, mobile ordered: Hero → Today's Adventure → Objectives → Rewards → Progress). No changes to routes or engine dispatch.
 
-- `src/lib/campus/buildings.ts` — Building registry. Array of `BuildingDef`:
-  ```ts
-  type BuildingDef = {
-    id: string;                    // stable id
-    kind: BuildingKind;            // "math" | "science" | "library" | "hall" | "residence" | "arena" | "merchant" | "future"
-    name: string;
-    tag: string;
-    route?: string;
-    match?: string[];
-    locked?: boolean;
-    weight?: number;               // visual importance (affects scale)
-    preferredLane?: "back" | "mid" | "front"; // hint for layout engine
-  };
-  export const BUILDINGS: BuildingDef[];
-  ```
-  Order in the array = display priority. Adding a new building = append one entry.
+## Part B — Remove Quiz System
 
-- `src/lib/campus/layoutEngine.ts` — Pure layout computation:
-  ```ts
-  type Breakpoint = "desktop" | "tablet" | "mobile";
-  type PlacedBuilding = BuildingDef & { x: number; y: number; scale: number };
-  export function resolveBreakpoint(width: number): Breakpoint;
-  export function layoutBuildings(defs: BuildingDef[], bp: Breakpoint): PlacedBuilding[];
-  export function playerHome(bp: Breakpoint): { x: number; y: number };
-  ```
-  - Uses a **lane grid**: `back / mid / front` rows on desktop+tablet, vertical stack on mobile.
-  - Allocates each building into a lane slot based on `preferredLane`, index, and available slots for the breakpoint.
-  - Computes `x` from `slotIndex / (slotsInLane + 1)` mapped into a horizontal padding-safe range (e.g. 8%–92%).
-  - Computes `y` from lane (back ≈ 46%, mid ≈ 58%, front ≈ 74% on desktop; compressed on tablet; single-column on mobile).
-  - Applies min-spacing check — if two buildings collide within threshold, nudges along x.
-  - Scale = base per-breakpoint × (weight or 1). Locked/utility buildings get a small negative weight.
-  - Deterministic (no randomness) so layout is stable across renders.
+### Student side
+- Delete routes: `app.tests.tsx`, `app.tests.$testId.tsx`.
+- Remove quiz CTAs/sections from `DungeonPath.tsx`, `app.journey.$worldId.$dungeonId.tsx`, `app.profile.tsx`, `app.coins.tsx`, and any other student surface referencing tests/quizzes.
+- Replace "quiz-gated" lecture unlock with a simple "Mark lecture complete" flow. Use existing `video_completions` as the completion signal; add a `markLectureComplete` server fn if not already present.
+- Rewrite `src/lib/api/lecture-progression.functions.ts` so `isLectureUnlocked` requires only that the previous lecture is marked complete (or manual override). Drop all quiz checks.
 
-- `src/lib/campus/useCampusLayout.ts` — Hook that watches `window.innerWidth` (matchMedia for `768px` and `1024px`), memoizes `layoutBuildings(BUILDINGS, bp)` and `playerHome(bp)`.
+### Admin side
+- Delete routes: `app.admin.lecture-quizzes.tsx`, `app.admin.quiz-import.tsx`, `app.admin.assessment.tsx` (assessment == quiz management here — verify and delete or trim).
+- Remove quiz nav entries from `app.tsx` sidebar and `app.admin.dashboard.tsx` tiles.
+- Delete server fns: `lecture-quiz.functions.ts`, `lecture-quiz-admin.functions.ts`, `quiz-import.functions.ts`.
+- Trim quiz sections from `app.admin.students.$id.tsx`, `app.admin.settings.tsx`, `app.admin.content.tsx`, `admin-rewards.functions.ts`, `gamification.functions.ts`.
+- Remove quiz references from `lumi/knowledge.ts`, `entry/tips.ts`, `passes.ts`, `pets.ts`, `talents.ts` (text-only).
 
-## Edited files
+### Database (migration)
+- Drop tables: `quiz_attempts`, `questions`, `tests`, `results` (results is quiz results — verify usage; if used elsewhere, keep).
+- Drop dependent foreign keys first. Preserve `chapter_completions`, `video_completions`, XP/coin transactions.
+- Keep `offline_tests` / `offline_marks` (physical offline tests, not app quizzes).
 
-- `src/components/campus/AcademyWorld.tsx`
-  - Delete `DESKTOP_BUILDINGS`, `MOBILE_BUILDINGS`, `PLAYER_HOME_DESKTOP`, `PLAYER_HOME_MOBILE`, the local `Building` type, and the `useIsMobile`-based selection.
-  - Import `useCampusLayout()` → get `buildings` (already placed with x/y/scale) and `playerHome`.
-  - Loop `buildings.map(b => …)` renders identically to today (same `<Building>` element, same click/hover handlers, same tag chips, same avatar/walk logic).
-  - Everything else in the file (SVG backdrop, mentors, particles, camera-push transition, tooltip, click-to-walk, navigation) stays byte-identical apart from source of coordinates.
+### Chapter completion
+- Update `submitLectureQuiz` logic that awards chapter completion → move equivalent logic into `markLectureComplete`: when all lectures in a chapter are marked complete, award chapter XP/coins (idempotent via `chapter_completions`).
 
-## Breakpoints
-
-- Mobile: `< 768px` — single column, 2 buildings per row where width allows, otherwise stacked; container height grows so no clipping; no horizontal scroll.
-- Tablet: `768–1023px` — two lanes (back+front), 3 slots per lane.
-- Desktop: `≥ 1024px` — three lanes (back/mid/front), matches current visual arrangement of the 8 buildings.
-
-Desktop slot targets are chosen so the resolved coordinates for the current 8 buildings are visually near today's hardcoded values (Library far-left back, Math mid-back, Science center-back, Hall mid-back-right, Residence far-right back, Arena front-left, Merchant front-right, Observatory front-center). Visual parity on desktop is the acceptance bar.
-
-## Preserved (do not touch)
-
-- All routes and route file names.
-- HUD, minimap, Lumi, particle field, mentor NPCs, camera-push transition, click-to-walk animation, avatar rendering.
-- Theme tokens, fonts, existing animations and timings.
-- Building visual components (`<Building>` and its kind-specific SVG art).
-- Locked-state behavior for Observatory.
-
-## Acceptance
-
-- Desktop screenshot of `/app` matches previous layout within a few percent per building.
-- Resize from desktop → tablet → mobile: buildings rearrange, no overlap, no clipping, no horizontal scrollbar, all remain clickable and route correctly.
-- Adding a 9th building = append to `BUILDINGS` array only; no changes to `AcademyWorld.tsx` or the engine.
-
-## Out of scope
-
-- No changes to `/app/welcome`, `/app/building/*`, journey, HUD, or any other route.
-- No new dependencies.
-- No redesign of building art or backdrop.
+## Notes / risks
+- `tests` also stores `is_boss` — Guardian battles currently piggy-back on the tests table. Since the spec says preserve Guardian system but remove quizzes, the "Guardian Battle" becomes a narrative/visual milestone tied to chapter completion (no quiz). CTA `Challenge Guardian` will trigger the chapter completion celebration when all lectures in the chapter are marked complete.
+- Existing student progress (chapter_completions, XP, coins, video_completions) is preserved. Only quiz-attempt history is dropped.
