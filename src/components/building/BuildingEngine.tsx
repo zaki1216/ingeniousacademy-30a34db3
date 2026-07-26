@@ -140,12 +140,15 @@ export function BuildingEngine({ buildingId }: { buildingId: string }) {
       <SimpleRenderer
         building={building}
         title={interiorTitle}
+        cadetName={cadetName}
         dungeons={dungeons}
+        stats={stats}
         recommended={recommended}
         onExit={exitBuilding}
         onEnterDungeon={enterDungeon}
       />
     );
+
   })();
 
   return (
