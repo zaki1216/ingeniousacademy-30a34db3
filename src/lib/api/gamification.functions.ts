@@ -291,54 +291,6 @@ export const completeVideo = createServerFn({ method: "POST" })
   });
 
 
-// ---------- Award quiz rewards (called after submitTest) ----------
-export const awardQuizRewards = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({
-    testId: z.string().uuid(),
-  }).parse(d))
-  .handler(async ({ data, context }) => {
-    const userId = context.userId;
-    // Has this user already been awarded for this test?
-    const { data: existing } = await supabaseAdmin
-      .from("xp_transactions")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("reason", "quiz_complete")
-      .contains("metadata", { testId: data.testId })
-      .maybeSingle();
-    if (existing) {
-      const stats = await ensureStatsRow(userId);
-      return {
-        alreadyAwarded: true,
-        xpAwarded: 0, coinsAwarded: 0, leveledUp: false,
-        oldLevel: stats.level, newLevel: stats.level, newXp: stats.xp, newCoins: stats.coins,
-        newAchievements: [],
-        weeklyStreakBonus: null,
-      };
-    }
-    // Server-side lookup of the actual graded result — never trust a client-supplied percentage.
-    const { data: result } = await supabaseAdmin
-      .from("results")
-      .select("percentage")
-      .eq("student_id", userId)
-      .eq("test_id", data.testId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (!result) {
-      throw new Error("No submitted result found for this test");
-    }
-    const percentage = Number(result.percentage);
-    const { data: test } = await supabaseAdmin
-      .from("tests").select("is_boss").eq("id", data.testId).single();
-    let xp = 30, coins = 10;
-    if (percentage >= 80) { xp += 20; coins += 10; }
-    if (test?.is_boss) { xp += 100; coins += 50; }
-    const rewardResult = await grantRewards(userId, xp, coins, "quiz_complete", { testId: data.testId, percentage });
-    return { alreadyAwarded: false, ...rewardResult };
-  });
-
 // ---------- Daily check-in (no rewards, just streak + weekly bonus) ----------
 export const dailyCheckIn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -357,6 +309,7 @@ export const dailyCheckIn = createServerFn({ method: "POST" })
       newAchievements,
     };
   });
+
 
 // ---------- Dashboard ----------
 export const getGamificationDashboard = createServerFn({ method: "GET" })
