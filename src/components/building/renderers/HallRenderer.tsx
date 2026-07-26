@@ -126,12 +126,23 @@ export function HallRenderer({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-40">
+        <div className="px-3 sm:px-6 md:px-8">
+          <AdventureDashboard
+            cadetName={cadetName}
+            interiorTitle={render.infoSubtitle ?? building.subtitle}
+            dungeons={dungeons}
+            stats={stats}
+            accent={theme.accent ?? "#fbbf24"}
+          />
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-40 mt-4">
           <DungeonGallery
             dungeons={dungeons}
             onEnter={(id, name, subjectId) => enterDungeon(id, name, subjectId)}
           />
         </div>
+
 
         {mentor && mentorLine && <MentorBubble mentor={mentor} line={mentorLine} />}
 
