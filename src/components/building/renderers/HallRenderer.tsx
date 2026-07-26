@@ -17,6 +17,8 @@ import {
 
 import type { BuildingCurriculum } from "@/lib/curriculum/types";
 import type { EngineDungeon, EngineStats } from "@/lib/building/useBuildingData";
+import { AdventureDashboard } from "@/components/building/AdventureDashboard";
+
 
 const DIFFICULTY_STARS = ["★", "★★", "★★★", "★★★★"];
 
