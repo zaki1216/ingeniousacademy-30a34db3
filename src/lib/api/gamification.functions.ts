@@ -253,11 +253,11 @@ export const completeVideo = createServerFn({ method: "POST" })
     }
     await supabaseAdmin.from("video_completions").insert({ user_id: userId, lecture_id: data.lectureId, watch_count: 1, last_watched_at: new Date().toISOString() });
 
-    // Check chapter completion bonus
+    // Check for chapter completion (all lectures watched → grant chapter bonus once).
     const { data: lec } = await supabaseAdmin
       .from("lectures").select("chapter_id").eq("id", data.lectureId).single();
     let xp = 50, coins = 10;
-    const reason: string = "video_complete";
+    let chapterCompleted: { xp: number; coins: number } | null = null;
     if (lec?.chapter_id) {
       const { data: chapterLecs } = await supabaseAdmin
         .from("lectures").select("id").eq("chapter_id", lec.chapter_id);
@@ -266,12 +266,30 @@ export const completeVideo = createServerFn({ method: "POST" })
         .from("video_completions").select("id", { count: "exact", head: true })
         .eq("user_id", userId).in("lecture_id", lecIds);
       if (lecIds.length > 0 && (doneCount ?? 0) === lecIds.length) {
-        xp += 100; coins += 50;
+        // Insert chapter_completions once (idempotent). Grant chapter bonus.
+        const { data: existingChapter } = await supabaseAdmin
+          .from("chapter_completions").select("id")
+          .eq("user_id", userId).eq("chapter_id", lec.chapter_id).maybeSingle();
+        if (!existingChapter) {
+          const { data: chapter } = await supabaseAdmin
+            .from("chapters").select("completion_xp, completion_coins")
+            .eq("id", lec.chapter_id).maybeSingle();
+          const bonusXp = chapter?.completion_xp ?? 100;
+          const bonusCoins = chapter?.completion_coins ?? 50;
+          await supabaseAdmin.from("chapter_completions").insert({
+            user_id: userId, chapter_id: lec.chapter_id,
+            xp_awarded: bonusXp, coins_awarded: bonusCoins,
+          });
+          xp += bonusXp;
+          coins += bonusCoins;
+          chapterCompleted = { xp: bonusXp, coins: bonusCoins };
+        }
       }
     }
-    const result = await grantRewards(userId, xp, coins, reason, { lectureId: data.lectureId });
-    return { alreadyCompleted: false, ...result };
+    const result = await grantRewards(userId, xp, coins, "video_complete", { lectureId: data.lectureId });
+    return { alreadyCompleted: false, chapterCompleted, ...result };
   });
+
 
 // ---------- Award quiz rewards (called after submitTest) ----------
 export const awardQuizRewards = createServerFn({ method: "POST" })
