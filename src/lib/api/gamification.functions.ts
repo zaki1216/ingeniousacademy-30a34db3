@@ -104,10 +104,10 @@ async function awardWeeklyStreakBonus(userId: string, bonus: WeeklyBonus) {
 
 async function evaluateAchievements(userId: string): Promise<RewardSummary["newAchievements"]> {
   // Compute progress for each requirement type
-  const [statsRes, vcRes, resultsRes, coinTxRes, uaRes, achRes] = await Promise.all([
+  const [statsRes, vcRes, chapterCompRes, coinTxRes, uaRes, achRes] = await Promise.all([
     supabaseAdmin.from("gamification_stats").select("*").eq("user_id", userId).maybeSingle(),
     supabaseAdmin.from("video_completions").select("id", { count: "exact", head: true }).eq("user_id", userId),
-    supabaseAdmin.from("results").select("percentage, test:tests(is_boss)").eq("student_id", userId),
+    supabaseAdmin.from("chapter_completions").select("id", { count: "exact", head: true }).eq("user_id", userId),
     supabaseAdmin.from("coin_transactions").select("amount").eq("user_id", userId).gt("amount", 0),
     supabaseAdmin.from("user_achievements").select("achievement_id").eq("user_id", userId),
     supabaseAdmin.from("achievements").select("*"),
@@ -115,10 +115,7 @@ async function evaluateAchievements(userId: string): Promise<RewardSummary["newA
 
   const stats = statsRes.data;
   const videosWatched = vcRes.count ?? 0;
-  const results = (resultsRes.data ?? []) as { percentage: number; test: { is_boss: boolean } | null }[];
-  const quizzesTaken = results.length;
-  const perfectQuizzes = results.filter((r) => Number(r.percentage) >= 100).length;
-  const bossesDefeated = results.filter((r) => r.test?.is_boss).length;
+  const bossesDefeated = chapterCompRes.count ?? 0;
   const coinsEarned = (coinTxRes.data ?? []).reduce((s, r) => s + r.amount, 0);
   const owned = new Set((uaRes.data ?? []).map((r) => r.achievement_id));
   const achievements = achRes.data ?? [];
@@ -126,8 +123,8 @@ async function evaluateAchievements(userId: string): Promise<RewardSummary["newA
   const metricFor = (type: string): number => {
     switch (type) {
       case "videos_watched": return videosWatched;
-      case "quizzes_taken": return quizzesTaken;
-      case "perfect_quizzes": return perfectQuizzes;
+      case "quizzes_taken": return videosWatched; // quiz system removed — use lecture completions
+      case "perfect_quizzes": return videosWatched;
       case "streak_days": return stats?.streak_days ?? 0;
       case "level": return stats?.level ?? 1;
       case "coins_earned": return coinsEarned;
@@ -171,6 +168,7 @@ async function evaluateAchievements(userId: string): Promise<RewardSummary["newA
 
   return toUnlock.map((a) => ({ code: a.code, name: a.name, description: a.description, icon: a.icon }));
 }
+
 
 async function grantRewards(
   userId: string,
