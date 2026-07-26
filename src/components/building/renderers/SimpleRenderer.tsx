@@ -13,19 +13,25 @@ import { DoorOpen } from "lucide-react";
 import type { BuildingCurriculum } from "@/lib/curriculum/types";
 import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
 import { DungeonCard } from "@/components/building/DungeonCard";
-import type { EngineDungeon } from "@/lib/building/useBuildingData";
+import { AdventureDashboard } from "@/components/building/AdventureDashboard";
+import type { EngineDungeon, EngineStats } from "@/lib/building/useBuildingData";
+
 
 export function SimpleRenderer({
   building,
   title,
+  cadetName,
   dungeons,
+  stats,
   recommended,
   onExit,
   onEnterDungeon,
 }: {
   building: BuildingCurriculum;
   title: string;
+  cadetName: string;
   dungeons: EngineDungeon[];
+  stats: EngineStats;
   recommended: BuildingObjective | null;
   onExit: () => void;
   onEnterDungeon: (subjectId: string, dungeonId: string) => void;
@@ -33,6 +39,7 @@ export function SimpleRenderer({
   const render = building.render!;
   const theme = render.theme;
   const emptyText = building.emptyText ?? "Content is being prepared.";
+
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050505]">
@@ -90,7 +97,18 @@ export function SimpleRenderer({
           </h1>
         </div>
 
+        <div className="mt-6">
+          <AdventureDashboard
+            cadetName={cadetName}
+            interiorTitle={title}
+            dungeons={dungeons}
+            stats={stats}
+            accent={theme.accent}
+          />
+        </div>
+
         <div className="mt-8 max-w-5xl w-full mx-auto grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-40">
+
           {dungeons.map((d, i) => (
             <DungeonCard
               key={d.id}

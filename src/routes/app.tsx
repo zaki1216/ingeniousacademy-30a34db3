@@ -28,15 +28,15 @@ export const Route = createFileRoute("/app")({
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean };
 
-// Academy Office — 6 hubs only
+// Academy Office — hubs (assessments removed with quiz system)
 const adminNav: NavItem[] = [
   { to: "/app/admin/dashboard", label: "Command Center", icon: LayoutDashboard },
   { to: "/app/admin/cadets", label: "Cadets", icon: ShieldCheck },
   { to: "/app/admin/content", label: "Academy Content", icon: Library },
-  { to: "/app/admin/assessment", label: "Assessments", icon: ScrollText },
   { to: "/app/admin/gamification", label: "Academy Systems", icon: Gamepad2 },
   { to: "/app/admin/settings", label: "Academy Settings", icon: Cog },
 ];
+
 
 const adminSecondaryNav: NavItem[] = [];
 

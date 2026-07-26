@@ -104,10 +104,10 @@ async function awardWeeklyStreakBonus(userId: string, bonus: WeeklyBonus) {
 
 async function evaluateAchievements(userId: string): Promise<RewardSummary["newAchievements"]> {
   // Compute progress for each requirement type
-  const [statsRes, vcRes, resultsRes, coinTxRes, uaRes, achRes] = await Promise.all([
+  const [statsRes, vcRes, chapterCompRes, coinTxRes, uaRes, achRes] = await Promise.all([
     supabaseAdmin.from("gamification_stats").select("*").eq("user_id", userId).maybeSingle(),
     supabaseAdmin.from("video_completions").select("id", { count: "exact", head: true }).eq("user_id", userId),
-    supabaseAdmin.from("results").select("percentage, test:tests(is_boss)").eq("student_id", userId),
+    supabaseAdmin.from("chapter_completions").select("id", { count: "exact", head: true }).eq("user_id", userId),
     supabaseAdmin.from("coin_transactions").select("amount").eq("user_id", userId).gt("amount", 0),
     supabaseAdmin.from("user_achievements").select("achievement_id").eq("user_id", userId),
     supabaseAdmin.from("achievements").select("*"),
@@ -115,10 +115,7 @@ async function evaluateAchievements(userId: string): Promise<RewardSummary["newA
 
   const stats = statsRes.data;
   const videosWatched = vcRes.count ?? 0;
-  const results = (resultsRes.data ?? []) as { percentage: number; test: { is_boss: boolean } | null }[];
-  const quizzesTaken = results.length;
-  const perfectQuizzes = results.filter((r) => Number(r.percentage) >= 100).length;
-  const bossesDefeated = results.filter((r) => r.test?.is_boss).length;
+  const bossesDefeated = chapterCompRes.count ?? 0;
   const coinsEarned = (coinTxRes.data ?? []).reduce((s, r) => s + r.amount, 0);
   const owned = new Set((uaRes.data ?? []).map((r) => r.achievement_id));
   const achievements = achRes.data ?? [];
@@ -126,8 +123,8 @@ async function evaluateAchievements(userId: string): Promise<RewardSummary["newA
   const metricFor = (type: string): number => {
     switch (type) {
       case "videos_watched": return videosWatched;
-      case "quizzes_taken": return quizzesTaken;
-      case "perfect_quizzes": return perfectQuizzes;
+      case "quizzes_taken": return videosWatched; // quiz system removed — use lecture completions
+      case "perfect_quizzes": return videosWatched;
       case "streak_days": return stats?.streak_days ?? 0;
       case "level": return stats?.level ?? 1;
       case "coins_earned": return coinsEarned;
@@ -171,6 +168,7 @@ async function evaluateAchievements(userId: string): Promise<RewardSummary["newA
 
   return toUnlock.map((a) => ({ code: a.code, name: a.name, description: a.description, icon: a.icon }));
 }
+
 
 async function grantRewards(
   userId: string,
@@ -255,11 +253,11 @@ export const completeVideo = createServerFn({ method: "POST" })
     }
     await supabaseAdmin.from("video_completions").insert({ user_id: userId, lecture_id: data.lectureId, watch_count: 1, last_watched_at: new Date().toISOString() });
 
-    // Check chapter completion bonus
+    // Check for chapter completion (all lectures watched → grant chapter bonus once).
     const { data: lec } = await supabaseAdmin
       .from("lectures").select("chapter_id").eq("id", data.lectureId).single();
     let xp = 50, coins = 10;
-    const reason: string = "video_complete";
+    let chapterCompleted: { xp: number; coins: number } | null = null;
     if (lec?.chapter_id) {
       const { data: chapterLecs } = await supabaseAdmin
         .from("lectures").select("id").eq("chapter_id", lec.chapter_id);
@@ -268,60 +266,30 @@ export const completeVideo = createServerFn({ method: "POST" })
         .from("video_completions").select("id", { count: "exact", head: true })
         .eq("user_id", userId).in("lecture_id", lecIds);
       if (lecIds.length > 0 && (doneCount ?? 0) === lecIds.length) {
-        xp += 100; coins += 50;
+        // Insert chapter_completions once (idempotent). Grant chapter bonus.
+        const { data: existingChapter } = await supabaseAdmin
+          .from("chapter_completions").select("id")
+          .eq("user_id", userId).eq("chapter_id", lec.chapter_id).maybeSingle();
+        if (!existingChapter) {
+          const { data: chapter } = await supabaseAdmin
+            .from("chapters").select("completion_xp, completion_coins")
+            .eq("id", lec.chapter_id).maybeSingle();
+          const bonusXp = chapter?.completion_xp ?? 100;
+          const bonusCoins = chapter?.completion_coins ?? 50;
+          await supabaseAdmin.from("chapter_completions").insert({
+            user_id: userId, chapter_id: lec.chapter_id,
+            xp_awarded: bonusXp, coins_awarded: bonusCoins,
+          });
+          xp += bonusXp;
+          coins += bonusCoins;
+          chapterCompleted = { xp: bonusXp, coins: bonusCoins };
+        }
       }
     }
-    const result = await grantRewards(userId, xp, coins, reason, { lectureId: data.lectureId });
-    return { alreadyCompleted: false, ...result };
+    const result = await grantRewards(userId, xp, coins, "video_complete", { lectureId: data.lectureId });
+    return { alreadyCompleted: false, chapterCompleted, ...result };
   });
 
-// ---------- Award quiz rewards (called after submitTest) ----------
-export const awardQuizRewards = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({
-    testId: z.string().uuid(),
-  }).parse(d))
-  .handler(async ({ data, context }) => {
-    const userId = context.userId;
-    // Has this user already been awarded for this test?
-    const { data: existing } = await supabaseAdmin
-      .from("xp_transactions")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("reason", "quiz_complete")
-      .contains("metadata", { testId: data.testId })
-      .maybeSingle();
-    if (existing) {
-      const stats = await ensureStatsRow(userId);
-      return {
-        alreadyAwarded: true,
-        xpAwarded: 0, coinsAwarded: 0, leveledUp: false,
-        oldLevel: stats.level, newLevel: stats.level, newXp: stats.xp, newCoins: stats.coins,
-        newAchievements: [],
-        weeklyStreakBonus: null,
-      };
-    }
-    // Server-side lookup of the actual graded result — never trust a client-supplied percentage.
-    const { data: result } = await supabaseAdmin
-      .from("results")
-      .select("percentage")
-      .eq("student_id", userId)
-      .eq("test_id", data.testId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (!result) {
-      throw new Error("No submitted result found for this test");
-    }
-    const percentage = Number(result.percentage);
-    const { data: test } = await supabaseAdmin
-      .from("tests").select("is_boss").eq("id", data.testId).single();
-    let xp = 30, coins = 10;
-    if (percentage >= 80) { xp += 20; coins += 10; }
-    if (test?.is_boss) { xp += 100; coins += 50; }
-    const rewardResult = await grantRewards(userId, xp, coins, "quiz_complete", { testId: data.testId, percentage });
-    return { alreadyAwarded: false, ...rewardResult };
-  });
 
 // ---------- Daily check-in (no rewards, just streak + weekly bonus) ----------
 export const dailyCheckIn = createServerFn({ method: "POST" })
@@ -341,6 +309,7 @@ export const dailyCheckIn = createServerFn({ method: "POST" })
       newAchievements,
     };
   });
+
 
 // ---------- Dashboard ----------
 export const getGamificationDashboard = createServerFn({ method: "GET" })
@@ -465,21 +434,3 @@ export const getAchievementsGallery = createServerFn({ method: "GET" })
     };
   });
 
-// ---------- Boss quiz availability for a chapter ----------
-export const getBossQuizStatus = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ chapterId: z.string().uuid() }).parse(d))
-  .handler(async ({ data, context }) => {
-    const userId = context.userId;
-    const { data: lectures } = await supabaseAdmin
-      .from("lectures").select("id").eq("chapter_id", data.chapterId);
-    const lecIds = (lectures ?? []).map((l) => l.id);
-    const { count: doneCount } = lecIds.length
-      ? await supabaseAdmin.from("video_completions").select("id", { count: "exact", head: true })
-          .eq("user_id", userId).in("lecture_id", lecIds)
-      : { count: 0 };
-    const allWatched = lecIds.length > 0 && doneCount === lecIds.length;
-    const { data: bossTest } = await supabaseAdmin
-      .from("tests").select("id, title, total_marks").eq("chapter_id", data.chapterId).eq("is_boss", true).maybeSingle();
-    return { unlocked: allWatched && !!bossTest, bossTest, totalLectures: lecIds.length, lecturesWatched: doneCount ?? 0 };
-  });

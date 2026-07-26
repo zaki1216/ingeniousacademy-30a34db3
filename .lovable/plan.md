@@ -1,52 +1,57 @@
-# Adventure Dashboard + Quiz Removal
 
-Two parallel workstreams. Preserve Academy World, HUD, Building Engine, Curriculum Engine, routes (except quiz), progress, XP/coins, Guardian system.
+# Adventure Dashboard + Quiz System Removal
 
-## Part A — Building Adventure Dashboard
+## Scope
+Preserve all current architecture (HUD, Academy World, curriculum, Building Engine, Journey, Residence, etc.). Two workstreams:
 
-Extend the Generic Building Engine so every building interior (Math/Science/Library and any future building) renders a reusable dashboard above the existing wing/dungeon content.
+### A. Remove the Quiz System (student + admin + DB)
+- **Student surfaces removed**
+  - `src/routes/app.tests.tsx`, `src/routes/app.tests.$testId.tsx`
+  - `src/routes/app.results.tsx`, `src/routes/app.analytics.tsx`, `src/routes/app.analytics.$testId.tsx`
+  - `QuestQuizPanel` and the Boss dialog inside `src/routes/app.journey.$worldId.$dungeonId.tsx`
+- **Admin surfaces removed**
+  - `src/routes/app.admin.lecture-quizzes.tsx`
+  - `src/routes/app.admin.quiz-import.tsx`
+  - `src/routes/app.admin.assessment.tsx` (folded into Content)
+  - Quiz cards from `app.admin.dashboard.tsx`, `app.admin.content.tsx`, `app.admin.settings.tsx`
+  - "Quiz History" section from `app.admin.students.$id.tsx`
+- **APIs removed**
+  - `src/lib/api/lecture-quiz.functions.ts`
+  - `src/lib/api/lecture-quiz-admin.functions.ts`
+  - `src/lib/api/quiz-import.functions.ts`
+  - `submitTest`, `checkChapterBoss` from `academy.functions.ts` / `gamification.functions.ts`
+  - Quiz history block from `admin-rewards.functions.ts`
+- **Progression rewrite** (`lecture-progression.functions.ts`)
+  - Unlock next lecture when the previous is marked complete (video watched → `video_completions`), or via admin `manual_unlocks`.
+  - Chapter completion + boss reward triggers automatically after final lecture is marked complete (moved into `completeVideo`).
+- **DB**: Keep `tests` / `questions` / `quiz_attempts` / `results` tables (PvP arena still queries `questions`). Only delete the `lecture_quiz` rows so no quiz content appears anywhere:
+  ```sql
+  DELETE FROM quiz_attempts USING tests WHERE quiz_attempts.test_id = tests.id AND tests.kind = 'lecture_quiz';
+  DELETE FROM results USING tests WHERE results.test_id = tests.id AND tests.kind = 'lecture_quiz';
+  DELETE FROM questions USING tests WHERE questions.test_id = tests.id AND tests.kind = 'lecture_quiz';
+  DELETE FROM tests WHERE kind = 'lecture_quiz';
+  ```
+- **Nav / links**: Sidebar entries for Tests, Results, Analytics, Quiz Rules, Quiz Import removed.
 
-### New components (in `src/components/building/adventure/`)
-- `AdventureHero.tsx` — building name, icon, mentor avatar, subtitle, overall completion %, student's rank within the building.
-- `TodaysAdventureCard.tsx` — computes next action from progress: Continue previous quest / Start next unlocked / Continue campaign / Prepare for Guardian. Renders the primary CTA (`Continue Adventure` / `Begin Quest` / `Challenge Guardian` / `Resume Campaign`) that deep-links into the correct dungeon + quest.
-- `ObjectivePanel.tsx` — three objective rows driven by data: "Watch today's lesson", "Earn XP (today)", "Defeat Guardian" (only when a boss is available/unlocked). Each shows status + progress.
-- `RewardsPreview.tsx` — upcoming XP, coins, chapter/building completion rewards, guardian reward, next achievement progress.
-- `ProgressPanel.tsx` — reusable animated bars/rings for building, wing, campaign, current quest.
-- `MentorGuidance.tsx` — mentor portrait + contextual message chosen from config rules based on progress state.
+### B. Adventure Dashboard (per building)
+New reusable component `src/components/building/AdventureDashboard.tsx` mounted at the top of both `HallRenderer` and `SimpleRenderer`, driven by `useBuildingData` + `getLectureProgress`. Sections:
 
-### Data layer
-- New selector hook `src/lib/building/useAdventureState.ts` — builds a normalized `AdventureState` from existing `useBuildingData` + gamification + lecture progression (no new server fns unless needed). Determines: nextQuest, currentCampaign, guardianAvailable, buildingCompletionPct, wingPct, mentorMessageKey.
-- Extend `BuildingRenderConfig` in `src/lib/curriculum/types.ts` with:
-  - `mentor.guidance: Record<GuidanceKey, string>` (config-driven messages).
-  - `subtitle`, `heroBadge`, optional `rewardHints`.
-- Extend `src/lib/curriculum/config.ts` with guidance strings per building.
+1. **Adventurer Overview** — cadet name, class, building name, personal rank badge, XP into level bar.
+2. **Today's Adventure** — the next unlocked/unfinished lecture (`next_to_unlock`), with dungeon name, quest title, "Enter Quest" CTA that deep-links to `/app/journey/$worldId/$dungeonId`.
+3. **Building Objectives** — 3 chip goals: "Clear a Quest", "Finish a Dungeon", "Weekly streak" with progress state.
+4. **Rewards Preview** — XP, coins, and chapter-completion bonuses for the current dungeon.
+5. **Recent Progress** — last 3 cleared lectures (from `video_completions`).
+6. **Mentor Guidance** — dynamic line from existing `mentor.line()` config.
+7. **Motivator Footer** — short quote pulled from a small rotating list.
 
-### Integration
-- Update `HallRenderer.tsx` and `SimpleRenderer.tsx` to render `<AdventureDashboard />` above their existing wing/dungeon UI. Dashboard is a single composed component that arranges the six pieces responsively (desktop grid, tablet stack with hierarchy, mobile ordered: Hero → Today's Adventure → Objectives → Rewards → Progress). No changes to routes or engine dispatch.
+Loading: skeleton tiles. Empty: "Your adventure is about to begin — no dungeons yet." Fully theme-tokenised (uses building `theme` accents already in config).
 
-## Part B — Remove Quiz System
+## Technical notes
+- Handlers that used to award boss rewards in `submitLectureQuiz` are moved into `completeVideo`: after inserting a `video_completions` row, if every lecture in the chapter is now completed and `chapter_completions` doesn't exist, insert it and grant the chapter XP/coins bonus.
+- `LectureUnlockState` shape trimmed: `quiz_passed` is replaced with `completed` (video_completions). All consumers updated (`DungeonPath`, dungeon route).
+- Route tree regenerates automatically after files are deleted.
 
-### Student side
-- Delete routes: `app.tests.tsx`, `app.tests.$testId.tsx`.
-- Remove quiz CTAs/sections from `DungeonPath.tsx`, `app.journey.$worldId.$dungeonId.tsx`, `app.profile.tsx`, `app.coins.tsx`, and any other student surface referencing tests/quizzes.
-- Replace "quiz-gated" lecture unlock with a simple "Mark lecture complete" flow. Use existing `video_completions` as the completion signal; add a `markLectureComplete` server fn if not already present.
-- Rewrite `src/lib/api/lecture-progression.functions.ts` so `isLectureUnlocked` requires only that the previous lecture is marked complete (or manual override). Drop all quiz checks.
-
-### Admin side
-- Delete routes: `app.admin.lecture-quizzes.tsx`, `app.admin.quiz-import.tsx`, `app.admin.assessment.tsx` (assessment == quiz management here — verify and delete or trim).
-- Remove quiz nav entries from `app.tsx` sidebar and `app.admin.dashboard.tsx` tiles.
-- Delete server fns: `lecture-quiz.functions.ts`, `lecture-quiz-admin.functions.ts`, `quiz-import.functions.ts`.
-- Trim quiz sections from `app.admin.students.$id.tsx`, `app.admin.settings.tsx`, `app.admin.content.tsx`, `admin-rewards.functions.ts`, `gamification.functions.ts`.
-- Remove quiz references from `lumi/knowledge.ts`, `entry/tips.ts`, `passes.ts`, `pets.ts`, `talents.ts` (text-only).
-
-### Database (migration)
-- Drop tables: `quiz_attempts`, `questions`, `tests`, `results` (results is quiz results — verify usage; if used elsewhere, keep).
-- Drop dependent foreign keys first. Preserve `chapter_completions`, `video_completions`, XP/coin transactions.
-- Keep `offline_tests` / `offline_marks` (physical offline tests, not app quizzes).
-
-### Chapter completion
-- Update `submitLectureQuiz` logic that awards chapter completion → move equivalent logic into `markLectureComplete`: when all lectures in a chapter are marked complete, award chapter XP/coins (idempotent via `chapter_completions`).
-
-## Notes / risks
-- `tests` also stores `is_boss` — Guardian battles currently piggy-back on the tests table. Since the spec says preserve Guardian system but remove quizzes, the "Guardian Battle" becomes a narrative/visual milestone tied to chapter completion (no quiz). CTA `Challenge Guardian` will trigger the chapter completion celebration when all lectures in the chapter are marked complete.
-- Existing student progress (chapter_completions, XP, coins, video_completions) is preserved. Only quiz-attempt history is dropped.
+## Out of scope
+- Redesigning any surviving UI.
+- Touching PvP, Attendance, Shop, Passes, Talents, Spin, Chest.
+- Migrating the `tests`/`questions` schema (kept for PvP).

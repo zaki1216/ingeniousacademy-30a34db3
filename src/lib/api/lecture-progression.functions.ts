@@ -1,21 +1,23 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+/**
+ * Lecture progression (post-quiz-removal).
+ *
+ * A lecture unlocks when the previous lecture in the same chapter is
+ * marked complete (via `video_completions`), or when an admin has granted
+ * a manual override in `manual_unlocks`. Chapter completion is derived
+ * from all lectures being completed.
+ */
 export type LectureUnlockState = {
   lecture_id: string;
   chapter_id: string;
   subject_id: string;
   lecture_number: number;
   unlocked: boolean;
-  quiz_passed: boolean;
-  best_score: number;
-  passing_marks: number;
-  total_marks: number;
-  test_id: string | null;
+  completed: boolean;
   prev_lecture_id: string | null;
   prev_lecture_number: number | null;
-  prev_passing_marks: number;
-  prev_total_marks: number;
 };
 
 export type ChapterAgg = {
@@ -33,10 +35,10 @@ export type ChapterAgg = {
 async function computeUnlockState(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-  const [profileRes, manualRes, attemptsRes] = await Promise.all([
+  const [profileRes, manualRes, completionsRes] = await Promise.all([
     supabaseAdmin.from("profiles").select("standard_id").eq("id", userId).maybeSingle(),
     supabaseAdmin.from("manual_unlocks").select("lecture_id, unlocked").eq("user_id", userId),
-    supabaseAdmin.from("quiz_attempts").select("lecture_id, test_id, correct_count").eq("student_id", userId),
+    supabaseAdmin.from("video_completions").select("lecture_id").eq("user_id", userId),
   ]);
 
   const standardId = profileRes.data?.standard_id;
@@ -46,34 +48,23 @@ async function computeUnlockState(userId: string) {
   const subjectIds = (subjectsRes.data ?? []).map((s) => s.id);
   if (subjectIds.length === 0) return [];
 
-  const chaptersRes = await supabaseAdmin.from("chapters").select("id, subject_id").in("subject_id", subjectIds);
+  const chaptersRes = await supabaseAdmin
+    .from("chapters")
+    .select("id, subject_id")
+    .in("subject_id", subjectIds);
   const chapterIds = (chaptersRes.data ?? []).map((c) => c.id);
   if (chapterIds.length === 0) return [];
 
-  const [lecturesRes, testsRes] = await Promise.all([
-    supabaseAdmin.from("lectures").select("id, chapter_id, lecture_number").in("chapter_id", chapterIds),
-    supabaseAdmin.from("tests").select("id, lecture_id, passing_marks, total_marks, marks_per_question, kind").eq("kind", "lecture_quiz"),
-  ]);
-
+  const lecturesRes = await supabaseAdmin
+    .from("lectures")
+    .select("id, chapter_id, lecture_number")
+    .in("chapter_id", chapterIds);
   const lectures = lecturesRes.data ?? [];
-  const tests = (testsRes.data ?? []).filter((t) => t.lecture_id && lectures.some((l) => l.id === t.lecture_id));
-  const testByLecture = new Map<string, (typeof tests)[number]>();
-  for (const t of tests) if (t.lecture_id) testByLecture.set(t.lecture_id, t);
 
-  // best score per lecture
-  const bestByLecture = new Map<string, number>();
-  for (const a of attemptsRes.data ?? []) {
-    const mpq: number = a.test_id ? (tests.find((t) => t.id === a.test_id)?.marks_per_question ?? 1) : 1;
-    const score = (a.correct_count ?? 0) * mpq;
-    const lid = a.lecture_id ?? "";
-    const prev = bestByLecture.get(lid) ?? 0;
-    if (score > prev) bestByLecture.set(lid, score);
-  }
-
+  const completedSet = new Set((completionsRes.data ?? []).map((c) => c.lecture_id));
   const manualMap = new Map<string, boolean>();
   for (const m of manualRes.data ?? []) manualMap.set(m.lecture_id, m.unlocked);
 
-  // group lectures by chapter, sort by lecture_number
   const byChapter = new Map<string, typeof lectures>();
   for (const l of lectures) {
     const arr = byChapter.get(l.chapter_id) ?? [];
@@ -89,26 +80,12 @@ async function computeUnlockState(userId: string) {
     for (let i = 0; i < lecs.length; i++) {
       const l = lecs[i];
       const prev = i === 0 ? null : lecs[i - 1];
-      const prevTest = prev ? testByLecture.get(prev.id) ?? null : null;
-      const myTest = testByLecture.get(l.id) ?? null;
-      const best = bestByLecture.get(l.id) ?? 0;
-
-      let unlocked: boolean;
       const manual = manualMap.get(l.id);
+      let unlocked: boolean;
       if (manual === true) unlocked = true;
       else if (manual === false) unlocked = false;
       else if (!prev) unlocked = true;
-      else if (!prevTest || (prevTest.passing_marks ?? 0) === 0) {
-        // Strict gate: without a configured prev quiz, the next quest stays locked.
-        // Admin must publish a quiz (or grant manual unlock) to progress.
-        unlocked = false;
-      } else {
-        const prevBest = bestByLecture.get(prev.id) ?? 0;
-        unlocked = prevBest >= (prevTest.passing_marks ?? 0);
-      }
-
-      const passing = myTest?.passing_marks ?? 0;
-      const quiz_passed = !!myTest && passing > 0 && best >= passing;
+      else unlocked = completedSet.has(prev.id);
 
       out.push({
         lecture_id: l.id,
@@ -116,15 +93,9 @@ async function computeUnlockState(userId: string) {
         subject_id: subjectOfChapter.get(chapterId) ?? "",
         lecture_number: l.lecture_number,
         unlocked,
-        quiz_passed,
-        best_score: best,
-        passing_marks: passing,
-        total_marks: myTest?.total_marks ?? 0,
-        test_id: myTest?.id ?? null,
+        completed: completedSet.has(l.id),
         prev_lecture_id: prev?.id ?? null,
         prev_lecture_number: prev?.lecture_number ?? null,
-        prev_passing_marks: prevTest?.passing_marks ?? 0,
-        prev_total_marks: prevTest?.total_marks ?? 0,
       });
     }
   }
@@ -142,19 +113,17 @@ function aggregateByChapter(states: LectureUnlockState[]): ChapterAgg[] {
   for (const [chapter_id, arr] of groups) {
     arr.sort((a, b) => a.lecture_number - b.lecture_number);
     const total = arr.length;
-    const passed = arr.filter((x) => x.quiz_passed).length;
-    const attempted = arr.filter((x) => x.best_score > 0).length;
-    const completed = passed;
-    const next = arr.find((x) => x.unlocked && !x.quiz_passed) ?? null;
+    const completed = arr.filter((x) => x.completed).length;
+    const next = arr.find((x) => x.unlocked && !x.completed) ?? null;
     out.push({
       chapter_id,
       subject_id: arr[0]?.subject_id ?? "",
       total,
       completed,
-      attempted,
-      passed,
-      pass_rate: attempted > 0 ? Math.round((passed / attempted) * 100) : 0,
-      percent: total > 0 ? Math.round((passed / total) * 100) : 0,
+      attempted: completed,
+      passed: completed,
+      pass_rate: total > 0 ? Math.round((completed / total) * 100) : 0,
+      percent: total > 0 ? Math.round((completed / total) * 100) : 0,
       next_to_unlock: next ? { lecture_id: next.lecture_id, lecture_number: next.lecture_number } : null,
     });
   }

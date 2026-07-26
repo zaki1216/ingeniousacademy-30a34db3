@@ -36,7 +36,6 @@ const groups: { title: string; tiles: Tile[] }[] = [
     title: "Rules",
     tiles: [
       { to: "/app/admin/passes", label: "Pass Rules", desc: "Pass types & approval flow", icon: Ticket },
-      { to: "/app/admin/lecture-quizzes", label: "Quiz Rules", desc: "Pass mark & unlock gating", icon: ClipboardList },
       { to: "/app/admin/talents", label: "Season Settings", desc: "Season length & rewards", icon: CalendarRange },
     ],
   },
