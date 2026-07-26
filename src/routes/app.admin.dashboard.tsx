@@ -30,7 +30,6 @@ export const Route = createFileRoute("/app/admin/dashboard")({
 const QUICK_ACTIONS: { to: string; label: string; icon: any }[] = [
   { to: "/app/content", label: "Create Lecture", icon: Plus },
   { to: "/app/notes", label: "Upload Notes", icon: FileText },
-  { to: "/app/admin/lecture-quizzes", label: "Create Quiz", icon: ListChecks },
   { to: "/app/admin/offline-tests", label: "Add Offline Test", icon: GraduationCap },
   { to: "/app/admin/passes", label: "Approve Pass", icon: Ticket },
   { to: "/app/announcements", label: "Send Announcement", icon: Megaphone },

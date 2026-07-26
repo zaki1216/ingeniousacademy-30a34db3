@@ -13,7 +13,6 @@ const tiles = [
   { to: "/app/content", label: "Content Library", desc: "Subjects → Chapters → Lectures", icon: BookOpen },
   { to: "/app/content", label: "Upload Content", desc: "Create new lectures & resources", icon: Upload },
   { to: "/app/notes", label: "Notes & Resources", desc: "Downloadable notes for Cadets", icon: FileText },
-  { to: "/app/admin/lecture-quizzes", label: "Lecture Quizzes", desc: "Unlock rules and quiz mapping", icon: ListChecks },
   { to: "/app/admin/quiz-import", label: "Bulk Quiz Import", desc: "Upload questions from XLSX or CSV", icon: FileSpreadsheet },
   { to: "/app/admin/lecture-views", label: "Engagement Analytics", desc: "Watch counts, drop-off, viewers", icon: Eye },
 ];
