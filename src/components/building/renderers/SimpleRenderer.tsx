@@ -13,7 +13,9 @@ import { DoorOpen } from "lucide-react";
 import type { BuildingCurriculum } from "@/lib/curriculum/types";
 import { BuildingObjectiveBar, type BuildingObjective } from "@/components/building/BuildingObjectiveBar";
 import { DungeonCard } from "@/components/building/DungeonCard";
-import type { EngineDungeon } from "@/lib/building/useBuildingData";
+import { AdventureDashboard } from "@/components/building/AdventureDashboard";
+import type { EngineDungeon, EngineStats } from "@/lib/building/useBuildingData";
+
 
 export function SimpleRenderer({
   building,
