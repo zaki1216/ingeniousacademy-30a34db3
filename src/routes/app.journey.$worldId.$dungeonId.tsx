@@ -2,17 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import {
-  ChevronLeft, PlayCircle, CheckCircle2, Lock, Loader2, Gift,
-  BrainCircuit, Coins, XCircle, Timer, Skull, Crown, Trophy,
+  ChevronLeft, CheckCircle2, Loader2, Gift, Coins, Skull, Crown,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
@@ -20,7 +18,6 @@ import { RewardPopup, type RewardPayload } from "@/components/gamification/Rewar
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 import { DungeonPath } from "@/components/rpg/DungeonPath";
 import { completeVideo } from "@/lib/api/gamification.functions";
-import { getQuizForLecture, submitLectureQuiz } from "@/lib/api/lecture-quiz.functions";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { cn } from "@/lib/utils";
 
@@ -88,7 +85,7 @@ function DungeonPage() {
     [progress.data, dungeonId],
   );
 
-  const allPassed = !!chAgg && chAgg.total > 0 && chAgg.passed === chAgg.total;
+  const allCompleted = !!chAgg && chAgg.total > 0 && chAgg.completed === chAgg.total;
   const bossDefeated = !!chapterCompletion.data;
 
   const handleVideoEnded = useCallback(() => {
@@ -109,6 +106,8 @@ function DungeonPage() {
         setReward({ ...r, title: "Quest cleared!" });
         qc.invalidateQueries({ queryKey: ["video-completions"] });
         qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
+        qc.invalidateQueries({ queryKey: ["lecture-progress"] });
+        qc.invalidateQueries({ queryKey: ["chapter-completion"] });
       }
     } catch {
       /* silent */
@@ -120,7 +119,7 @@ function DungeonPage() {
   const openLecture = useCallback(
     (l: { id: string; url: string; title: string; number: number }, locked: boolean, prevNum?: number | null) => {
       if (locked) {
-        toast.error("Quest locked", { description: `Pass Quest ${prevNum ?? ""} quiz first.` });
+        toast.error("Quest locked", { description: `Finish Quest ${prevNum ?? ""} first.` });
         return;
       }
       setActiveLecture(l);
@@ -157,7 +156,7 @@ function DungeonPage() {
         {chAgg && (
           <div className="mt-2 space-y-1">
             <div className="flex justify-between text-xs">
-              <span className="font-semibold">{chAgg.passed} / {chAgg.total} Quests cleared</span>
+              <span className="font-semibold">{chAgg.completed} / {chAgg.total} Quests cleared</span>
               <span className="text-muted-foreground">{chAgg.percent}%</span>
             </div>
             <Progress value={chAgg.percent} className="h-1.5" />
@@ -196,18 +195,10 @@ function DungeonPage() {
                 )}
               </Button>
             )}
-            <QuestQuizPanel
-              lectureId={activeLecture.id}
-              onResult={() => {
-                qc.invalidateQueries({ queryKey: ["lecture-progress"] });
-                qc.invalidateQueries({ queryKey: ["chapter-completion"] });
-              }}
-            />
           </CardContent>
         </Card>
       )}
 
-      {/* Dungeon Path — RPG quest map with boss node at the tail */}
       <DungeonPath
         lectures={lectures}
         stateById={stateById}
@@ -219,7 +210,7 @@ function DungeonPage() {
             prevNum,
           )
         }
-        bossReady={allPassed}
+        bossReady={allCompleted}
         bossDefeated={bossDefeated}
         bossXp={bossXp}
         bossCoins={bossCoins}
@@ -248,7 +239,7 @@ function DungeonPage() {
             <div className="text-sm text-muted-foreground">
               {bossDefeated
                 ? "You've conquered every quest in this dungeon. Glory is yours."
-                : "Boss rewards are awarded automatically when you pass the final quest quiz."}
+                : "Boss rewards are granted automatically when you complete every quest in this dungeon."}
             </div>
             <div className="flex justify-center gap-3 text-sm font-bold">
               <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-400">
@@ -265,151 +256,5 @@ function DungeonPage() {
         </DialogContent>
       </Dialog>
     </div>
-  );
-}
-
-function QuestQuizPanel({ lectureId, onResult }: { lectureId: string; onResult?: () => void }) {
-  const qc = useQueryClient();
-  const getQuiz = useServerFn(getQuizForLecture);
-  const submit = useServerFn(submitLectureQuiz);
-
-  const quiz = useQuery({
-    queryKey: ["lecture-quiz", lectureId],
-    queryFn: () => getQuiz({ data: { lectureId } }),
-  });
-
-  const [open, setOpen] = useState(false);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [result, setResult] = useState<Awaited<ReturnType<typeof submit>> | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  const test = quiz.data?.test;
-  const questions = quiz.data?.questions ?? [];
-
-  function start() {
-    setAnswers({});
-    setResult(null);
-    setOpen(true);
-  }
-
-  async function send() {
-    if (!test) return;
-    setBusy(true);
-    try {
-      const r = await submit({ data: { testId: test.id, answers } });
-      setResult(r);
-      if (r.passed) toast.success(`Quest cleared · +${r.coinsAwarded} coins · next quest unlocked`);
-      else toast.error(`Failed · ${r.score}/${r.totalMarks} (need ${r.passingMarks})`);
-      qc.invalidateQueries({ queryKey: ["gam-dashboard"] });
-      qc.invalidateQueries({ queryKey: ["lecture-quiz", lectureId] });
-      onResult?.();
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  if (!test) return null;
-
-  const passingMarks = (test as any).passing_marks ?? 0;
-  const mpq = (test as any).marks_per_question ?? 1;
-  const timeLimit = (test as any).time_limit_seconds as number | null | undefined;
-
-  return (
-    <>
-      <Button
-        variant="outline"
-        className="w-full border-cyan-500/40 hover:bg-cyan-500/10"
-        onClick={start}
-      >
-        <BrainCircuit className="h-4 w-4 mr-2 text-cyan-400" />
-        Quest Quiz · {passingMarks > 0 ? `Pass ${passingMarks}/${test.total_marks ?? questions.length * mpq}` : "Practice"}
-      </Button>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <BrainCircuit className="h-5 w-5 text-cyan-400" /> {test.title}
-            </DialogTitle>
-            <p className="text-xs text-muted-foreground">
-              {questions.length} questions · {mpq} mark{mpq === 1 ? "" : "s"} each · Pass {passingMarks}/{test.total_marks ?? questions.length * mpq}
-              {timeLimit ? <> · <Timer className="h-3 w-3 inline" /> {Math.round(timeLimit / 60)} min</> : null}
-            </p>
-            {quiz.data?.bestScore != null && quiz.data.bestScore > 0 && (
-              <p className="text-xs text-muted-foreground">Best so far: {quiz.data.bestScore}</p>
-            )}
-          </DialogHeader>
-
-          {result ? (
-            <div className="space-y-3 py-4 text-center">
-              <div className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold", result.passed ? "bg-emerald-500/15 text-emerald-500" : "bg-red-500/15 text-red-500")}>
-                {result.passed ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
-                {result.passed ? "QUEST CLEARED" : "QUEST FAILED"}
-              </div>
-              <div className="text-4xl font-extrabold font-orbitron">
-                {result.correct}/{result.total}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Score {result.score}/{result.totalMarks} · Pass {result.passingMarks}
-              </div>
-              {result.coinsAwarded > 0 && (
-                <div className="inline-flex items-center gap-1 text-amber-400 font-bold">
-                  <Coins className="h-4 w-4" /> +{result.coinsAwarded} coins
-                </div>
-              )}
-              {result.chapterCompleted && (
-                <div className="rounded-xl border border-amber-400/50 bg-amber-500/10 p-3">
-                  <div className="font-orbitron font-bold text-amber-400 flex items-center justify-center gap-2">
-                    <Crown className="h-4 w-4" /> Boss Defeated
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    +{result.chapterCompleted.xp} XP · +{result.chapterCompleted.coins} coins
-                  </div>
-                </div>
-              )}
-              <DialogFooter className="sm:justify-center">
-                {!result.passed && <Button onClick={start} variant="outline">Retry</Button>}
-                <Button onClick={() => setOpen(false)}>Close</Button>
-              </DialogFooter>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {questions.map((q, i) => (
-                <div key={q.id} className="space-y-2">
-                  <div className="text-sm font-semibold">{i + 1}. {q.question_text}</div>
-                  <div className="space-y-1.5">
-                    {q.options.map((opt, j) => {
-                      const checked = answers[q.id] === j;
-                      return (
-                        <button
-                          key={j}
-                          type="button"
-                          onClick={() => setAnswers((a) => ({ ...a, [q.id]: j }))}
-                          className={cn(
-                            "w-full text-left text-sm px-3 py-2 rounded-lg border transition",
-                            checked
-                              ? "border-primary bg-primary/10"
-                              : "border-border hover:bg-accent/50",
-                          )}
-                        >
-                          {opt}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-              <DialogFooter>
-                <Button onClick={send} disabled={busy || Object.keys(answers).length < questions.length} className="w-full">
-                  {busy ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : "Submit Quiz"}
-                </Button>
-              </DialogFooter>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </>
   );
 }
