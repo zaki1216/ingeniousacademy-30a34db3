@@ -20,14 +20,18 @@ import type { EngineDungeon, EngineStats } from "@/lib/building/useBuildingData"
 export function SimpleRenderer({
   building,
   title,
+  cadetName,
   dungeons,
+  stats,
   recommended,
   onExit,
   onEnterDungeon,
 }: {
   building: BuildingCurriculum;
   title: string;
+  cadetName: string;
   dungeons: EngineDungeon[];
+  stats: EngineStats;
   recommended: BuildingObjective | null;
   onExit: () => void;
   onEnterDungeon: (subjectId: string, dungeonId: string) => void;
@@ -35,6 +39,7 @@ export function SimpleRenderer({
   const render = building.render!;
   const theme = render.theme;
   const emptyText = building.emptyText ?? "Content is being prepared.";
+
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050505]">
