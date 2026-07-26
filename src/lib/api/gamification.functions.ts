@@ -434,21 +434,3 @@ export const getAchievementsGallery = createServerFn({ method: "GET" })
     };
   });
 
-// ---------- Boss quiz availability for a chapter ----------
-export const getBossQuizStatus = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ chapterId: z.string().uuid() }).parse(d))
-  .handler(async ({ data, context }) => {
-    const userId = context.userId;
-    const { data: lectures } = await supabaseAdmin
-      .from("lectures").select("id").eq("chapter_id", data.chapterId);
-    const lecIds = (lectures ?? []).map((l) => l.id);
-    const { count: doneCount } = lecIds.length
-      ? await supabaseAdmin.from("video_completions").select("id", { count: "exact", head: true })
-          .eq("user_id", userId).in("lecture_id", lecIds)
-      : { count: 0 };
-    const allWatched = lecIds.length > 0 && doneCount === lecIds.length;
-    const { data: bossTest } = await supabaseAdmin
-      .from("tests").select("id, title, total_marks").eq("chapter_id", data.chapterId).eq("is_boss", true).maybeSingle();
-    return { unlocked: allWatched && !!bossTest, bossTest, totalLectures: lecIds.length, lecturesWatched: doneCount ?? 0 };
-  });
