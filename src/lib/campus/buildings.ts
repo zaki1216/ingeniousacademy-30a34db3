@@ -10,10 +10,8 @@ export type BuildingKind =
   | "math"
   | "science"
   | "library"
-  | "merchant"
-  | "arena"
-  | "hall"
   | "residence"
+  | "progress"
   | "future";
 
 export type BuildingLane = "back" | "front";
@@ -38,12 +36,10 @@ export type BuildingDef = {
  * and cell order on mobile.
  */
 export const BUILDINGS: BuildingDef[] = [
-  { id: "library",   kind: "library",   name: "Language Library",     tag: "Scriptorium",    route: "/app/building/library", match: ["english","hindi","language","urdu","sanskrit","lang"], weight: 0.9,  preferredLane: "back"  },
-  { id: "math",      kind: "math",      name: "Mathematics Building", tag: "Numeric Halls",  match: ["math"],                                                                    weight: 1.0,  preferredLane: "back"  },
+  { id: "library",   kind: "library",   name: "Language Library",     tag: "Scriptorium",    route: "/app/building/library", match: ["english","hindi","language","urdu","sanskrit","lang"], weight: 0.95, preferredLane: "back"  },
+  { id: "math",      kind: "math",      name: "Mathematics Building", tag: "Numeric Halls",  match: ["math"],                                                                    weight: 1.05, preferredLane: "back"  },
   { id: "science",   kind: "science",   name: "Science Laboratory",   tag: "Alchemy Wing",   route: "/app/building/science", match: ["science","physics","chem","bio"],          weight: 1.05, preferredLane: "back"  },
-  { id: "hall",      kind: "hall",      name: "Hall of Fame",         tag: "Champions",      route: "/app/leaderboard",                                                          weight: 1.0,  preferredLane: "back"  },
-  { id: "residence", kind: "residence", name: "Residence",            tag: "Your Quarters",  route: "/app/profile",                                                              weight: 0.85, preferredLane: "back"  },
-  { id: "arena",     kind: "arena",     name: "Arena Coliseum",       tag: "Duelists' Ring", route: "/app/pvp",                                                                  weight: 1.0,  preferredLane: "front" },
+  { id: "progress",  kind: "progress",  name: "Records Hall",         tag: "Progress",       route: "/app/progress",                                                             weight: 0.95, preferredLane: "front" },
+  { id: "residence", kind: "residence", name: "Residence",            tag: "Your Quarters",  route: "/app/profile",                                                              weight: 0.9,  preferredLane: "front" },
   { id: "future",    kind: "future",    name: "Observatory",          tag: "Coming Soon",    locked: true,                                                                       weight: 0.9,  preferredLane: "front" },
-  { id: "merchant",  kind: "merchant",  name: "Merchant's Emporium",  tag: "Bazaar",         route: "/app/shop",                                                                 weight: 0.9,  preferredLane: "front" },
 ];
