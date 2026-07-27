@@ -18,47 +18,25 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppWelcomeRouteImport } from './routes/app.welcome'
-import { Route as AppTalentsRouteImport } from './routes/app.talents'
-import { Route as AppStudentsRouteImport } from './routes/app.students'
-import { Route as AppSpinRouteImport } from './routes/app.spin'
-import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppReportCardRouteImport } from './routes/app.report-card'
-import { Route as AppPvpRouteImport } from './routes/app.pvp'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
-import { Route as AppPetsRouteImport } from './routes/app.pets'
-import { Route as AppPassesRouteImport } from './routes/app.passes'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
-import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
 import { Route as AppJourneyRouteImport } from './routes/app.journey'
-import { Route as AppInventoryRouteImport } from './routes/app.inventory'
-import { Route as AppGuidebookRouteImport } from './routes/app.guidebook'
 import { Route as AppContentRouteImport } from './routes/app.content'
-import { Route as AppCollectionRouteImport } from './routes/app.collection'
-import { Route as AppCoinsRouteImport } from './routes/app.coins'
-import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
-import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
-import { Route as AppAchievementsRouteImport } from './routes/app.achievements'
-import { Route as AppPvpIndexRouteImport } from './routes/app.pvp.index'
 import { Route as AppJourneyIndexRouteImport } from './routes/app.journey.index'
 import { Route as AppBuildingScienceRouteImport } from './routes/app.building.science'
 import { Route as AppBuildingMathRouteImport } from './routes/app.building.math'
 import { Route as AppBuildingLibraryRouteImport } from './routes/app.building.library'
-import { Route as AppAdminTalentsRouteImport } from './routes/app.admin.talents'
-import { Route as AppAdminSpinRouteImport } from './routes/app.admin.spin'
 import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.settings'
-import { Route as AppAdminPassesRouteImport } from './routes/app.admin.passes'
 import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
 import { Route as AppAdminLumiRouteImport } from './routes/app.admin.lumi'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
-import { Route as AppAdminGamificationRouteImport } from './routes/app.admin.gamification'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
 import { Route as AppAdminContentRouteImport } from './routes/app.admin.content'
 import { Route as AppAdminCadetsRouteImport } from './routes/app.admin.cadets'
 import { Route as AppAdminAttendanceRouteImport } from './routes/app.admin.attendance'
 import { Route as AppJourneyWorldIdIndexRouteImport } from './routes/app.journey.$worldId.index'
-import { Route as AppPvpDuelIdRouteImport } from './routes/app.pvp.duel.$id'
-import { Route as AppPvpBrIdRouteImport } from './routes/app.pvp.br.$id'
 import { Route as AppJourneyWorldIdDungeonIdRouteImport } from './routes/app.journey.$worldId.$dungeonId'
 import { Route as AppAdminStudentsIdRouteImport } from './routes/app.admin.students.$id'
 
@@ -107,26 +85,6 @@ const AppWelcomeRoute = AppWelcomeRouteImport.update({
   path: '/welcome',
   getParentRoute: () => AppRoute,
 } as any)
-const AppTalentsRoute = AppTalentsRouteImport.update({
-  id: '/talents',
-  path: '/talents',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppStudentsRoute = AppStudentsRouteImport.update({
-  id: '/students',
-  path: '/students',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSpinRoute = AppSpinRouteImport.update({
-  id: '/spin',
-  path: '/spin',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppShopRoute = AppShopRouteImport.update({
-  id: '/shop',
-  path: '/shop',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -137,24 +95,9 @@ const AppReportCardRoute = AppReportCardRouteImport.update({
   path: '/report-card',
   getParentRoute: () => AppRoute,
 } as any)
-const AppPvpRoute = AppPvpRouteImport.update({
-  id: '/pvp',
-  path: '/pvp',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPetsRoute = AppPetsRouteImport.update({
-  id: '/pets',
-  path: '/pets',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPassesRoute = AppPassesRouteImport.update({
-  id: '/passes',
-  path: '/passes',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNotesRoute = AppNotesRouteImport.update({
@@ -162,60 +105,15 @@ const AppNotesRoute = AppNotesRouteImport.update({
   path: '/notes',
   getParentRoute: () => AppRoute,
 } as any)
-const AppLeaderboardRoute = AppLeaderboardRouteImport.update({
-  id: '/leaderboard',
-  path: '/leaderboard',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppJourneyRoute = AppJourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppInventoryRoute = AppInventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppGuidebookRoute = AppGuidebookRouteImport.update({
-  id: '/guidebook',
-  path: '/guidebook',
   getParentRoute: () => AppRoute,
 } as any)
 const AppContentRoute = AppContentRouteImport.update({
   id: '/content',
   path: '/content',
   getParentRoute: () => AppRoute,
-} as any)
-const AppCollectionRoute = AppCollectionRouteImport.update({
-  id: '/collection',
-  path: '/collection',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCoinsRoute = AppCoinsRouteImport.update({
-  id: '/coins',
-  path: '/coins',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAttendanceRoute = AppAttendanceRouteImport.update({
-  id: '/attendance',
-  path: '/attendance',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
-  id: '/announcements',
-  path: '/announcements',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAchievementsRoute = AppAchievementsRouteImport.update({
-  id: '/achievements',
-  path: '/achievements',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPvpIndexRoute = AppPvpIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppPvpRoute,
 } as any)
 const AppJourneyIndexRoute = AppJourneyIndexRouteImport.update({
   id: '/',
@@ -237,24 +135,9 @@ const AppBuildingLibraryRoute = AppBuildingLibraryRouteImport.update({
   path: '/building/library',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminTalentsRoute = AppAdminTalentsRouteImport.update({
-  id: '/admin/talents',
-  path: '/admin/talents',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminSpinRoute = AppAdminSpinRouteImport.update({
-  id: '/admin/spin',
-  path: '/admin/spin',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
   id: '/admin/settings',
   path: '/admin/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminPassesRoute = AppAdminPassesRouteImport.update({
-  id: '/admin/passes',
-  path: '/admin/passes',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminOfflineTestsRoute = AppAdminOfflineTestsRouteImport.update({
@@ -270,11 +153,6 @@ const AppAdminLumiRoute = AppAdminLumiRouteImport.update({
 const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
   id: '/admin/lecture-views',
   path: '/admin/lecture-views',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminGamificationRoute = AppAdminGamificationRouteImport.update({
-  id: '/admin/gamification',
-  path: '/admin/gamification',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
@@ -302,16 +180,6 @@ const AppJourneyWorldIdIndexRoute = AppJourneyWorldIdIndexRouteImport.update({
   path: '/$worldId/',
   getParentRoute: () => AppJourneyRoute,
 } as any)
-const AppPvpDuelIdRoute = AppPvpDuelIdRouteImport.update({
-  id: '/duel/$id',
-  path: '/duel/$id',
-  getParentRoute: () => AppPvpRoute,
-} as any)
-const AppPvpBrIdRoute = AppPvpBrIdRouteImport.update({
-  id: '/br/$id',
-  path: '/br/$id',
-  getParentRoute: () => AppPvpRoute,
-} as any)
 const AppJourneyWorldIdDungeonIdRoute =
   AppJourneyWorldIdDungeonIdRouteImport.update({
     id: '/$worldId/$dungeonId',
@@ -332,50 +200,28 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
-  '/app/achievements': typeof AppAchievementsRoute
-  '/app/announcements': typeof AppAnnouncementsRoute
-  '/app/attendance': typeof AppAttendanceRoute
-  '/app/coins': typeof AppCoinsRoute
-  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
-  '/app/guidebook': typeof AppGuidebookRoute
-  '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
-  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/notes': typeof AppNotesRoute
-  '/app/passes': typeof AppPassesRoute
-  '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
-  '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/report-card': typeof AppReportCardRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/shop': typeof AppShopRoute
-  '/app/spin': typeof AppSpinRoute
-  '/app/students': typeof AppStudentsRoute
-  '/app/talents': typeof AppTalentsRoute
   '/app/welcome': typeof AppWelcomeRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
-  '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
-  '/app/admin/spin': typeof AppAdminSpinRoute
-  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
   '/app/journey/': typeof AppJourneyIndexRoute
-  '/app/pvp/': typeof AppPvpIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
-  '/app/pvp/br/$id': typeof AppPvpBrIdRoute
-  '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
   '/app/journey/$worldId/': typeof AppJourneyWorldIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -385,48 +231,27 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
-  '/app/achievements': typeof AppAchievementsRoute
-  '/app/announcements': typeof AppAnnouncementsRoute
-  '/app/attendance': typeof AppAttendanceRoute
-  '/app/coins': typeof AppCoinsRoute
-  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
-  '/app/guidebook': typeof AppGuidebookRoute
-  '/app/inventory': typeof AppInventoryRoute
-  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/notes': typeof AppNotesRoute
-  '/app/passes': typeof AppPassesRoute
-  '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/report-card': typeof AppReportCardRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/shop': typeof AppShopRoute
-  '/app/spin': typeof AppSpinRoute
-  '/app/students': typeof AppStudentsRoute
-  '/app/talents': typeof AppTalentsRoute
   '/app/welcome': typeof AppWelcomeRoute
   '/app': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
-  '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
-  '/app/admin/spin': typeof AppAdminSpinRoute
-  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
   '/app/journey': typeof AppJourneyIndexRoute
-  '/app/pvp': typeof AppPvpIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
-  '/app/pvp/br/$id': typeof AppPvpBrIdRoute
-  '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
   '/app/journey/$worldId': typeof AppJourneyWorldIdIndexRoute
 }
 export interface FileRoutesById {
@@ -438,50 +263,28 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
-  '/app/achievements': typeof AppAchievementsRoute
-  '/app/announcements': typeof AppAnnouncementsRoute
-  '/app/attendance': typeof AppAttendanceRoute
-  '/app/coins': typeof AppCoinsRoute
-  '/app/collection': typeof AppCollectionRoute
   '/app/content': typeof AppContentRoute
-  '/app/guidebook': typeof AppGuidebookRoute
-  '/app/inventory': typeof AppInventoryRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
-  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/notes': typeof AppNotesRoute
-  '/app/passes': typeof AppPassesRoute
-  '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
-  '/app/pvp': typeof AppPvpRouteWithChildren
   '/app/report-card': typeof AppReportCardRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/shop': typeof AppShopRoute
-  '/app/spin': typeof AppSpinRoute
-  '/app/students': typeof AppStudentsRoute
-  '/app/talents': typeof AppTalentsRoute
   '/app/welcome': typeof AppWelcomeRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
   '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
-  '/app/admin/gamification': typeof AppAdminGamificationRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
-  '/app/admin/passes': typeof AppAdminPassesRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
-  '/app/admin/spin': typeof AppAdminSpinRoute
-  '/app/admin/talents': typeof AppAdminTalentsRoute
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
   '/app/journey/': typeof AppJourneyIndexRoute
-  '/app/pvp/': typeof AppPvpIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
-  '/app/pvp/br/$id': typeof AppPvpBrIdRoute
-  '/app/pvp/duel/$id': typeof AppPvpDuelIdRoute
   '/app/journey/$worldId/': typeof AppJourneyWorldIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -494,50 +297,28 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/setup'
-    | '/app/achievements'
-    | '/app/announcements'
-    | '/app/attendance'
-    | '/app/coins'
-    | '/app/collection'
     | '/app/content'
-    | '/app/guidebook'
-    | '/app/inventory'
     | '/app/journey'
-    | '/app/leaderboard'
     | '/app/notes'
-    | '/app/passes'
-    | '/app/pets'
     | '/app/profile'
-    | '/app/pvp'
     | '/app/report-card'
     | '/app/settings'
-    | '/app/shop'
-    | '/app/spin'
-    | '/app/students'
-    | '/app/talents'
     | '/app/welcome'
     | '/app/'
     | '/app/admin/attendance'
     | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
-    | '/app/admin/gamification'
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/offline-tests'
-    | '/app/admin/passes'
     | '/app/admin/settings'
-    | '/app/admin/spin'
-    | '/app/admin/talents'
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
     | '/app/journey/'
-    | '/app/pvp/'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
-    | '/app/pvp/br/$id'
-    | '/app/pvp/duel/$id'
     | '/app/journey/$worldId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -547,48 +328,27 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/setup'
-    | '/app/achievements'
-    | '/app/announcements'
-    | '/app/attendance'
-    | '/app/coins'
-    | '/app/collection'
     | '/app/content'
-    | '/app/guidebook'
-    | '/app/inventory'
-    | '/app/leaderboard'
     | '/app/notes'
-    | '/app/passes'
-    | '/app/pets'
     | '/app/profile'
     | '/app/report-card'
     | '/app/settings'
-    | '/app/shop'
-    | '/app/spin'
-    | '/app/students'
-    | '/app/talents'
     | '/app/welcome'
     | '/app'
     | '/app/admin/attendance'
     | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
-    | '/app/admin/gamification'
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/offline-tests'
-    | '/app/admin/passes'
     | '/app/admin/settings'
-    | '/app/admin/spin'
-    | '/app/admin/talents'
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
     | '/app/journey'
-    | '/app/pvp'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
-    | '/app/pvp/br/$id'
-    | '/app/pvp/duel/$id'
     | '/app/journey/$worldId'
   id:
     | '__root__'
@@ -599,50 +359,28 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/setup'
-    | '/app/achievements'
-    | '/app/announcements'
-    | '/app/attendance'
-    | '/app/coins'
-    | '/app/collection'
     | '/app/content'
-    | '/app/guidebook'
-    | '/app/inventory'
     | '/app/journey'
-    | '/app/leaderboard'
     | '/app/notes'
-    | '/app/passes'
-    | '/app/pets'
     | '/app/profile'
-    | '/app/pvp'
     | '/app/report-card'
     | '/app/settings'
-    | '/app/shop'
-    | '/app/spin'
-    | '/app/students'
-    | '/app/talents'
     | '/app/welcome'
     | '/app/'
     | '/app/admin/attendance'
     | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
-    | '/app/admin/gamification'
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/offline-tests'
-    | '/app/admin/passes'
     | '/app/admin/settings'
-    | '/app/admin/spin'
-    | '/app/admin/talents'
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
     | '/app/journey/'
-    | '/app/pvp/'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
-    | '/app/pvp/br/$id'
-    | '/app/pvp/duel/$id'
     | '/app/journey/$worldId/'
   fileRoutesById: FileRoutesById
 }
@@ -721,34 +459,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWelcomeRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/talents': {
-      id: '/app/talents'
-      path: '/talents'
-      fullPath: '/app/talents'
-      preLoaderRoute: typeof AppTalentsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/students': {
-      id: '/app/students'
-      path: '/students'
-      fullPath: '/app/students'
-      preLoaderRoute: typeof AppStudentsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/spin': {
-      id: '/app/spin'
-      path: '/spin'
-      fullPath: '/app/spin'
-      preLoaderRoute: typeof AppSpinRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/shop': {
-      id: '/app/shop'
-      path: '/shop'
-      fullPath: '/app/shop'
-      preLoaderRoute: typeof AppShopRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/settings': {
       id: '/app/settings'
       path: '/settings'
@@ -763,32 +473,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppReportCardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/pvp': {
-      id: '/app/pvp'
-      path: '/pvp'
-      fullPath: '/app/pvp'
-      preLoaderRoute: typeof AppPvpRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/profile': {
       id: '/app/profile'
       path: '/profile'
       fullPath: '/app/profile'
       preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/pets': {
-      id: '/app/pets'
-      path: '/pets'
-      fullPath: '/app/pets'
-      preLoaderRoute: typeof AppPetsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/passes': {
-      id: '/app/passes'
-      path: '/passes'
-      fullPath: '/app/passes'
-      preLoaderRoute: typeof AppPassesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/notes': {
@@ -798,32 +487,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNotesRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/leaderboard': {
-      id: '/app/leaderboard'
-      path: '/leaderboard'
-      fullPath: '/app/leaderboard'
-      preLoaderRoute: typeof AppLeaderboardRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/journey': {
       id: '/app/journey'
       path: '/journey'
       fullPath: '/app/journey'
       preLoaderRoute: typeof AppJourneyRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/inventory': {
-      id: '/app/inventory'
-      path: '/inventory'
-      fullPath: '/app/inventory'
-      preLoaderRoute: typeof AppInventoryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/guidebook': {
-      id: '/app/guidebook'
-      path: '/guidebook'
-      fullPath: '/app/guidebook'
-      preLoaderRoute: typeof AppGuidebookRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/content': {
@@ -832,48 +500,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/content'
       preLoaderRoute: typeof AppContentRouteImport
       parentRoute: typeof AppRoute
-    }
-    '/app/collection': {
-      id: '/app/collection'
-      path: '/collection'
-      fullPath: '/app/collection'
-      preLoaderRoute: typeof AppCollectionRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/coins': {
-      id: '/app/coins'
-      path: '/coins'
-      fullPath: '/app/coins'
-      preLoaderRoute: typeof AppCoinsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/attendance': {
-      id: '/app/attendance'
-      path: '/attendance'
-      fullPath: '/app/attendance'
-      preLoaderRoute: typeof AppAttendanceRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/announcements': {
-      id: '/app/announcements'
-      path: '/announcements'
-      fullPath: '/app/announcements'
-      preLoaderRoute: typeof AppAnnouncementsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/achievements': {
-      id: '/app/achievements'
-      path: '/achievements'
-      fullPath: '/app/achievements'
-      preLoaderRoute: typeof AppAchievementsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/pvp/': {
-      id: '/app/pvp/'
-      path: '/'
-      fullPath: '/app/pvp/'
-      preLoaderRoute: typeof AppPvpIndexRouteImport
-      parentRoute: typeof AppPvpRoute
     }
     '/app/journey/': {
       id: '/app/journey/'
@@ -903,32 +529,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuildingLibraryRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/admin/talents': {
-      id: '/app/admin/talents'
-      path: '/admin/talents'
-      fullPath: '/app/admin/talents'
-      preLoaderRoute: typeof AppAdminTalentsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/spin': {
-      id: '/app/admin/spin'
-      path: '/admin/spin'
-      fullPath: '/app/admin/spin'
-      preLoaderRoute: typeof AppAdminSpinRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/admin/settings': {
       id: '/app/admin/settings'
       path: '/admin/settings'
       fullPath: '/app/admin/settings'
       preLoaderRoute: typeof AppAdminSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/passes': {
-      id: '/app/admin/passes'
-      path: '/admin/passes'
-      fullPath: '/app/admin/passes'
-      preLoaderRoute: typeof AppAdminPassesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/admin/offline-tests': {
@@ -950,13 +555,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/lecture-views'
       fullPath: '/app/admin/lecture-views'
       preLoaderRoute: typeof AppAdminLectureViewsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/gamification': {
-      id: '/app/admin/gamification'
-      path: '/admin/gamification'
-      fullPath: '/app/admin/gamification'
-      preLoaderRoute: typeof AppAdminGamificationRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/admin/dashboard': {
@@ -994,20 +592,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppJourneyWorldIdIndexRouteImport
       parentRoute: typeof AppJourneyRoute
     }
-    '/app/pvp/duel/$id': {
-      id: '/app/pvp/duel/$id'
-      path: '/duel/$id'
-      fullPath: '/app/pvp/duel/$id'
-      preLoaderRoute: typeof AppPvpDuelIdRouteImport
-      parentRoute: typeof AppPvpRoute
-    }
-    '/app/pvp/br/$id': {
-      id: '/app/pvp/br/$id'
-      path: '/br/$id'
-      fullPath: '/app/pvp/br/$id'
-      preLoaderRoute: typeof AppPvpBrIdRouteImport
-      parentRoute: typeof AppPvpRoute
-    }
     '/app/journey/$worldId/$dungeonId': {
       id: '/app/journey/$worldId/$dungeonId'
       path: '/$worldId/$dungeonId'
@@ -1041,57 +625,23 @@ const AppJourneyRouteWithChildren = AppJourneyRoute._addFileChildren(
   AppJourneyRouteChildren,
 )
 
-interface AppPvpRouteChildren {
-  AppPvpIndexRoute: typeof AppPvpIndexRoute
-  AppPvpBrIdRoute: typeof AppPvpBrIdRoute
-  AppPvpDuelIdRoute: typeof AppPvpDuelIdRoute
-}
-
-const AppPvpRouteChildren: AppPvpRouteChildren = {
-  AppPvpIndexRoute: AppPvpIndexRoute,
-  AppPvpBrIdRoute: AppPvpBrIdRoute,
-  AppPvpDuelIdRoute: AppPvpDuelIdRoute,
-}
-
-const AppPvpRouteWithChildren =
-  AppPvpRoute._addFileChildren(AppPvpRouteChildren)
-
 interface AppRouteChildren {
-  AppAchievementsRoute: typeof AppAchievementsRoute
-  AppAnnouncementsRoute: typeof AppAnnouncementsRoute
-  AppAttendanceRoute: typeof AppAttendanceRoute
-  AppCoinsRoute: typeof AppCoinsRoute
-  AppCollectionRoute: typeof AppCollectionRoute
   AppContentRoute: typeof AppContentRoute
-  AppGuidebookRoute: typeof AppGuidebookRoute
-  AppInventoryRoute: typeof AppInventoryRoute
   AppJourneyRoute: typeof AppJourneyRouteWithChildren
-  AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppNotesRoute: typeof AppNotesRoute
-  AppPassesRoute: typeof AppPassesRoute
-  AppPetsRoute: typeof AppPetsRoute
   AppProfileRoute: typeof AppProfileRoute
-  AppPvpRoute: typeof AppPvpRouteWithChildren
   AppReportCardRoute: typeof AppReportCardRoute
   AppSettingsRoute: typeof AppSettingsRoute
-  AppShopRoute: typeof AppShopRoute
-  AppSpinRoute: typeof AppSpinRoute
-  AppStudentsRoute: typeof AppStudentsRoute
-  AppTalentsRoute: typeof AppTalentsRoute
   AppWelcomeRoute: typeof AppWelcomeRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
   AppAdminCadetsRoute: typeof AppAdminCadetsRoute
   AppAdminContentRoute: typeof AppAdminContentRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
-  AppAdminGamificationRoute: typeof AppAdminGamificationRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminLumiRoute: typeof AppAdminLumiRoute
   AppAdminOfflineTestsRoute: typeof AppAdminOfflineTestsRoute
-  AppAdminPassesRoute: typeof AppAdminPassesRoute
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
-  AppAdminSpinRoute: typeof AppAdminSpinRoute
-  AppAdminTalentsRoute: typeof AppAdminTalentsRoute
   AppBuildingLibraryRoute: typeof AppBuildingLibraryRoute
   AppBuildingMathRoute: typeof AppBuildingMathRoute
   AppBuildingScienceRoute: typeof AppBuildingScienceRoute
@@ -1099,41 +649,22 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAchievementsRoute: AppAchievementsRoute,
-  AppAnnouncementsRoute: AppAnnouncementsRoute,
-  AppAttendanceRoute: AppAttendanceRoute,
-  AppCoinsRoute: AppCoinsRoute,
-  AppCollectionRoute: AppCollectionRoute,
   AppContentRoute: AppContentRoute,
-  AppGuidebookRoute: AppGuidebookRoute,
-  AppInventoryRoute: AppInventoryRoute,
   AppJourneyRoute: AppJourneyRouteWithChildren,
-  AppLeaderboardRoute: AppLeaderboardRoute,
   AppNotesRoute: AppNotesRoute,
-  AppPassesRoute: AppPassesRoute,
-  AppPetsRoute: AppPetsRoute,
   AppProfileRoute: AppProfileRoute,
-  AppPvpRoute: AppPvpRouteWithChildren,
   AppReportCardRoute: AppReportCardRoute,
   AppSettingsRoute: AppSettingsRoute,
-  AppShopRoute: AppShopRoute,
-  AppSpinRoute: AppSpinRoute,
-  AppStudentsRoute: AppStudentsRoute,
-  AppTalentsRoute: AppTalentsRoute,
   AppWelcomeRoute: AppWelcomeRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminAttendanceRoute: AppAdminAttendanceRoute,
   AppAdminCadetsRoute: AppAdminCadetsRoute,
   AppAdminContentRoute: AppAdminContentRoute,
   AppAdminDashboardRoute: AppAdminDashboardRoute,
-  AppAdminGamificationRoute: AppAdminGamificationRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminLumiRoute: AppAdminLumiRoute,
   AppAdminOfflineTestsRoute: AppAdminOfflineTestsRoute,
-  AppAdminPassesRoute: AppAdminPassesRoute,
   AppAdminSettingsRoute: AppAdminSettingsRoute,
-  AppAdminSpinRoute: AppAdminSpinRoute,
-  AppAdminTalentsRoute: AppAdminTalentsRoute,
   AppBuildingLibraryRoute: AppBuildingLibraryRoute,
   AppBuildingMathRoute: AppBuildingMathRoute,
   AppBuildingScienceRoute: AppBuildingScienceRoute,
@@ -1154,13 +685,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

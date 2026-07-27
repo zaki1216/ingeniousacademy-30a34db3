@@ -385,48 +385,17 @@ function BuildingArt({ kind, open, locked }: { kind: BuildingKind; open: boolean
           <text x="0" y="-46" textAnchor="middle" fontSize="8" fontWeight="900" fill="#78350f">📚</text>
         </svg>
       );
-    case "merchant":
+    case "progress":
       return (
         <svg {...svgProps}>
-          <rect x="-22" y="-32" width="44" height="32" fill="#a16207" stroke="#4a2f0a" strokeWidth="0.8" />
-          <polygon points="-24,-32 0,-46 24,-32" fill="#7a4a10" />
-          <rect x="-24" y="-24" width="48" height="6" fill="#c026d3" stroke="#6b1478" strokeWidth="0.4" />
-          {[-16, -8, 0, 8, 16].map((x, i) => (
-            <line key={i} x1={x} y1="-24" x2={x} y2="-18" stroke="#4a1153" strokeWidth="0.3" />
-          ))}
-          {doorGroup("#5a3410")}
-          <rect x="8" y="-14" width="10" height="10" fill="#3a1f08" />
-          <circle cx="13" cy="-9" r="1.5" fill="#fcd34d" />
-          <text x="0" y="-36" textAnchor="middle" fontSize="6" fontWeight="900" fill="#fde68a">SHOP</text>
-        </svg>
-      );
-    case "arena":
-      return (
-        <svg {...svgProps}>
-          <ellipse cx="0" cy="-4" rx="26" ry="6" fill="#8a5a3a" />
-          <rect x="-24" y="-32" width="48" height="30" fill="#a16b3a" stroke="#5a3418" strokeWidth="0.8" />
-          {[-18, -6, 6, 18].map((x) => (
-            <rect key={x} x={x - 3} y="-24" width="6" height="10" fill="#5a3418" rx="3" />
-          ))}
-          <rect x="-24" y="-38" width="48" height="6" fill="#7a4820" />
-          {[-18, -6, 6, 18].map((x, i) => (
-            <path key={i} d={`M${x - 2},-38 L${x},-42 L${x + 2},-38 Z`} fill="#7f1d1d" />
-          ))}
-          {doorGroup("#3a1f08")}
-        </svg>
-      );
-    case "hall":
-      return (
-        <svg {...svgProps}>
-          <rect x="-24" y="-38" width="48" height="6" fill="#fbbf24" />
-          <polygon points="-26,-38 0,-52 26,-38" fill="#f59e0b" />
-          <circle cx="0" cy="-46" r="2.5" fill="#fef3c7" />
-          {[-16, -8, 0, 8, 16].map((x, i) => (
-            <rect key={i} x={x - 2} y="-32" width="4" height="30" fill="#fef3c7" stroke="#c79a2b" strokeWidth="0.3" />
-          ))}
-          <rect x="-24" y="-4" width="48" height="4" fill="#fbbf24" />
-          {doorGroup("#78350f")}
-          <text x="0" y="-42" textAnchor="middle" fontSize="4" fontWeight="900" fill="#78350f">HALL OF FAME</text>
+          <rect x="-22" y="-36" width="44" height="36" fill="#7c3aed" stroke="#3b0764" strokeWidth="0.8" />
+          <polygon points="-24,-36 0,-50 24,-36" fill="#5b21b6" />
+          <rect x="-16" y="-28" width="6" height="8" fill="#fde68a" opacity="0.8" />
+          <rect x="10" y="-28" width="6" height="8" fill="#fde68a" opacity="0.8" />
+          <rect x="-16" y="-16" width="6" height="6" fill="#fde68a" opacity="0.7" />
+          <rect x="10" y="-16" width="6" height="6" fill="#fde68a" opacity="0.7" />
+          {doorGroup("#3b0764")}
+          <text x="0" y="-42" textAnchor="middle" fontSize="6" fontWeight="900" fill="#fde68a">📖</text>
         </svg>
       );
     case "residence":
