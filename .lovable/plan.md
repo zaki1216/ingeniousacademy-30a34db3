@@ -1,57 +1,75 @@
 
-# Adventure Dashboard + Quiz System Removal
+# Simplify Ingenious Academy
 
-## Scope
-Preserve all current architecture (HUD, Academy World, curriculum, Building Engine, Journey, Residence, etc.). Two workstreams:
+Preserve: Academy theme, World/Building/Curriculum/Adventure engines, auth, XP, coins, Guardian Battles, Daily Chest, Achievements, responsive layouts.
 
-### A. Remove the Quiz System (student + admin + DB)
-- **Student surfaces removed**
-  - `src/routes/app.tests.tsx`, `src/routes/app.tests.$testId.tsx`
-  - `src/routes/app.results.tsx`, `src/routes/app.analytics.tsx`, `src/routes/app.analytics.$testId.tsx`
-  - `QuestQuizPanel` and the Boss dialog inside `src/routes/app.journey.$worldId.$dungeonId.tsx`
-- **Admin surfaces removed**
-  - `src/routes/app.admin.lecture-quizzes.tsx`
-  - `src/routes/app.admin.quiz-import.tsx`
-  - `src/routes/app.admin.assessment.tsx` (folded into Content)
-  - Quiz cards from `app.admin.dashboard.tsx`, `app.admin.content.tsx`, `app.admin.settings.tsx`
-  - "Quiz History" section from `app.admin.students.$id.tsx`
-- **APIs removed**
-  - `src/lib/api/lecture-quiz.functions.ts`
-  - `src/lib/api/lecture-quiz-admin.functions.ts`
-  - `src/lib/api/quiz-import.functions.ts`
-  - `submitTest`, `checkChapterBoss` from `academy.functions.ts` / `gamification.functions.ts`
-  - Quiz history block from `admin-rewards.functions.ts`
-- **Progression rewrite** (`lecture-progression.functions.ts`)
-  - Unlock next lecture when the previous is marked complete (video watched → `video_completions`), or via admin `manual_unlocks`.
-  - Chapter completion + boss reward triggers automatically after final lecture is marked complete (moved into `completeVideo`).
-- **DB**: Keep `tests` / `questions` / `quiz_attempts` / `results` tables (PvP arena still queries `questions`). Only delete the `lecture_quiz` rows so no quiz content appears anywhere:
-  ```sql
-  DELETE FROM quiz_attempts USING tests WHERE quiz_attempts.test_id = tests.id AND tests.kind = 'lecture_quiz';
-  DELETE FROM results USING tests WHERE results.test_id = tests.id AND tests.kind = 'lecture_quiz';
-  DELETE FROM questions USING tests WHERE questions.test_id = tests.id AND tests.kind = 'lecture_quiz';
-  DELETE FROM tests WHERE kind = 'lecture_quiz';
-  ```
-- **Nav / links**: Sidebar entries for Tests, Results, Analytics, Quiz Rules, Quiz Import removed.
+## 1. Features to Remove (student + admin)
 
-### B. Adventure Dashboard (per building)
-New reusable component `src/components/building/AdventureDashboard.tsx` mounted at the top of both `HallRenderer` and `SimpleRenderer`, driven by `useBuildingData` + `getLectureProgress`. Sections:
+Delete routes, components, server functions, nav entries, and dead helpers for:
 
-1. **Adventurer Overview** — cadet name, class, building name, personal rank badge, XP into level bar.
-2. **Today's Adventure** — the next unlocked/unfinished lecture (`next_to_unlock`), with dungeon name, quest title, "Enter Quest" CTA that deep-links to `/app/journey/$worldId/$dungeonId`.
-3. **Building Objectives** — 3 chip goals: "Clear a Quest", "Finish a Dungeon", "Weekly streak" with progress state.
-4. **Rewards Preview** — XP, coins, and chapter-completion bonuses for the current dungeon.
-5. **Recent Progress** — last 3 cleared lectures (from `video_completions`).
-6. **Mentor Guidance** — dynamic line from existing `mentor.line()` config.
-7. **Motivator Footer** — short quote pulled from a small rotating list.
+- **PvP** — `app.pvp.*`, `pvp-*.functions.ts`, PvP DB references in UI (tables kept, unused)
+- **Pets** — `app.pets.tsx`, `rpg/pets.ts`, `PetCompanion`
+- **Inventory** — `app.inventory.tsx`
+- **Collections** — `app.collection.tsx`, `rpg-collection.functions.ts`
+- **Talents** — `app.talents.tsx`, `app.admin.talents.tsx`, `talents*.functions.ts`, `gamification/talents.ts`
+- **Passes / Battle Pass** — `app.passes.tsx`, `app.admin.passes.tsx`, `passes*.functions.ts`, `rpg/passes.ts`
+- **Spin Wheel** — `app.spin.tsx`, `app.admin.spin.tsx`, `spin.functions.ts`
+- **Shop** — `app.shop.tsx`, `shop.functions.ts` (keep coins)
+- **Active Bonuses panel** — `ActiveBonusesCard`
+- **Game Stats panel** — `GameStatsCard`
 
-Loading: skeleton tiles. Empty: "Your adventure is about to begin — no dungeons yet." Fully theme-tokenised (uses building `theme` accents already in config).
+DB rows/tables remain untouched (no destructive migrations); code just stops referencing them.
 
-## Technical notes
-- Handlers that used to award boss rewards in `submitLectureQuiz` are moved into `completeVideo`: after inserting a `video_completions` row, if every lecture in the chapter is now completed and `chapter_completions` doesn't exist, insert it and grant the chapter XP/coins bonus.
-- `LectureUnlockState` shape trimmed: `quiz_passed` is replaced with `completed` (video_completions). All consumers updated (`DungeonPath`, dungeon route).
-- Route tree regenerates automatically after files are deleted.
+## 2. Student Navigation (6 tabs)
 
-## Out of scope
-- Redesigning any surviving UI.
-- Touching PvP, Attendance, Shop, Passes, Talents, Spin, Chest.
-- Migrating the `tests`/`questions` schema (kept for PvP).
+```text
+Home  Academy  Learn  Progress  Profile  Settings
+```
+
+- Home → `/app` (index)
+- Academy → `/app/journey` (world map / campus entrance)
+- Learn → `/app/content` (lectures + notes browser)
+- Progress → new `/app/progress` (merges attendance + leaderboard widget + achievements summary)
+- Profile → `/app/profile` (residence, trimmed)
+- Settings → `/app/settings`
+
+Remove Announcements/Attendance/Leaderboard/Notes/Achievements/Coins/Guidebook from primary nav (routes may remain or be merged; announcements → Home, attendance → Progress, leaderboard → Progress widget, notes → inside lesson view).
+
+## 3. Home Screen (`app.index.tsx`)
+
+Single focused stack:
+- Hero: avatar + welcome message
+- "Today's Adventure" card with **Continue Learning** CTA (deep-links to recommended lecture)
+- Current subject + progress bar
+- XP + Coins compact chips
+- Daily Chest card (existing)
+- Latest announcement (1 item, from `announcements` table)
+
+Remove ActiveBonuses, GameStats, extra CTA grids.
+
+## 4. Progress Page (new)
+
+Consolidates:
+- Attendance summary (from existing attendance data)
+- Adventure/chapter completion overview
+- Leaderboard top-5 widget (XP hall only)
+- Achievements list
+
+## 5. Admin Cleanup
+
+Keep hubs: Students, Content (subjects/classes/lessons), Attendance, Rewards, Announcements, Analytics, Settings. Remove: Passes, Talents, Spin, Lumi manager (optional keep), Gamification (if tied to removed systems — verify), Lecture-quizzes (already gone), PvP admin (none exists).
+
+## 6. Code Cleanup
+
+- Delete removed route files (TanStack regenerates `routeTree.gen.ts`).
+- Delete their `*.functions.ts` and pure helpers.
+- Remove imports in `app.tsx` nav arrays, HUD, Lumi knowledge references, campus building links pointing to removed pages.
+- Verify typecheck passes.
+
+## Technical Notes
+
+- Coin earning paths in `gamification.functions.ts`, `chest.functions.ts`, `attendance.functions.ts` unchanged.
+- Guardian Battles = boss lecture nodes in DungeonPath — untouched.
+- `profiles.equipped_avatar/frame/title` columns remain but no UI edits them (Profile shows current values read-only).
+- No DB migrations. Orphan tables (pvp_*, user_passes, user_talents, shop_items, etc.) stay; only code references removed.
+- Verify with `tsgo` after edits.
