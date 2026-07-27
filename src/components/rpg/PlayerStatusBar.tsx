@@ -75,7 +75,7 @@ export function PlayerStatusBar() {
             >
               {stats.level}
           </div>
-          <PetCompanion size="sm" className="-ml-1.5 -mb-1 self-end" />
+          
           </div>
           <div className="hidden sm:block min-w-0">
             <div
