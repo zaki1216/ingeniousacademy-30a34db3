@@ -144,3 +144,14 @@ function Chip({ icon, label, sub, accent }: { icon: React.ReactNode; label: stri
     </div>
   );
 }
+
+function useCadetXp(): number {
+  const fn = useServerFn(getGamificationDashboard);
+  const q = useQuery({
+    queryKey: ["gam-dashboard-xp"],
+    queryFn: () => fn(),
+    staleTime: 30_000,
+  });
+  return q.data?.stats?.xp ?? 0;
+}
+
