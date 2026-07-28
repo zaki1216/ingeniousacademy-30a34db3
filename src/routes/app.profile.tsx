@@ -14,6 +14,8 @@ import { levelProgress } from "@/lib/gamification/leveling";
 import { rankFromLevel, nextRank } from "@/lib/rpg/ranks";
 import { RankBadge } from "@/components/rpg/RankBadge";
 import { DailyChestCard } from "@/components/gamification/DailyChestCard";
+import { AcademyRankCard } from "@/components/rpg/AcademyRankCard";
+
 
 export const Route = createFileRoute("/app/profile")({
   head: () => ({
@@ -185,10 +187,14 @@ function ResidencePage() {
           </div>
         </motion.div>
 
+        {/* Academy Rank */}
+        <AcademyRankCard xp={stats?.xp ?? 0} />
+
         {/* Daily Reward */}
         <div className="grid grid-cols-1 gap-4">
           <DailyChestCard />
         </div>
+
 
         {/* Quick actions */}
         <section>

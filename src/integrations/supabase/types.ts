@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_ranks: {
+        Row: {
+          code: string
+          color: string
+          created_at: string
+          enabled: boolean
+          gradient: string
+          icon: string
+          id: string
+          message: string | null
+          name: string
+          sort_order: number
+          updated_at: string
+          xp_required: number
+        }
+        Insert: {
+          code: string
+          color?: string
+          created_at?: string
+          enabled?: boolean
+          gradient?: string
+          icon?: string
+          id?: string
+          message?: string | null
+          name: string
+          sort_order?: number
+          updated_at?: string
+          xp_required?: number
+        }
+        Update: {
+          code?: string
+          color?: string
+          created_at?: string
+          enabled?: boolean
+          gradient?: string
+          icon?: string
+          id?: string
+          message?: string | null
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          xp_required?: number
+        }
+        Relationships: []
+      }
       achievements: {
         Row: {
           category: string

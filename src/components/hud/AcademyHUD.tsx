@@ -24,6 +24,10 @@ import { rankFromLevel } from "@/lib/rpg/ranks";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { RankPromotionModal } from "@/components/rpg/RankPromotionModal";
+import { AcademyRankCard } from "@/components/rpg/AcademyRankCard";
+
+
 
 type MapNode = {
   id: string;
@@ -178,6 +182,9 @@ export function ResourceHUD({ onSignOut }: { onSignOut: () => void }) {
 
   return (
     <div className="pointer-events-auto flex items-center gap-1 sm:gap-1.5">
+      <div className="hidden sm:block">
+        <AcademyRankCard xp={stats?.xp ?? 0} variant="compact" />
+      </div>
       <ResourceChip
         icon={<Coins className="h-3.5 w-3.5 text-amber-300" />}
         value={stats ? stats.coins.toLocaleString() : "—"}
@@ -188,6 +195,7 @@ export function ResourceHUD({ onSignOut }: { onSignOut: () => void }) {
         value={`${stats?.streak_days ?? 0}`}
         glow="rgba(251,146,60,0.25)"
       />
+
       <div className="hidden sm:block">
         <ResourceChip
           icon={<KeyRound className="h-3.5 w-3.5 text-slate-200" />}
@@ -415,9 +423,11 @@ export function AcademyHUD({
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
         <AdventureBar />
       </div>
+      <RankPromotionModal />
     </div>
   );
 }
+
 
 function FloatingParticles() {
   return (
