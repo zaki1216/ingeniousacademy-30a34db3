@@ -27,11 +27,13 @@ const groups: { title: string; tiles: Tile[] }[] = [
   {
     title: "Ranks & Progression",
     tiles: [
+      { to: "/app/admin/ranks", label: "Academy Ranks", desc: "Long-term promotion ladder & XP thresholds", icon: Trophy },
       { label: "Hunter Ranks", desc: "E → Monarch tier thresholds", icon: Trophy, readOnly: true },
       { to: "/app/admin/talents", label: "XP Rules", desc: "How much XP each action awards", icon: Zap },
       { to: "/app/admin/talents", label: "Coin Rules", desc: "Coin rewards & multipliers", icon: Coins },
     ],
   },
+
   {
     title: "Rules",
     tiles: [
