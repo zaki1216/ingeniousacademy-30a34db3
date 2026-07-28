@@ -24,6 +24,8 @@ import { rankFromLevel } from "@/lib/rpg/ranks";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { RankPromotionModal } from "@/components/rpg/RankPromotionModal";
+
 
 type MapNode = {
   id: string;
@@ -415,9 +417,11 @@ export function AcademyHUD({
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
         <AdventureBar />
       </div>
+      <RankPromotionModal />
     </div>
   );
 }
+
 
 function FloatingParticles() {
   return (
