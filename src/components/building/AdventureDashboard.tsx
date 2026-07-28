@@ -6,9 +6,14 @@
 
 import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Sparkles, Coins, Star, Trophy, ChevronRight, Target, Compass } from "lucide-react";
 
 import type { EngineDungeon, EngineStats } from "@/lib/building/useBuildingData";
+import { getGamificationDashboard } from "@/lib/api/gamification.functions";
+import { AcademyRankCard } from "@/components/rpg/AcademyRankCard";
+
 
 interface Props {
   cadetName: string;
@@ -64,7 +69,11 @@ export function AdventureDashboard({ cadetName, interiorTitle, dungeons, stats, 
               Welcome back, {cadetName}
             </div>
             <div className="text-[11px] text-amber-100/60 truncate">{interiorTitle}</div>
+            <div className="mt-2">
+              <AcademyRankCard xp={useCadetXp()} variant="compact" />
+            </div>
           </div>
+
 
           <div className="flex items-center gap-2 text-[11px] text-amber-100/80">
             <Chip icon={<Trophy className="h-3 w-3" />} label={`${stats.cleared}/${stats.totalDungeons}`} sub="Chapters" accent={accent} />
