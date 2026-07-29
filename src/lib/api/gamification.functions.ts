@@ -231,6 +231,48 @@ export const completeVideo = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ lectureId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const userId = context.userId;
+
+    // Gate: verify lecture belongs to student's standard and is unlocked before granting rewards.
+    const { data: lectureRow } = await supabaseAdmin
+      .from("lectures")
+      .select("id, chapter_id, chapters!inner(subject_id, subjects!inner(standard_id))")
+      .eq("id", data.lectureId)
+      .maybeSingle();
+    if (!lectureRow) throw new Error("Lecture not found");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles").select("standard_id").eq("id", userId).maybeSingle();
+    const lectureStandardId = (lectureRow as unknown as {
+      chapters: { subjects: { standard_id: string } };
+    }).chapters?.subjects?.standard_id;
+    if (!profile?.standard_id || profile.standard_id !== lectureStandardId) {
+      throw new Error("Lecture not available for your class");
+    }
+
+    const { data: manual } = await supabaseAdmin
+      .from("manual_unlocks").select("unlocked")
+      .eq("user_id", userId).eq("lecture_id", data.lectureId).maybeSingle();
+    let isUnlocked: boolean;
+    if (manual?.unlocked === true) isUnlocked = true;
+    else if (manual?.unlocked === false) isUnlocked = false;
+    else {
+      const { data: siblings } = await supabaseAdmin
+        .from("lectures").select("id, lecture_number")
+        .eq("chapter_id", lectureRow.chapter_id)
+        .order("lecture_number", { ascending: true });
+      const sorted = siblings ?? [];
+      const idx = sorted.findIndex((l) => l.id === data.lectureId);
+      if (idx <= 0) isUnlocked = true;
+      else {
+        const prevId = sorted[idx - 1].id;
+        const { data: prevDone } = await supabaseAdmin
+          .from("video_completions").select("id")
+          .eq("user_id", userId).eq("lecture_id", prevId).maybeSingle();
+        isUnlocked = !!prevDone;
+      }
+    }
+    if (!isUnlocked) throw new Error("Lecture is locked");
+
     const { data: existing } = await supabaseAdmin
       .from("video_completions")
       .select("id, watch_count")
