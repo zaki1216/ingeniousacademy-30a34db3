@@ -31,9 +31,10 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: 
 // Academy Office — hubs (assessments removed with quiz system)
 const adminNav: NavItem[] = [
   { to: "/app/admin/dashboard", label: "Command Center", icon: LayoutDashboard },
-  { to: "/app/admin/cadets", label: "Cadets", icon: ShieldCheck },
+  { to: "/app/admin/cadets", label: "All Cadets", icon: ShieldCheck },
+  { to: "/app/admin/attendance", label: "Attendance", icon: LayoutDashboard },
   { to: "/app/admin/content", label: "Academy Content", icon: Library },
-  { to: "/app/admin/gamification", label: "Academy Systems", icon: Gamepad2 },
+  { to: "/app/admin/progress", label: "Progress & Rewards", icon: Gamepad2 },
   { to: "/app/admin/settings", label: "Academy Settings", icon: Cog },
 ];
 
