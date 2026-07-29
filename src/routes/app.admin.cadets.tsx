@@ -20,7 +20,7 @@ import {
 
 import { useAuth } from "@/lib/auth/AuthContext";
 import { HeadmasterHeader } from "@/components/admin/HeadmasterHeader";
-import { getRankFromXp } from "@/lib/rpg/academyRanks";
+
 import {
   adminListCadets, adminSetCadetActive, adminDeleteCadet,
 } from "@/lib/api/cadets.functions";
@@ -130,7 +130,6 @@ function CadetsList() {
       ) : (
         <div className="space-y-2">
           {filtered.map((c) => {
-            const rank = getRankFromXp(c.xp);
             const attPct = c.attendance_total > 0
               ? Math.round((c.attendance_present / c.attendance_total) * 100) : 0;
             return (
@@ -143,7 +142,6 @@ function CadetsList() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="font-semibold truncate">{c.name ?? "—"}</div>
                       {!c.is_active && <Badge variant="secondary" className="text-[10px]">Inactive</Badge>}
-                      {rank && <Badge variant="outline" className="text-[10px]">{rank.name}</Badge>}
                     </div>
                     <div className="text-xs text-muted-foreground truncate">
                       {c.email}{c.phone ? ` · ${c.phone}` : ""}
