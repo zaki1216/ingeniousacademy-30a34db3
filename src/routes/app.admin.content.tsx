@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookOpen, FileText, Eye, Upload, ListChecks, FileSpreadsheet, Library } from "lucide-react";
+import { BookOpen, FileText, Eye, Library } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { HeadmasterHeader } from "@/components/admin/HeadmasterHeader";
@@ -10,12 +10,10 @@ export const Route = createFileRoute("/app/admin/content")({
 });
 
 const tiles = [
-  { to: "/app/content", label: "Content Library", desc: "Subjects → Chapters → Lectures", icon: BookOpen },
-  { to: "/app/content", label: "Upload Content", desc: "Create new lectures & resources", icon: Upload },
-  { to: "/app/notes", label: "Notes & Resources", desc: "Downloadable notes for Cadets", icon: FileText },
-  { to: "/app/admin/quiz-import", label: "Bulk Quiz Import", desc: "Upload questions from XLSX or CSV", icon: FileSpreadsheet },
+  { to: "/app/content", label: "Curriculum Editor", desc: "Boards, Classes, Subjects, Chapters, Lectures", icon: BookOpen },
+  { to: "/app/notes", label: "Notes & Resources", desc: "PDF notes and downloadable resources", icon: FileText },
   { to: "/app/admin/lecture-views", label: "Engagement Analytics", desc: "Watch counts, drop-off, viewers", icon: Eye },
-];
+] as const;
 
 function ContentHub() {
   const { role } = useAuth();
@@ -25,12 +23,9 @@ function ContentHub() {
       <HeadmasterHeader
         icon={<Library className="h-7 w-7" />}
         title="Academy Content"
-        tagline="The Great Library — every Subject, Chapter, Lecture and Quest of Ingenious Academy."
-        lumi="Everything Cadets learn from flows through this wing. Shape the curriculum here and every classroom updates instantly."
+        tagline="The Great Library — every Subject, Chapter, Lecture and Video of Ingenious Academy."
+        lumi="Shape the curriculum here and every classroom updates instantly."
       />
-      <div className="mb-1 text-xs font-orbitron uppercase tracking-widest text-muted-foreground">
-        Subject → Chapter → Lecture → Quiz → Boss
-      </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {tiles.map((t) => {
           const Icon = t.icon;

@@ -30,6 +30,7 @@ import { Route as AppBuildingMathRouteImport } from './routes/app.building.math'
 import { Route as AppBuildingLibraryRouteImport } from './routes/app.building.library'
 import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.settings'
 import { Route as AppAdminRanksRouteImport } from './routes/app.admin.ranks'
+import { Route as AppAdminProgressRouteImport } from './routes/app.admin.progress'
 import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
 import { Route as AppAdminLumiRouteImport } from './routes/app.admin.lumi'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
@@ -146,6 +147,11 @@ const AppAdminRanksRoute = AppAdminRanksRouteImport.update({
   path: '/admin/ranks',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminProgressRoute = AppAdminProgressRouteImport.update({
+  id: '/admin/progress',
+  path: '/admin/progress',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminOfflineTestsRoute = AppAdminOfflineTestsRouteImport.update({
   id: '/admin/offline-tests',
   path: '/admin/offline-tests',
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
+  '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/building/library': typeof AppBuildingLibraryRoute
@@ -252,6 +259,7 @@ export interface FileRoutesByTo {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
+  '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/building/library': typeof AppBuildingLibraryRoute
@@ -286,6 +294,7 @@ export interface FileRoutesById {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
+  '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
   '/app/admin/settings': typeof AppAdminSettingsRoute
   '/app/building/library': typeof AppBuildingLibraryRoute
@@ -321,6 +330,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/offline-tests'
+    | '/app/admin/progress'
     | '/app/admin/ranks'
     | '/app/admin/settings'
     | '/app/building/library'
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/offline-tests'
+    | '/app/admin/progress'
     | '/app/admin/ranks'
     | '/app/admin/settings'
     | '/app/building/library'
@@ -385,6 +396,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/offline-tests'
+    | '/app/admin/progress'
     | '/app/admin/ranks'
     | '/app/admin/settings'
     | '/app/building/library'
@@ -555,6 +567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminRanksRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/progress': {
+      id: '/app/admin/progress'
+      path: '/admin/progress'
+      fullPath: '/app/admin/progress'
+      preLoaderRoute: typeof AppAdminProgressRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/offline-tests': {
       id: '/app/admin/offline-tests'
       path: '/admin/offline-tests'
@@ -660,6 +679,7 @@ interface AppRouteChildren {
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminLumiRoute: typeof AppAdminLumiRoute
   AppAdminOfflineTestsRoute: typeof AppAdminOfflineTestsRoute
+  AppAdminProgressRoute: typeof AppAdminProgressRoute
   AppAdminRanksRoute: typeof AppAdminRanksRoute
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppBuildingLibraryRoute: typeof AppBuildingLibraryRoute
@@ -684,6 +704,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminLumiRoute: AppAdminLumiRoute,
   AppAdminOfflineTestsRoute: AppAdminOfflineTestsRoute,
+  AppAdminProgressRoute: AppAdminProgressRoute,
   AppAdminRanksRoute: AppAdminRanksRoute,
   AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppBuildingLibraryRoute: AppBuildingLibraryRoute,
