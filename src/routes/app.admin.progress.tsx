@@ -36,7 +36,7 @@ function ProgressHub() {
     queryFn: () => boardFn({ data: { period: "weekly" } }),
   });
 
-  const cadets = cadetsQ.data?.cadets ?? [];
+  const cadets = cadetsQ.data?.students ?? [];
   const ranks: AcademyRank[] = (ranksQ.data ?? []) as AcademyRank[];
 
   const totals = cadets.reduce(
