@@ -19,6 +19,7 @@ import {
   adminGetStudentCommandCenter, adminAwardCoins, adminAwardBadge, adminAwardTitle,
   adminGrantPass, adminUnlockShadow, adminGetStudentQuizHistory,
 } from "@/lib/api/admin-rewards.functions";
+import { adminGetStudentAdminInfo } from "@/lib/api/students.functions";
 
 export const Route = createFileRoute("/app/admin/students/$id")({ component: StudentCommandCenter });
 
@@ -69,6 +70,8 @@ function StudentCommandCenter() {
         </CardContent>
       </Card>
 
+      <StudentRecord userId={id} />
+
       <QuickActions userId={id} onDone={refresh} />
 
       <div className="grid md:grid-cols-2 gap-3">
@@ -110,6 +113,64 @@ function StudentCommandCenter() {
       </div>
 
       <QuizHistory userId={id} />
+    </div>
+  );
+}
+
+function StudentRecord({ userId }: { userId: string }) {
+  const fn = useServerFn(adminGetStudentAdminInfo);
+  const q = useQuery({ queryKey: ["admin-student-record", userId], queryFn: () => fn({ data: { userId } }) });
+  if (q.isLoading || !q.data) return <Skeleton className="h-40" />;
+  const d = q.data as any;
+  const p = d.profile ?? {};
+  return (
+    <div className="grid gap-3 md:grid-cols-3">
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-base">Personal & Parent</CardTitle></CardHeader>
+        <CardContent className="space-y-1 text-sm">
+          <Row k="Full name" v={p.name} />
+          <Row k="Username" v={p.username ? `@${p.username}` : "—"} />
+          <Row k="Roll number" v={p.roll_number} />
+          <Row k="Admission date" v={p.admission_date} />
+          <Row k="Student mobile" v={p.phone} />
+          <Row k="Parent name" v={p.parent_name} />
+          <Row k="Parent mobile" v={p.parent_phone} />
+          <Row k="Parent WhatsApp" v={p.parent_whatsapp} />
+          <Row k="Email" v={p.email} />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-base">Academic</CardTitle></CardHeader>
+        <CardContent className="space-y-1 text-sm">
+          <Row k="Standard" v={d.standardName} />
+          <Row k="Subjects" v={(d.subjects ?? []).map((s: any) => s.subject_name).join(", ") || "—"} />
+          <Row k="Current lesson" v={d.recentVideos?.[0]?.title ?? "—"} />
+          <div className="pt-2 text-xs text-muted-foreground">Recent activity</div>
+          {(d.recentVideos ?? []).slice(0, 5).map((v: any, i: number) => (
+            <div key={i} className="text-xs truncate">• {v.title} — {new Date(v.at).toLocaleDateString()}</div>
+          ))}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-base">Administrative</CardTitle></CardHeader>
+        <CardContent className="space-y-1 text-sm">
+          <Row k="Account status" v={p.is_active === false ? "🔴 Inactive" : "🟢 Active"} />
+          <Row k="Login blocked" v={d.banned ? "Yes" : "No"} />
+          <Row k="Last sign-in" v={d.lastSignInAt ? new Date(d.lastSignInAt).toLocaleString() : "—"} />
+          <Row k="Last active" v={d.stats?.last_active_date ?? "—"} />
+          <Row k="Account created" v={d.createdAt ? new Date(d.createdAt).toLocaleDateString() : "—"} />
+          <Row k="Username locked" v={p.username_locked ? "Yes" : "No"} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function Row({ k, v }: { k: string; v?: string | null }) {
+  return (
+    <div className="flex items-start justify-between gap-2">
+      <span className="text-muted-foreground text-xs">{k}</span>
+      <span className="text-xs text-right break-words min-w-0">{v || "—"}</span>
     </div>
   );
 }
