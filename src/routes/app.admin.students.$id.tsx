@@ -44,7 +44,7 @@ function StudentCommandCenter() {
 
   return (
     <div className="space-y-4">
-      <Link to="/app/students" className="text-xs text-muted-foreground inline-flex items-center gap-1">
+      <Link to="/app/admin/students" className="text-xs text-muted-foreground inline-flex items-center gap-1">
         <ArrowLeft className="h-3 w-3" /> Back to students
       </Link>
 

@@ -111,7 +111,7 @@ function AcademyCommandCenter() {
       <div>
         <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Quick Actions</div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          <Link to="/app/admin/cadets" className="rounded-xl border border-white/10 p-3 hover:border-primary/50 text-sm font-semibold flex items-center gap-2"><Users className="h-4 w-4" />All Cadets</Link>
+          <Link to="/app/admin/students" className="rounded-xl border border-white/10 p-3 hover:border-primary/50 text-sm font-semibold flex items-center gap-2"><Users className="h-4 w-4" />Student Management</Link>
           <Link to="/app/admin/content" className="rounded-xl border border-white/10 p-3 hover:border-primary/50 text-sm font-semibold flex items-center gap-2"><BookOpen className="h-4 w-4" />Content</Link>
           <Link to="/app/admin/progress" className="rounded-xl border border-white/10 p-3 hover:border-primary/50 text-sm font-semibold flex items-center gap-2"><ClipboardList className="h-4 w-4" />Progress</Link>
           <Link to="/app/admin/lumi" className="rounded-xl border border-white/10 p-3 hover:border-primary/50 text-sm font-semibold flex items-center gap-2"><Megaphone className="h-4 w-4" />Announce</Link>

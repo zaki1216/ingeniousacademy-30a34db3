@@ -28,7 +28,7 @@ export const Route = createFileRoute("/app/admin/dashboard")({
 });
 
 const QUICK_ACTIONS: { to: string; label: string; icon: any }[] = [
-  { to: "/app/admin/cadets", label: "All Cadets", icon: Users },
+  { to: "/app/admin/students", label: "Student Management", icon: Users },
   { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/app/content", label: "Curriculum", icon: BookOpen },
   { to: "/app/notes", label: "Notes", icon: FileText },

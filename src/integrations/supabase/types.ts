@@ -590,6 +590,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          admission_date: string | null
           created_at: string
           email: string
           equipped_avatar: string | null
@@ -598,11 +599,18 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          parent_name: string | null
           parent_phone: string | null
+          parent_whatsapp: string | null
           phone: string | null
+          roll_number: string | null
           standard_id: string | null
+          username: string | null
+          username_changed_at: string | null
+          username_locked: boolean
         }
         Insert: {
+          admission_date?: string | null
           created_at?: string
           email: string
           equipped_avatar?: string | null
@@ -611,11 +619,18 @@ export type Database = {
           id: string
           is_active?: boolean
           name: string
+          parent_name?: string | null
           parent_phone?: string | null
+          parent_whatsapp?: string | null
           phone?: string | null
+          roll_number?: string | null
           standard_id?: string | null
+          username?: string | null
+          username_changed_at?: string | null
+          username_locked?: boolean
         }
         Update: {
+          admission_date?: string | null
           created_at?: string
           email?: string
           equipped_avatar?: string | null
@@ -624,9 +639,15 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          parent_name?: string | null
           parent_phone?: string | null
+          parent_whatsapp?: string | null
           phone?: string | null
+          roll_number?: string | null
           standard_id?: string | null
+          username?: string | null
+          username_changed_at?: string | null
+          username_locked?: boolean
         }
         Relationships: [
           {

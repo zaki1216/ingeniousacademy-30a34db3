@@ -43,7 +43,7 @@ function ResidencePage() {
     queryFn: async () =>
       (await supabase
         .from("profiles")
-        .select("name, equipped_avatar, equipped_frame, equipped_title")
+        .select("name, username, equipped_avatar, equipped_frame, equipped_title")
         .eq("id", user!.id)
         .maybeSingle()).data,
   });

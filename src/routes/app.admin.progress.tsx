@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { HeadmasterHeader } from "@/components/admin/HeadmasterHeader";
-import { adminListCadets } from "@/lib/api/cadets.functions";
+import { adminListStudents } from "@/lib/api/students.functions";
 import { getLeaderboard } from "@/lib/api/gamification.functions";
 import { rankFromXp, type AcademyRank } from "@/lib/rpg/academyRanks";
 import { adminListAcademyRanks } from "@/lib/api/ranks.functions";
@@ -25,7 +25,7 @@ function ProgressHub() {
   const { role } = useAuth();
   if (role !== "admin") return <p className="text-muted-foreground">Admins only.</p>;
 
-  const cadetsFn = useServerFn(adminListCadets);
+  const cadetsFn = useServerFn(adminListStudents);
   const ranksFn = useServerFn(adminListAcademyRanks);
   const boardFn = useServerFn(getLeaderboard);
 

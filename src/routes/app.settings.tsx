@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { UsernameSettings } from "@/components/student/UsernameSettings";
 
 export const Route = createFileRoute("/app/settings")({ component: SettingsPage });
 
@@ -44,6 +45,8 @@ function SettingsPage() {
           <CardDescription>Signed in as <b>{user?.email}</b></CardDescription>
         </CardHeader>
       </Card>
+
+      <UsernameSettings />
 
       <Card>
         <CardHeader>
