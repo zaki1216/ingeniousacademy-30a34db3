@@ -36,9 +36,9 @@ import { Route as AppAdminLumiRouteImport } from './routes/app.admin.lumi'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
 import { Route as AppAdminContentRouteImport } from './routes/app.admin.content'
-import { Route as AppAdminCadetsRouteImport } from './routes/app.admin.cadets'
 import { Route as AppAdminAttendanceRouteImport } from './routes/app.admin.attendance'
 import { Route as AppJourneyWorldIdIndexRouteImport } from './routes/app.journey.$worldId.index'
+import { Route as AppAdminStudentsIndexRouteImport } from './routes/app.admin.students.index'
 import { Route as AppJourneyWorldIdDungeonIdRouteImport } from './routes/app.journey.$worldId.$dungeonId'
 import { Route as AppAdminStudentsIdRouteImport } from './routes/app.admin.students.$id'
 
@@ -177,11 +177,6 @@ const AppAdminContentRoute = AppAdminContentRouteImport.update({
   path: '/admin/content',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminCadetsRoute = AppAdminCadetsRouteImport.update({
-  id: '/admin/cadets',
-  path: '/admin/cadets',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppAdminAttendanceRoute = AppAdminAttendanceRouteImport.update({
   id: '/admin/attendance',
   path: '/admin/attendance',
@@ -191,6 +186,11 @@ const AppJourneyWorldIdIndexRoute = AppJourneyWorldIdIndexRouteImport.update({
   id: '/$worldId/',
   path: '/$worldId/',
   getParentRoute: () => AppJourneyRoute,
+} as any)
+const AppAdminStudentsIndexRoute = AppAdminStudentsIndexRouteImport.update({
+  id: '/admin/students/',
+  path: '/admin/students/',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppJourneyWorldIdDungeonIdRoute =
   AppJourneyWorldIdDungeonIdRouteImport.update({
@@ -221,7 +221,6 @@ export interface FileRoutesByFullPath {
   '/app/welcome': typeof AppWelcomeRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
-  '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
@@ -236,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
+  '/app/admin/students/': typeof AppAdminStudentsIndexRoute
   '/app/journey/$worldId/': typeof AppJourneyWorldIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -253,7 +253,6 @@ export interface FileRoutesByTo {
   '/app/welcome': typeof AppWelcomeRoute
   '/app': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
-  '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
@@ -268,6 +267,7 @@ export interface FileRoutesByTo {
   '/app/journey': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
+  '/app/admin/students': typeof AppAdminStudentsIndexRoute
   '/app/journey/$worldId': typeof AppJourneyWorldIdIndexRoute
 }
 export interface FileRoutesById {
@@ -288,7 +288,6 @@ export interface FileRoutesById {
   '/app/welcome': typeof AppWelcomeRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/attendance': typeof AppAdminAttendanceRoute
-  '/app/admin/cadets': typeof AppAdminCadetsRoute
   '/app/admin/content': typeof AppAdminContentRoute
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
@@ -303,6 +302,7 @@ export interface FileRoutesById {
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
+  '/app/admin/students/': typeof AppAdminStudentsIndexRoute
   '/app/journey/$worldId/': typeof AppJourneyWorldIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -324,7 +324,6 @@ export interface FileRouteTypes {
     | '/app/welcome'
     | '/app/'
     | '/app/admin/attendance'
-    | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
@@ -339,6 +338,7 @@ export interface FileRouteTypes {
     | '/app/journey/'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
+    | '/app/admin/students/'
     | '/app/journey/$worldId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -356,7 +356,6 @@ export interface FileRouteTypes {
     | '/app/welcome'
     | '/app'
     | '/app/admin/attendance'
-    | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
@@ -371,6 +370,7 @@ export interface FileRouteTypes {
     | '/app/journey'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
+    | '/app/admin/students'
     | '/app/journey/$worldId'
   id:
     | '__root__'
@@ -390,7 +390,6 @@ export interface FileRouteTypes {
     | '/app/welcome'
     | '/app/'
     | '/app/admin/attendance'
-    | '/app/admin/cadets'
     | '/app/admin/content'
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
@@ -405,6 +404,7 @@ export interface FileRouteTypes {
     | '/app/journey/'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
+    | '/app/admin/students/'
     | '/app/journey/$worldId/'
   fileRoutesById: FileRoutesById
 }
@@ -609,13 +609,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminContentRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/admin/cadets': {
-      id: '/app/admin/cadets'
-      path: '/admin/cadets'
-      fullPath: '/app/admin/cadets'
-      preLoaderRoute: typeof AppAdminCadetsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/admin/attendance': {
       id: '/app/admin/attendance'
       path: '/admin/attendance'
@@ -629,6 +622,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/journey/$worldId/'
       preLoaderRoute: typeof AppJourneyWorldIdIndexRouteImport
       parentRoute: typeof AppJourneyRoute
+    }
+    '/app/admin/students/': {
+      id: '/app/admin/students/'
+      path: '/admin/students'
+      fullPath: '/app/admin/students/'
+      preLoaderRoute: typeof AppAdminStudentsIndexRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/journey/$worldId/$dungeonId': {
       id: '/app/journey/$worldId/$dungeonId'
@@ -673,7 +673,6 @@ interface AppRouteChildren {
   AppWelcomeRoute: typeof AppWelcomeRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminAttendanceRoute: typeof AppAdminAttendanceRoute
-  AppAdminCadetsRoute: typeof AppAdminCadetsRoute
   AppAdminContentRoute: typeof AppAdminContentRoute
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
@@ -686,6 +685,7 @@ interface AppRouteChildren {
   AppBuildingMathRoute: typeof AppBuildingMathRoute
   AppBuildingScienceRoute: typeof AppBuildingScienceRoute
   AppAdminStudentsIdRoute: typeof AppAdminStudentsIdRoute
+  AppAdminStudentsIndexRoute: typeof AppAdminStudentsIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -698,7 +698,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppWelcomeRoute: AppWelcomeRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminAttendanceRoute: AppAdminAttendanceRoute,
-  AppAdminCadetsRoute: AppAdminCadetsRoute,
   AppAdminContentRoute: AppAdminContentRoute,
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
@@ -711,6 +710,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppBuildingMathRoute: AppBuildingMathRoute,
   AppBuildingScienceRoute: AppBuildingScienceRoute,
   AppAdminStudentsIdRoute: AppAdminStudentsIdRoute,
+  AppAdminStudentsIndexRoute: AppAdminStudentsIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
