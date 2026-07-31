@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RankPromotionModal } from "@/components/rpg/RankPromotionModal";
 import { AcademyRankCard } from "@/components/rpg/AcademyRankCard";
+import { ContinueLearningCard } from "@/components/learning/ContinueLearningCard";
 
 
 
@@ -40,12 +41,11 @@ type MapNode = {
 
 const MAP_NODES: MapNode[] = [
   { id: "home", label: "Courtyard", to: "/app", x: 50, y: 82, color: "#f59e0b" },
-  { id: "journey", label: "Journey", to: "/app/journey", x: 50, y: 42, color: "#22d3ee" },
-  { id: "arena", label: "Arena", to: "/app/pvp", x: 22, y: 60, color: "#f97316" },
-  { id: "shop", label: "Merchant", to: "/app/shop", x: 50, y: 55, color: "#c084fc" },
-  { id: "hall", label: "Hall of Fame", to: "/app/leaderboard", x: 78, y: 60, color: "#fcd34d" },
+  { id: "journey", label: "Learn", to: "/app/journey", x: 50, y: 42, color: "#22d3ee" },
+  { id: "progress", label: "Progress", to: "/app/report-card", x: 22, y: 60, color: "#34d399" },
+  { id: "notes", label: "Notes", to: "/app/notes", x: 78, y: 60, color: "#38bdf8" },
   { id: "residence", label: "Residence", to: "/app/profile", x: 78, y: 30, color: "#a78bfa" },
-  { id: "library", label: "Library", to: "/app/content", x: 22, y: 30, color: "#38bdf8" },
+  { id: "settings", label: "Settings", to: "/app/settings", x: 22, y: 30, color: "#fcd34d" },
 ];
 
 function useCurrentNode(path: string): string {
@@ -345,7 +345,7 @@ export function Minimap() {
 /* ------------------------------ Adventure Bar ------------------------------ */
 export function AdventureBar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  // Hide on world/home to keep it uncluttered
+  // Hide on world/home — the hero Continue card already lives there.
   if (path === "/app") return null;
 
   return (
@@ -359,18 +359,9 @@ export function AdventureBar() {
         <div className="text-[9px] font-black tracking-[0.3em] text-amber-300/80" style={{ fontFamily: "'Cinzel', serif" }}>
           CURRENT ADVENTURE
         </div>
-        <div className="text-sm font-extrabold text-amber-50 leading-tight">Continue your Journey</div>
+        <div className="text-sm font-extrabold text-amber-50 leading-tight">Pick up where you left off</div>
       </div>
-      <div className="hidden md:block h-1 w-32 rounded-full bg-white/10 overflow-hidden">
-        <div className="h-full w-[62%] bg-gradient-to-r from-amber-300 to-amber-600" />
-      </div>
-      <Link
-        to="/app/journey"
-        className="pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-xl font-black text-xs tracking-[0.18em] text-amber-950 bg-gradient-to-b from-amber-200 via-amber-400 to-amber-700 hover:brightness-110 shadow-[0_0_30px_-6px_rgba(251,191,36,0.7)]"
-        style={{ fontFamily: "'Cinzel', serif" }}
-      >
-        <Play className="h-3.5 w-3.5 fill-current" /> CONTINUE
-      </Link>
+      <ContinueLearningCard variant="bar" />
     </motion.div>
   );
 }
