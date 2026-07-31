@@ -9,62 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SetupRouteImport } from './routes/setup'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SetupRouteImport } from './routes/setup'
 import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppWelcomeRouteImport } from './routes/app.welcome'
-import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as AppReportCardRouteImport } from './routes/app.report-card'
-import { Route as AppProfileRouteImport } from './routes/app.profile'
-import { Route as AppNotesRouteImport } from './routes/app.notes'
-import { Route as AppJourneyRouteImport } from './routes/app.journey'
 import { Route as AppContentRouteImport } from './routes/app.content'
-import { Route as AppJourneyIndexRouteImport } from './routes/app.journey.index'
-import { Route as AppBuildingScienceRouteImport } from './routes/app.building.science'
-import { Route as AppBuildingMathRouteImport } from './routes/app.building.math'
-import { Route as AppBuildingLibraryRouteImport } from './routes/app.building.library'
-import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.settings'
-import { Route as AppAdminRanksRouteImport } from './routes/app.admin.ranks'
-import { Route as AppAdminProgressRouteImport } from './routes/app.admin.progress'
-import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
-import { Route as AppAdminLumiRouteImport } from './routes/app.admin.lumi'
-import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
-import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
-import { Route as AppAdminContentRouteImport } from './routes/app.admin.content'
+import { Route as AppJourneyRouteImport } from './routes/app.journey'
+import { Route as AppNotesRouteImport } from './routes/app.notes'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppReportCardRouteImport } from './routes/app.report-card'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppWelcomeRouteImport } from './routes/app.welcome'
 import { Route as AppAdminAttendanceRouteImport } from './routes/app.admin.attendance'
-import { Route as AppJourneyWorldIdIndexRouteImport } from './routes/app.journey.$worldId.index'
+import { Route as AppAdminContentRouteImport } from './routes/app.admin.content'
+import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
+import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
+import { Route as AppAdminLumiRouteImport } from './routes/app.admin.lumi'
+import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
+import { Route as AppAdminProgressRouteImport } from './routes/app.admin.progress'
+import { Route as AppAdminRanksRouteImport } from './routes/app.admin.ranks'
+import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.settings'
+import { Route as AppBuildingLibraryRouteImport } from './routes/app.building.library'
+import { Route as AppBuildingMathRouteImport } from './routes/app.building.math'
+import { Route as AppBuildingScienceRouteImport } from './routes/app.building.science'
+import { Route as AppJourneyIndexRouteImport } from './routes/app.journey.index'
 import { Route as AppAdminStudentsIndexRouteImport } from './routes/app.admin.students.index'
-import { Route as AppJourneyWorldIdDungeonIdRouteImport } from './routes/app.journey.$worldId.$dungeonId'
 import { Route as AppAdminStudentsIdRouteImport } from './routes/app.admin.students.$id'
+import { Route as AppJourneyWorldIdIndexRouteImport } from './routes/app.journey.$worldId.index'
+import { Route as AppJourneyWorldIdDungeonIdRouteImport } from './routes/app.journey.$worldId.$dungeonId'
 
-const SetupRoute = SetupRouteImport.update({
-  id: '/setup',
-  path: '/setup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -72,9 +52,29 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupRoute = SetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -82,29 +82,9 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppWelcomeRoute = AppWelcomeRouteImport.update({
-  id: '/welcome',
-  path: '/welcome',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppReportCardRoute = AppReportCardRouteImport.update({
-  id: '/report-card',
-  path: '/report-card',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppNotesRoute = AppNotesRouteImport.update({
-  id: '/notes',
-  path: '/notes',
+const AppContentRoute = AppContentRouteImport.update({
+  id: '/content',
+  path: '/content',
   getParentRoute: () => AppRoute,
 } as any)
 const AppJourneyRoute = AppJourneyRouteImport.update({
@@ -112,69 +92,29 @@ const AppJourneyRoute = AppJourneyRouteImport.update({
   path: '/journey',
   getParentRoute: () => AppRoute,
 } as any)
-const AppContentRoute = AppContentRouteImport.update({
-  id: '/content',
-  path: '/content',
+const AppNotesRoute = AppNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
   getParentRoute: () => AppRoute,
 } as any)
-const AppJourneyIndexRoute = AppJourneyIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppJourneyRoute,
-} as any)
-const AppBuildingScienceRoute = AppBuildingScienceRouteImport.update({
-  id: '/building/science',
-  path: '/building/science',
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
-const AppBuildingMathRoute = AppBuildingMathRouteImport.update({
-  id: '/building/math',
-  path: '/building/math',
+const AppReportCardRoute = AppReportCardRouteImport.update({
+  id: '/report-card',
+  path: '/report-card',
   getParentRoute: () => AppRoute,
 } as any)
-const AppBuildingLibraryRoute = AppBuildingLibraryRouteImport.update({
-  id: '/building/library',
-  path: '/building/library',
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
-  id: '/admin/settings',
-  path: '/admin/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminRanksRoute = AppAdminRanksRouteImport.update({
-  id: '/admin/ranks',
-  path: '/admin/ranks',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminProgressRoute = AppAdminProgressRouteImport.update({
-  id: '/admin/progress',
-  path: '/admin/progress',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminOfflineTestsRoute = AppAdminOfflineTestsRouteImport.update({
-  id: '/admin/offline-tests',
-  path: '/admin/offline-tests',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminLumiRoute = AppAdminLumiRouteImport.update({
-  id: '/admin/lumi',
-  path: '/admin/lumi',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
-  id: '/admin/lecture-views',
-  path: '/admin/lecture-views',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
-  id: '/admin/dashboard',
-  path: '/admin/dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminContentRoute = AppAdminContentRouteImport.update({
-  id: '/admin/content',
-  path: '/admin/content',
+const AppWelcomeRoute = AppWelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminAttendanceRoute = AppAdminAttendanceRouteImport.update({
@@ -182,9 +122,64 @@ const AppAdminAttendanceRoute = AppAdminAttendanceRouteImport.update({
   path: '/admin/attendance',
   getParentRoute: () => AppRoute,
 } as any)
-const AppJourneyWorldIdIndexRoute = AppJourneyWorldIdIndexRouteImport.update({
-  id: '/$worldId/',
-  path: '/$worldId/',
+const AppAdminContentRoute = AppAdminContentRouteImport.update({
+  id: '/admin/content',
+  path: '/admin/content',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
+  id: '/admin/lecture-views',
+  path: '/admin/lecture-views',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminLumiRoute = AppAdminLumiRouteImport.update({
+  id: '/admin/lumi',
+  path: '/admin/lumi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminOfflineTestsRoute = AppAdminOfflineTestsRouteImport.update({
+  id: '/admin/offline-tests',
+  path: '/admin/offline-tests',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminProgressRoute = AppAdminProgressRouteImport.update({
+  id: '/admin/progress',
+  path: '/admin/progress',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminRanksRoute = AppAdminRanksRouteImport.update({
+  id: '/admin/ranks',
+  path: '/admin/ranks',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBuildingLibraryRoute = AppBuildingLibraryRouteImport.update({
+  id: '/building/library',
+  path: '/building/library',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBuildingMathRoute = AppBuildingMathRouteImport.update({
+  id: '/building/math',
+  path: '/building/math',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBuildingScienceRoute = AppBuildingScienceRouteImport.update({
+  id: '/building/science',
+  path: '/building/science',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppJourneyIndexRoute = AppJourneyIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => AppJourneyRoute,
 } as any)
 const AppAdminStudentsIndexRoute = AppAdminStudentsIndexRouteImport.update({
@@ -192,17 +187,22 @@ const AppAdminStudentsIndexRoute = AppAdminStudentsIndexRouteImport.update({
   path: '/admin/students/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminStudentsIdRoute = AppAdminStudentsIdRouteImport.update({
+  id: '/admin/students/$id',
+  path: '/admin/students/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppJourneyWorldIdIndexRoute = AppJourneyWorldIdIndexRouteImport.update({
+  id: '/$worldId/',
+  path: '/$worldId/',
+  getParentRoute: () => AppJourneyRoute,
+} as any)
 const AppJourneyWorldIdDungeonIdRoute =
   AppJourneyWorldIdDungeonIdRouteImport.update({
     id: '/$worldId/$dungeonId',
     path: '/$worldId/$dungeonId',
     getParentRoute: () => AppJourneyRoute,
   } as any)
-const AppAdminStudentsIdRoute = AppAdminStudentsIdRouteImport.update({
-  id: '/admin/students/$id',
-  path: '/admin/students/$id',
-  getParentRoute: () => AppRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -420,39 +420,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/setup': {
-      id: '/setup'
-      path: '/setup'
-      fullPath: '/setup'
-      preLoaderRoute: typeof SetupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -462,11 +434,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup': {
+      id: '/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof SetupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -476,39 +476,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/welcome': {
-      id: '/app/welcome'
-      path: '/welcome'
-      fullPath: '/app/welcome'
-      preLoaderRoute: typeof AppWelcomeRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/settings': {
-      id: '/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/report-card': {
-      id: '/app/report-card'
-      path: '/report-card'
-      fullPath: '/app/report-card'
-      preLoaderRoute: typeof AppReportCardRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/profile': {
-      id: '/app/profile'
-      path: '/profile'
-      fullPath: '/app/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/notes': {
-      id: '/app/notes'
-      path: '/notes'
-      fullPath: '/app/notes'
-      preLoaderRoute: typeof AppNotesRouteImport
+    '/app/content': {
+      id: '/app/content'
+      path: '/content'
+      fullPath: '/app/content'
+      preLoaderRoute: typeof AppContentRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/journey': {
@@ -518,95 +490,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppJourneyRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/content': {
-      id: '/app/content'
-      path: '/content'
-      fullPath: '/app/content'
-      preLoaderRoute: typeof AppContentRouteImport
+    '/app/notes': {
+      id: '/app/notes'
+      path: '/notes'
+      fullPath: '/app/notes'
+      preLoaderRoute: typeof AppNotesRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/journey/': {
-      id: '/app/journey/'
-      path: '/'
-      fullPath: '/app/journey/'
-      preLoaderRoute: typeof AppJourneyIndexRouteImport
-      parentRoute: typeof AppJourneyRoute
-    }
-    '/app/building/science': {
-      id: '/app/building/science'
-      path: '/building/science'
-      fullPath: '/app/building/science'
-      preLoaderRoute: typeof AppBuildingScienceRouteImport
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/building/math': {
-      id: '/app/building/math'
-      path: '/building/math'
-      fullPath: '/app/building/math'
-      preLoaderRoute: typeof AppBuildingMathRouteImport
+    '/app/report-card': {
+      id: '/app/report-card'
+      path: '/report-card'
+      fullPath: '/app/report-card'
+      preLoaderRoute: typeof AppReportCardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/building/library': {
-      id: '/app/building/library'
-      path: '/building/library'
-      fullPath: '/app/building/library'
-      preLoaderRoute: typeof AppBuildingLibraryRouteImport
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/admin/settings': {
-      id: '/app/admin/settings'
-      path: '/admin/settings'
-      fullPath: '/app/admin/settings'
-      preLoaderRoute: typeof AppAdminSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/ranks': {
-      id: '/app/admin/ranks'
-      path: '/admin/ranks'
-      fullPath: '/app/admin/ranks'
-      preLoaderRoute: typeof AppAdminRanksRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/progress': {
-      id: '/app/admin/progress'
-      path: '/admin/progress'
-      fullPath: '/app/admin/progress'
-      preLoaderRoute: typeof AppAdminProgressRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/offline-tests': {
-      id: '/app/admin/offline-tests'
-      path: '/admin/offline-tests'
-      fullPath: '/app/admin/offline-tests'
-      preLoaderRoute: typeof AppAdminOfflineTestsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/lumi': {
-      id: '/app/admin/lumi'
-      path: '/admin/lumi'
-      fullPath: '/app/admin/lumi'
-      preLoaderRoute: typeof AppAdminLumiRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/lecture-views': {
-      id: '/app/admin/lecture-views'
-      path: '/admin/lecture-views'
-      fullPath: '/app/admin/lecture-views'
-      preLoaderRoute: typeof AppAdminLectureViewsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/dashboard': {
-      id: '/app/admin/dashboard'
-      path: '/admin/dashboard'
-      fullPath: '/app/admin/dashboard'
-      preLoaderRoute: typeof AppAdminDashboardRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/admin/content': {
-      id: '/app/admin/content'
-      path: '/admin/content'
-      fullPath: '/app/admin/content'
-      preLoaderRoute: typeof AppAdminContentRouteImport
+    '/app/welcome': {
+      id: '/app/welcome'
+      path: '/welcome'
+      fullPath: '/app/welcome'
+      preLoaderRoute: typeof AppWelcomeRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/admin/attendance': {
@@ -616,11 +532,88 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminAttendanceRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/journey/$worldId/': {
-      id: '/app/journey/$worldId/'
-      path: '/$worldId'
-      fullPath: '/app/journey/$worldId/'
-      preLoaderRoute: typeof AppJourneyWorldIdIndexRouteImport
+    '/app/admin/content': {
+      id: '/app/admin/content'
+      path: '/admin/content'
+      fullPath: '/app/admin/content'
+      preLoaderRoute: typeof AppAdminContentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/dashboard': {
+      id: '/app/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/app/admin/dashboard'
+      preLoaderRoute: typeof AppAdminDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/lecture-views': {
+      id: '/app/admin/lecture-views'
+      path: '/admin/lecture-views'
+      fullPath: '/app/admin/lecture-views'
+      preLoaderRoute: typeof AppAdminLectureViewsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/lumi': {
+      id: '/app/admin/lumi'
+      path: '/admin/lumi'
+      fullPath: '/app/admin/lumi'
+      preLoaderRoute: typeof AppAdminLumiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/offline-tests': {
+      id: '/app/admin/offline-tests'
+      path: '/admin/offline-tests'
+      fullPath: '/app/admin/offline-tests'
+      preLoaderRoute: typeof AppAdminOfflineTestsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/progress': {
+      id: '/app/admin/progress'
+      path: '/admin/progress'
+      fullPath: '/app/admin/progress'
+      preLoaderRoute: typeof AppAdminProgressRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/ranks': {
+      id: '/app/admin/ranks'
+      path: '/admin/ranks'
+      fullPath: '/app/admin/ranks'
+      preLoaderRoute: typeof AppAdminRanksRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/settings': {
+      id: '/app/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/app/admin/settings'
+      preLoaderRoute: typeof AppAdminSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/building/library': {
+      id: '/app/building/library'
+      path: '/building/library'
+      fullPath: '/app/building/library'
+      preLoaderRoute: typeof AppBuildingLibraryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/building/math': {
+      id: '/app/building/math'
+      path: '/building/math'
+      fullPath: '/app/building/math'
+      preLoaderRoute: typeof AppBuildingMathRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/building/science': {
+      id: '/app/building/science'
+      path: '/building/science'
+      fullPath: '/app/building/science'
+      preLoaderRoute: typeof AppBuildingScienceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/journey/': {
+      id: '/app/journey/'
+      path: '/'
+      fullPath: '/app/journey/'
+      preLoaderRoute: typeof AppJourneyIndexRouteImport
       parentRoute: typeof AppJourneyRoute
     }
     '/app/admin/students/': {
@@ -630,19 +623,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminStudentsIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/journey/$worldId/$dungeonId': {
-      id: '/app/journey/$worldId/$dungeonId'
-      path: '/$worldId/$dungeonId'
-      fullPath: '/app/journey/$worldId/$dungeonId'
-      preLoaderRoute: typeof AppJourneyWorldIdDungeonIdRouteImport
-      parentRoute: typeof AppJourneyRoute
-    }
     '/app/admin/students/$id': {
       id: '/app/admin/students/$id'
       path: '/admin/students/$id'
       fullPath: '/app/admin/students/$id'
       preLoaderRoute: typeof AppAdminStudentsIdRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/app/journey/$worldId/': {
+      id: '/app/journey/$worldId/'
+      path: '/$worldId'
+      fullPath: '/app/journey/$worldId/'
+      preLoaderRoute: typeof AppJourneyWorldIdIndexRouteImport
+      parentRoute: typeof AppJourneyRoute
+    }
+    '/app/journey/$worldId/$dungeonId': {
+      id: '/app/journey/$worldId/$dungeonId'
+      path: '/$worldId/$dungeonId'
+      fullPath: '/app/journey/$worldId/$dungeonId'
+      preLoaderRoute: typeof AppJourneyWorldIdDungeonIdRouteImport
+      parentRoute: typeof AppJourneyRoute
     }
   }
 }
@@ -727,3 +727,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
