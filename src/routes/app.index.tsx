@@ -6,6 +6,8 @@ import {
   Users, BookOpen, ClipboardList, Megaphone, Target,
 } from "lucide-react";
 import { AcademyWorld } from "@/components/campus/AcademyWorld";
+import { ContinueLearningCard } from "@/components/learning/ContinueLearningCard";
+import { DailyMissions } from "@/components/learning/DailyMissions";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,7 +66,13 @@ function StudentDashboard({ userId }: { userId?: string }) {
     }
   }, [navigate]);
 
-  return <AcademyWorld />;
+  return (
+    <div className="space-y-3">
+      <ContinueLearningCard variant="hero" />
+      <DailyMissions />
+      <AcademyWorld />
+    </div>
+  );
 }
 
 function AcademyCommandCenter() {
