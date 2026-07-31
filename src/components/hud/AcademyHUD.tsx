@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RankPromotionModal } from "@/components/rpg/RankPromotionModal";
 import { AcademyRankCard } from "@/components/rpg/AcademyRankCard";
+import { ContinueLearningCard } from "@/components/learning/ContinueLearningCard";
 
 
 
