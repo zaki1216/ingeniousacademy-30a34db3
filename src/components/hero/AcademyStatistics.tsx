@@ -19,18 +19,66 @@ export function AcademyStatistics({ stats }: { stats: HeroStats }) {
   const hours = Math.floor(stats.studyMinutes / 60);
   const mins = stats.studyMinutes % 60;
   const tiles = [
-    { icon: <BookOpen className="h-5 w-5 text-cyan-300" />, label: "Lessons Completed", value: `${stats.lessonsCompleted}` },
-    { icon: <Shield className="h-5 w-5 text-violet-300" />, label: "Dungeons Cleared", value: `${stats.dungeonsCleared}` },
-    { icon: <Swords className="h-5 w-5 text-rose-300" />, label: "Master Trials Won", value: `${stats.masterTrialsWon}` },
-    { icon: <Target className="h-5 w-5 text-emerald-300" />, label: "Missions Completed", value: `${stats.missionsCompleted}` },
-    { icon: <Clock className="h-5 w-5 text-sky-300" />, label: "Study Time", value: hours ? `${hours}h ${mins}m` : `${mins}m` },
-    { icon: <Flame className="h-5 w-5 text-orange-400" />, label: "Current Streak", value: `${stats.streakDays}d` },
-    { icon: <CalendarCheck className="h-5 w-5 text-emerald-300" />, label: "Attendance", value: `${stats.attendancePct}%` },
-    { icon: <Zap className="h-5 w-5 text-yellow-300" />, label: "XP Earned", value: stats.xpEarned.toLocaleString() },
-    { icon: <Coins className="h-5 w-5 text-amber-300" />, label: "Coins Earned", value: stats.coinsEarned.toLocaleString() },
-    { icon: <Crown className="h-5 w-5 text-amber-300" />, label: "Rank Promotions", value: `${stats.rankPromotions}` },
-    { icon: <Award className="h-5 w-5 text-fuchsia-300" />, label: "Days in Academy", value: `${stats.daysInAcademy}` },
-    { icon: <Flame className="h-5 w-5 text-red-400" />, label: "Best Streak", value: `${stats.maxStreak}d` },
+    {
+      icon: <BookOpen className="h-5 w-5 text-cyan-300" />,
+      label: "Lessons Completed",
+      value: `${stats.lessonsCompleted}`,
+    },
+    {
+      icon: <Shield className="h-5 w-5 text-violet-300" />,
+      label: "Dungeons Cleared",
+      value: `${stats.dungeonsCleared}`,
+    },
+    {
+      icon: <Swords className="h-5 w-5 text-rose-300" />,
+      label: "Master Trials Won",
+      value: `${stats.masterTrialsWon}`,
+    },
+    {
+      icon: <Target className="h-5 w-5 text-emerald-300" />,
+      label: "Missions Completed",
+      value: `${stats.missionsCompleted}`,
+    },
+    {
+      icon: <Clock className="h-5 w-5 text-sky-300" />,
+      label: "Study Time",
+      value: hours ? `${hours}h ${mins}m` : `${mins}m`,
+    },
+    {
+      icon: <Flame className="h-5 w-5 text-orange-400" />,
+      label: "Current Streak",
+      value: `${stats.streakDays}d`,
+    },
+    {
+      icon: <CalendarCheck className="h-5 w-5 text-emerald-300" />,
+      label: "Attendance",
+      value: `${stats.attendancePct}%`,
+    },
+    {
+      icon: <Zap className="h-5 w-5 text-yellow-300" />,
+      label: "XP Earned",
+      value: stats.xpEarned.toLocaleString(),
+    },
+    {
+      icon: <Coins className="h-5 w-5 text-amber-300" />,
+      label: "Coins Earned",
+      value: stats.coinsEarned.toLocaleString(),
+    },
+    {
+      icon: <Crown className="h-5 w-5 text-amber-300" />,
+      label: "Rank Promotions",
+      value: `${stats.rankPromotions}`,
+    },
+    {
+      icon: <Award className="h-5 w-5 text-fuchsia-300" />,
+      label: "Days in Academy",
+      value: `${stats.daysInAcademy}`,
+    },
+    {
+      icon: <Flame className="h-5 w-5 text-red-400" />,
+      label: "Best Streak",
+      value: `${stats.maxStreak}d`,
+    },
   ];
 
   return (

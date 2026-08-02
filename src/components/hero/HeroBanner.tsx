@@ -6,13 +6,7 @@ import { levelProgress } from "@/lib/gamification/leveling";
 import type { HeroIdentity, HeroStats } from "@/lib/hero/types";
 
 /** Hero Banner — avatar, name, @username, rank, level, XP and coins. */
-export function HeroBanner({
-  identity,
-  stats,
-}: {
-  identity: HeroIdentity;
-  stats: HeroStats;
-}) {
+export function HeroBanner({ identity, stats }: { identity: HeroIdentity; stats: HeroStats }) {
   const p = levelProgress(stats.xp);
   const avatar = identity.avatar || "🧑‍🎓";
   const frameStyle = identity.frame
@@ -44,7 +38,10 @@ export function HeroBanner({
 
       <div className="relative flex flex-col sm:flex-row items-center sm:items-start gap-5">
         <div className="relative shrink-0">
-          <div className="relative h-28 w-28 sm:h-32 sm:w-32 rounded-3xl p-[3px]" style={frameStyle}>
+          <div
+            className="relative h-28 w-28 sm:h-32 sm:w-32 rounded-3xl p-[3px]"
+            style={frameStyle}
+          >
             <div className="h-full w-full rounded-[20px] bg-[var(--bg-void)] grid place-items-center text-6xl sm:text-7xl">
               {avatar}
             </div>

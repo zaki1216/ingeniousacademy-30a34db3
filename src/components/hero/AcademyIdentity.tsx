@@ -57,7 +57,9 @@ export function AcademyIdentity({ journey }: { journey: HeroJourney }) {
           label="Current Mission"
           value={activeMission?.label ?? "All missions done"}
           sub={
-            activeMission ? `${activeMission.progress}/${activeMission.target}` : "Come back tomorrow"
+            activeMission
+              ? `${activeMission.progress}/${activeMission.target}`
+              : "Come back tomorrow"
           }
         />
       </div>

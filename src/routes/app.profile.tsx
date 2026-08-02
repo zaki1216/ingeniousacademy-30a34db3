@@ -47,7 +47,9 @@ export const Route = createFileRoute("/app/profile")({
 });
 
 function SectionFallback({ height = "h-32" }: { height?: string }) {
-  return <div className={`rounded-2xl border border-white/10 bg-black/40 animate-pulse ${height}`} />;
+  return (
+    <div className={`rounded-2xl border border-white/10 bg-black/40 animate-pulse ${height}`} />
+  );
 }
 
 function HeroProfilePage() {
@@ -57,10 +59,7 @@ function HeroProfilePage() {
     () => (data ? evaluateAll(ACHIEVEMENTS, data.stats, data.journey) : []),
     [data],
   );
-  const badges = useMemo(
-    () => (data ? evaluateAll(BADGES, data.stats, data.journey) : []),
-    [data],
-  );
+  const badges = useMemo(() => (data ? evaluateAll(BADGES, data.stats, data.journey) : []), [data]);
 
   return (
     <div className="relative">
@@ -179,7 +178,11 @@ function HeroProfilePage() {
         <HeroSection eyebrow="Quick actions" title="Continue your Journey">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <QuickLink to="/app" icon={<Home className="h-4 w-4" />} label="Academy" />
-            <QuickLink to="/app/journey" icon={<Sparkles className="h-4 w-4" />} label="Adventure" />
+            <QuickLink
+              to="/app/journey"
+              icon={<Sparkles className="h-4 w-4" />}
+              label="Adventure"
+            />
             <QuickLink
               to="/app/progress"
               icon={<GraduationCap className="h-4 w-4" />}

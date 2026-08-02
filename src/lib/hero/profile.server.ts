@@ -7,11 +7,7 @@
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { MINUTES_PER_LESSON } from "@/lib/learning/missions";
-import type {
-  HeroBuildingProgress,
-  HeroProfileResult,
-  HeroTimelineEvent,
-} from "@/lib/hero/types";
+import type { HeroBuildingProgress, HeroProfileResult, HeroTimelineEvent } from "@/lib/hero/types";
 
 function daysBetween(from: string, to = new Date().toISOString()): number {
   const a = new Date(from).getTime();
@@ -104,9 +100,7 @@ export async function computeHeroProfile(userId: string): Promise<HeroProfileRes
   }
 
   // Missing chapter names (e.g. chapters outside the current standard)
-  const missing = chapterCompletions
-    .map((c) => c.chapter_id)
-    .filter((id) => !chapterNames.has(id));
+  const missing = chapterCompletions.map((c) => c.chapter_id).filter((id) => !chapterNames.has(id));
   if (missing.length) {
     const { data: extra } = await supabaseAdmin
       .from("chapters")

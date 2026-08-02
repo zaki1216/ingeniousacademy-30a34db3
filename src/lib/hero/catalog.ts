@@ -10,10 +10,7 @@ import type { HeroJourney, HeroStats } from "@/lib/hero/types";
 
 export type Rarity = "common" | "rare" | "epic" | "legendary";
 
-export const RARITY_STYLE: Record<
-  Rarity,
-  { label: string; color: string; gradient: string }
-> = {
+export const RARITY_STYLE: Record<Rarity, { label: string; color: string; gradient: string }> = {
   common: {
     label: "Common",
     color: "#94a3b8",
