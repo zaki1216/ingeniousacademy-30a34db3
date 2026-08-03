@@ -19,6 +19,7 @@ import { Route as SetupRouteImport } from './routes/setup'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppJourneyRouteImport } from './routes/app.journey'
+import { Route as AppMarketplaceRouteImport } from './routes/app.marketplace'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppReportCardRouteImport } from './routes/app.report-card'
@@ -90,6 +91,11 @@ const AppContentRoute = AppContentRouteImport.update({
 const AppJourneyRoute = AppJourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMarketplaceRoute = AppMarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNotesRoute = AppNotesRouteImport.update({
@@ -214,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
+  '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
   '/app/report-card': typeof AppReportCardRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
+  '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
   '/app/report-card': typeof AppReportCardRoute
@@ -281,6 +289,7 @@ export interface FileRoutesById {
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
+  '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
   '/app/report-card': typeof AppReportCardRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/app/content'
     | '/app/journey'
+    | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
     | '/app/report-card'
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/setup'
     | '/app/content'
+    | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
     | '/app/report-card'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/app/content'
     | '/app/journey'
+    | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
     | '/app/report-card'
@@ -488,6 +500,13 @@ declare module '@tanstack/react-router' {
       path: '/journey'
       fullPath: '/app/journey'
       preLoaderRoute: typeof AppJourneyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/marketplace': {
+      id: '/app/marketplace'
+      path: '/marketplace'
+      fullPath: '/app/marketplace'
+      preLoaderRoute: typeof AppMarketplaceRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/notes': {
@@ -666,6 +685,7 @@ const AppJourneyRouteWithChildren = AppJourneyRoute._addFileChildren(
 interface AppRouteChildren {
   AppContentRoute: typeof AppContentRoute
   AppJourneyRoute: typeof AppJourneyRouteWithChildren
+  AppMarketplaceRoute: typeof AppMarketplaceRoute
   AppNotesRoute: typeof AppNotesRoute
   AppProfileRoute: typeof AppProfileRoute
   AppReportCardRoute: typeof AppReportCardRoute
@@ -691,6 +711,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppContentRoute: AppContentRoute,
   AppJourneyRoute: AppJourneyRouteWithChildren,
+  AppMarketplaceRoute: AppMarketplaceRoute,
   AppNotesRoute: AppNotesRoute,
   AppProfileRoute: AppProfileRoute,
   AppReportCardRoute: AppReportCardRoute,
