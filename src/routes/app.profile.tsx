@@ -1,7 +1,7 @@
 import { lazy, Suspense, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { BookOpen, GraduationCap, Home, Settings, Sparkles } from "lucide-react";
+import { BookOpen, GraduationCap, Home, Settings, ShoppingBag } from "lucide-react";
 
 import { ContinueLearningCard } from "@/components/learning/ContinueLearningCard";
 import { DailyMissions } from "@/components/learning/DailyMissions";
@@ -179,9 +179,9 @@ function HeroProfilePage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <QuickLink to="/app" icon={<Home className="h-4 w-4" />} label="Academy" />
             <QuickLink
-              to="/app/journey"
-              icon={<Sparkles className="h-4 w-4" />}
-              label="Adventure"
+              to="/app/marketplace"
+              icon={<ShoppingBag className="h-4 w-4" />}
+              label="Marketplace"
             />
             <QuickLink
               to="/app/progress"
