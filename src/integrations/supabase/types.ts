@@ -594,7 +594,12 @@ export type Database = {
           created_at: string
           email: string
           equipped_avatar: string | null
+          equipped_badge: string | null
+          equipped_celebration: string | null
           equipped_frame: string | null
+          equipped_nameplate: string | null
+          equipped_outfit: string | null
+          equipped_theme: string | null
           equipped_title: string | null
           id: string
           is_active: boolean
@@ -614,7 +619,12 @@ export type Database = {
           created_at?: string
           email: string
           equipped_avatar?: string | null
+          equipped_badge?: string | null
+          equipped_celebration?: string | null
           equipped_frame?: string | null
+          equipped_nameplate?: string | null
+          equipped_outfit?: string | null
+          equipped_theme?: string | null
           equipped_title?: string | null
           id: string
           is_active?: boolean
@@ -634,7 +644,12 @@ export type Database = {
           created_at?: string
           email?: string
           equipped_avatar?: string | null
+          equipped_badge?: string | null
+          equipped_celebration?: string | null
           equipped_frame?: string | null
+          equipped_nameplate?: string | null
+          equipped_outfit?: string | null
+          equipped_theme?: string | null
           equipped_title?: string | null
           id?: string
           is_active?: boolean
@@ -924,34 +939,52 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          description: string | null
+          enabled: boolean
+          icon: string | null
           id: string
           name: string
           price_coins: number
           rarity: string
+          release_at: string | null
+          shop_code: string
           sort_order: number
           type: string
+          updated_at: string
           value: string
         }
         Insert: {
           code: string
           created_at?: string
+          description?: string | null
+          enabled?: boolean
+          icon?: string | null
           id?: string
           name: string
           price_coins?: number
           rarity?: string
+          release_at?: string | null
+          shop_code?: string
           sort_order?: number
           type: string
+          updated_at?: string
           value: string
         }
         Update: {
           code?: string
           created_at?: string
+          description?: string | null
+          enabled?: boolean
+          icon?: string | null
           id?: string
           name?: string
           price_coins?: number
           rarity?: string
+          release_at?: string | null
+          shop_code?: string
           sort_order?: number
           type?: string
+          updated_at?: string
           value?: string
         }
         Relationships: []
