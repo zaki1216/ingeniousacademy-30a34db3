@@ -19,6 +19,7 @@ import { Route as SetupRouteImport } from './routes/setup'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppJourneyRouteImport } from './routes/app.journey'
+import { Route as AppMarketplaceRouteImport } from './routes/app.marketplace'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppReportCardRouteImport } from './routes/app.report-card'
@@ -29,6 +30,7 @@ import { Route as AppAdminContentRouteImport } from './routes/app.admin.content'
 import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashboard'
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
 import { Route as AppAdminLumiRouteImport } from './routes/app.admin.lumi'
+import { Route as AppAdminMarketplaceRouteImport } from './routes/app.admin.marketplace'
 import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
 import { Route as AppAdminProgressRouteImport } from './routes/app.admin.progress'
 import { Route as AppAdminRanksRouteImport } from './routes/app.admin.ranks'
@@ -92,6 +94,11 @@ const AppJourneyRoute = AppJourneyRouteImport.update({
   path: '/journey',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMarketplaceRoute = AppMarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppNotesRoute = AppNotesRouteImport.update({
   id: '/notes',
   path: '/notes',
@@ -140,6 +147,11 @@ const AppAdminLectureViewsRoute = AppAdminLectureViewsRouteImport.update({
 const AppAdminLumiRoute = AppAdminLumiRouteImport.update({
   id: '/admin/lumi',
   path: '/admin/lumi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminMarketplaceRoute = AppAdminMarketplaceRouteImport.update({
+  id: '/admin/marketplace',
+  path: '/admin/marketplace',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminOfflineTestsRoute = AppAdminOfflineTestsRouteImport.update({
@@ -214,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
+  '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
   '/app/report-card': typeof AppReportCardRoute
@@ -225,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
+  '/app/admin/marketplace': typeof AppAdminMarketplaceRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
@@ -246,6 +260,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
+  '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
   '/app/report-card': typeof AppReportCardRoute
@@ -257,6 +272,7 @@ export interface FileRoutesByTo {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
+  '/app/admin/marketplace': typeof AppAdminMarketplaceRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
@@ -281,6 +297,7 @@ export interface FileRoutesById {
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
+  '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
   '/app/report-card': typeof AppReportCardRoute
@@ -292,6 +309,7 @@ export interface FileRoutesById {
   '/app/admin/dashboard': typeof AppAdminDashboardRoute
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
+  '/app/admin/marketplace': typeof AppAdminMarketplaceRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
@@ -317,6 +335,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/app/content'
     | '/app/journey'
+    | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
     | '/app/report-card'
@@ -328,6 +347,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
+    | '/app/admin/marketplace'
     | '/app/admin/offline-tests'
     | '/app/admin/progress'
     | '/app/admin/ranks'
@@ -349,6 +369,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/setup'
     | '/app/content'
+    | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
     | '/app/report-card'
@@ -360,6 +381,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
+    | '/app/admin/marketplace'
     | '/app/admin/offline-tests'
     | '/app/admin/progress'
     | '/app/admin/ranks'
@@ -383,6 +405,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/app/content'
     | '/app/journey'
+    | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
     | '/app/report-card'
@@ -394,6 +417,7 @@ export interface FileRouteTypes {
     | '/app/admin/dashboard'
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
+    | '/app/admin/marketplace'
     | '/app/admin/offline-tests'
     | '/app/admin/progress'
     | '/app/admin/ranks'
@@ -490,6 +514,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppJourneyRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/marketplace': {
+      id: '/app/marketplace'
+      path: '/marketplace'
+      fullPath: '/app/marketplace'
+      preLoaderRoute: typeof AppMarketplaceRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/notes': {
       id: '/app/notes'
       path: '/notes'
@@ -558,6 +589,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/lumi'
       fullPath: '/app/admin/lumi'
       preLoaderRoute: typeof AppAdminLumiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin/marketplace': {
+      id: '/app/admin/marketplace'
+      path: '/admin/marketplace'
+      fullPath: '/app/admin/marketplace'
+      preLoaderRoute: typeof AppAdminMarketplaceRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/admin/offline-tests': {
@@ -666,6 +704,7 @@ const AppJourneyRouteWithChildren = AppJourneyRoute._addFileChildren(
 interface AppRouteChildren {
   AppContentRoute: typeof AppContentRoute
   AppJourneyRoute: typeof AppJourneyRouteWithChildren
+  AppMarketplaceRoute: typeof AppMarketplaceRoute
   AppNotesRoute: typeof AppNotesRoute
   AppProfileRoute: typeof AppProfileRoute
   AppReportCardRoute: typeof AppReportCardRoute
@@ -677,6 +716,7 @@ interface AppRouteChildren {
   AppAdminDashboardRoute: typeof AppAdminDashboardRoute
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminLumiRoute: typeof AppAdminLumiRoute
+  AppAdminMarketplaceRoute: typeof AppAdminMarketplaceRoute
   AppAdminOfflineTestsRoute: typeof AppAdminOfflineTestsRoute
   AppAdminProgressRoute: typeof AppAdminProgressRoute
   AppAdminRanksRoute: typeof AppAdminRanksRoute
@@ -691,6 +731,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppContentRoute: AppContentRoute,
   AppJourneyRoute: AppJourneyRouteWithChildren,
+  AppMarketplaceRoute: AppMarketplaceRoute,
   AppNotesRoute: AppNotesRoute,
   AppProfileRoute: AppProfileRoute,
   AppReportCardRoute: AppReportCardRoute,
@@ -702,6 +743,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminDashboardRoute: AppAdminDashboardRoute,
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminLumiRoute: AppAdminLumiRoute,
+  AppAdminMarketplaceRoute: AppAdminMarketplaceRoute,
   AppAdminOfflineTestsRoute: AppAdminOfflineTestsRoute,
   AppAdminProgressRoute: AppAdminProgressRoute,
   AppAdminRanksRoute: AppAdminRanksRoute,

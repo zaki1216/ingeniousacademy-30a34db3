@@ -414,6 +414,27 @@ function BuildingArt({ kind, open, locked }: { kind: BuildingKind; open: boolean
           <circle cx="0" cy="-38" r="1.5" fill="#f97316" opacity="0.9" />
         </svg>
       );
+    case "marketplace":
+      return (
+        <svg {...svgProps}>
+          <rect x="-24" y="-32" width="48" height="32" fill="#9a3412" stroke="#4a1a06" strokeWidth="0.8" />
+          <polygon points="-26,-32 0,-46 26,-32" fill="#c2410c" />
+          <rect x="-26" y="-34" width="52" height="5" fill="#fbbf24" opacity="0.85" />
+          <rect x="-20" y="-34" width="8" height="5" fill="#ef4444" opacity="0.9" />
+          <rect x="-4" y="-34" width="8" height="5" fill="#ef4444" opacity="0.9" />
+          <rect x="12" y="-34" width="8" height="5" fill="#ef4444" opacity="0.9" />
+          {doorGroup("#4a1a06")}
+          <rect x="-20" y="-26" width="8" height="8" fill="#fde68a" opacity="0.75" />
+          <rect x="12" y="-26" width="8" height="8" fill="#fde68a" opacity="0.75" />
+          <circle cx="-16" cy="-40" r="1.6" fill="#fbbf24">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="2.2s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="16" cy="-40" r="1.6" fill="#fbbf24">
+            <animate attributeName="opacity" values="1;0.4;1" dur="2.2s" repeatCount="indefinite" />
+          </circle>
+          <text x="0" y="-38" textAnchor="middle" fontSize="6" fontWeight="900" fill="#fde68a">🪙</text>
+        </svg>
+      );
     case "future":
       return (
         <svg {...svgProps}>

@@ -14,14 +14,17 @@ const SLOTS: { key: keyof HeroShowcaseData; label: string; hint: string; icon: s
   { key: "avatar", label: "Avatar", hint: "Customisation coming soon", icon: "🧑‍🎓" },
   { key: "frame", label: "Profile Frame", hint: "Seasonal frames coming soon", icon: "🖼️" },
   { key: "title", label: "Title", hint: "Earned titles coming soon", icon: "🎗️" },
+  { key: "outfit", label: "Outfit", hint: "Visit the Outfit Boutique", icon: "👕" },
+  { key: "nameplate", label: "Nameplate", hint: "Visit the Frame Studio", icon: "🔷" },
+  { key: "celebration", label: "Celebration", hint: "Visit the Celebration Workshop", icon: "✨" },
   { key: "companion", label: "Companion", hint: "Companions coming soon", icon: "🐉" },
   { key: "dorm", label: "Dorm Preview", hint: "Dorm rooms coming soon", icon: "🏠" },
-  { key: "favoriteBadge", label: "Favorite Badge", hint: "Pin a badge soon", icon: "⭐" },
+  { key: "favoriteBadge", label: "Favorite Badge", hint: "Visit the Badge Gallery", icon: "⭐" },
 ];
 
 export function HeroShowcase({ showcase }: { showcase: HeroShowcaseData }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
       {SLOTS.map((s) => {
         const value = showcase[s.key];
         return (
