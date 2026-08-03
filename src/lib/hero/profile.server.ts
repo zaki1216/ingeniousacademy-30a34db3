@@ -22,7 +22,7 @@ export async function computeHeroProfile(userId: string): Promise<HeroProfileRes
       supabaseAdmin
         .from("profiles")
         .select(
-          "name, username, equipped_avatar, equipped_frame, equipped_title, standard_id, admission_date, created_at, standard:standards(name)",
+          "name, username, equipped_avatar, equipped_frame, equipped_title, equipped_outfit, equipped_nameplate, equipped_celebration, equipped_badge, standard_id, admission_date, created_at, standard:standards(name)",
         )
         .eq("id", userId)
         .maybeSingle(),
@@ -227,9 +227,12 @@ export async function computeHeroProfile(userId: string): Promise<HeroProfileRes
       avatar: profile?.equipped_avatar ?? null,
       frame: profile?.equipped_frame ?? null,
       title: profile?.equipped_title ?? null,
+      outfit: profile?.equipped_outfit ?? null,
+      nameplate: profile?.equipped_nameplate ?? null,
+      celebration: profile?.equipped_celebration ?? null,
       companion: null,
       dorm: null,
-      favoriteBadge: null,
+      favoriteBadge: profile?.equipped_badge ?? null,
     },
   };
 }

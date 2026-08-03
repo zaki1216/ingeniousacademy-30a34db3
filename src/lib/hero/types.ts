@@ -72,6 +72,9 @@ export type HeroShowcase = {
   avatar: string | null;
   frame: string | null;
   title: string | null;
+  outfit: string | null;
+  nameplate: string | null;
+  celebration: string | null;
   companion: string | null;
   dorm: string | null;
   favoriteBadge: string | null;
