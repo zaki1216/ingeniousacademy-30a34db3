@@ -170,7 +170,7 @@ export async function equipMarketplaceItem(userId: string, itemId: string) {
   const column = SLOT_COLUMN[slotForType(item.type)];
   const { error } = await supabaseAdmin
     .from("profiles")
-    .update({ [column]: item.value })
+    .update({ [column]: item.value } as never)
     .eq("id", userId);
   if (error) throw new Error(error.message);
   return { ok: true as const, slot: slotForType(item.type), value: item.value };
@@ -180,7 +180,7 @@ export async function unequipMarketplaceSlot(userId: string, slot: EquipSlot) {
   const column = SLOT_COLUMN[slot];
   const { error } = await supabaseAdmin
     .from("profiles")
-    .update({ [column]: null })
+    .update({ [column]: null } as never)
     .eq("id", userId);
   if (error) throw new Error(error.message);
   return { ok: true as const, slot };
