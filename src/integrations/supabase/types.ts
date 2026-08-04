@@ -302,6 +302,27 @@ export type Database = {
         }
         Relationships: []
       }
+      dorm_layouts: {
+        Row: {
+          created_at: string
+          slots: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          slots?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          slots?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       gamification_stats: {
         Row: {
           chest_cycle_day: number

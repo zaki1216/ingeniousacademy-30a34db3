@@ -9,6 +9,7 @@
  */
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { isDormType } from "@/lib/dorm/config";
 import {
   SLOT_COLUMN,
   slotForType,
@@ -143,7 +144,8 @@ export async function purchaseMarketplaceItem(
   if (invErr) throw new Error(invErr.message);
 
   let didEquip = false;
-  if (autoEquip) {
+  // Dorm decorations are placed in the room, never equipped on the hero.
+  if (autoEquip && !isDormType(item.type)) {
     await equipMarketplaceItem(userId, itemId);
     didEquip = true;
   }

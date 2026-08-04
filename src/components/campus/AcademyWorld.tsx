@@ -435,6 +435,19 @@ function BuildingArt({ kind, open, locked }: { kind: BuildingKind; open: boolean
           <text x="0" y="-38" textAnchor="middle" fontSize="6" fontWeight="900" fill="#fde68a">🪙</text>
         </svg>
       );
+    case "dorm":
+      return (
+        <svg {...svgProps}>
+          <rect x="-19" y="-27" width="38" height="27" fill="#8b5cf6" stroke="#3b2a63" strokeWidth="0.8" opacity="0.85" />
+          <polygon points="-21,-27 0,-40 21,-27" fill="#6d28d9" />
+          {doorGroup("#3b2a63")}
+          <rect x="-13" y="-22" width="9" height="8" fill="#fde68a" opacity="0.9">
+            <animate attributeName="opacity" values="0.7;1;0.7" dur="3.4s" repeatCount="indefinite" />
+          </rect>
+          <rect x="5" y="-22" width="9" height="8" fill="#fde68a" opacity="0.7" />
+          <text x="0" y="-32" textAnchor="middle" fontSize="6" fontWeight="900" fill="#fde68a">🏠</text>
+        </svg>
+      );
     case "future":
       return (
         <svg {...svgProps}>

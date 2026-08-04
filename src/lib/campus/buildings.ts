@@ -13,6 +13,7 @@ export type BuildingKind =
   | "residence"
   | "progress"
   | "marketplace"
+  | "dorm"
   | "future";
 
 export type BuildingLane = "back" | "front";
@@ -43,5 +44,6 @@ export const BUILDINGS: BuildingDef[] = [
   { id: "progress",  kind: "progress",  name: "Records Hall",         tag: "Progress",       route: "/app/progress",                                                             weight: 0.95, preferredLane: "front" },
   { id: "residence", kind: "residence", name: "Residence",            tag: "Your Quarters",  route: "/app/profile",                                                              weight: 0.9,  preferredLane: "front" },
   { id: "marketplace", kind: "marketplace", name: "Academy Marketplace", tag: "Academy Street", route: "/app/marketplace",                                                    weight: 1.0,  preferredLane: "front" },
+  { id: "dorm",      kind: "dorm",      name: "My Academy",           tag: "Your Dorm Room", route: "/app/dorm",                                                                 weight: 0.95, preferredLane: "front" },
   { id: "future",    kind: "future",    name: "Observatory",          tag: "Coming Soon",    locked: true,                                                                       weight: 0.9,  preferredLane: "front" },
 ];
