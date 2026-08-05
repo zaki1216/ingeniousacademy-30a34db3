@@ -40,6 +40,7 @@ import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.setting
 import { Route as AppBuildingLibraryRouteImport } from './routes/app.building.library'
 import { Route as AppBuildingMathRouteImport } from './routes/app.building.math'
 import { Route as AppBuildingScienceRouteImport } from './routes/app.building.science'
+import { Route as AppCertificateIdRouteImport } from './routes/app.certificate.$id'
 import { Route as AppJourneyIndexRouteImport } from './routes/app.journey.index'
 import { Route as AppAdminStudentsIndexRouteImport } from './routes/app.admin.students.index'
 import { Route as AppAdminStudentsIdRouteImport } from './routes/app.admin.students.$id'
@@ -201,6 +202,11 @@ const AppBuildingScienceRoute = AppBuildingScienceRouteImport.update({
   path: '/building/science',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCertificateIdRoute = AppCertificateIdRouteImport.update({
+  id: '/certificate/$id',
+  path: '/certificate/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppJourneyIndexRoute = AppJourneyIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -260,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
+  '/app/certificate/$id': typeof AppCertificateIdRoute
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
+  '/app/certificate/$id': typeof AppCertificateIdRoute
   '/app/journey': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
+  '/app/certificate/$id': typeof AppCertificateIdRoute
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
@@ -375,6 +384,7 @@ export interface FileRouteTypes {
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
+    | '/app/certificate/$id'
     | '/app/journey/'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
+    | '/app/certificate/$id'
     | '/app/journey'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
@@ -449,6 +460,7 @@ export interface FileRouteTypes {
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
+    | '/app/certificate/$id'
     | '/app/journey/'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
@@ -685,6 +697,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuildingScienceRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/certificate/$id': {
+      id: '/app/certificate/$id'
+      path: '/certificate/$id'
+      fullPath: '/app/certificate/$id'
+      preLoaderRoute: typeof AppCertificateIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/journey/': {
       id: '/app/journey/'
       path: '/'
@@ -764,6 +783,7 @@ interface AppRouteChildren {
   AppBuildingLibraryRoute: typeof AppBuildingLibraryRoute
   AppBuildingMathRoute: typeof AppBuildingMathRoute
   AppBuildingScienceRoute: typeof AppBuildingScienceRoute
+  AppCertificateIdRoute: typeof AppCertificateIdRoute
   AppAdminStudentsIdRoute: typeof AppAdminStudentsIdRoute
   AppAdminStudentsIndexRoute: typeof AppAdminStudentsIndexRoute
 }
@@ -793,6 +813,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppBuildingLibraryRoute: AppBuildingLibraryRoute,
   AppBuildingMathRoute: AppBuildingMathRoute,
   AppBuildingScienceRoute: AppBuildingScienceRoute,
+  AppCertificateIdRoute: AppCertificateIdRoute,
   AppAdminStudentsIdRoute: AppAdminStudentsIdRoute,
   AppAdminStudentsIndexRoute: AppAdminStudentsIndexRoute,
 }
