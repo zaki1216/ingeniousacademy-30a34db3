@@ -20,5 +20,5 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const { mode } = Route.useSearch();
-  return <EntryFlow initialMode={mode} />;
+  return <EntryFlow initialMode={mode ?? "student"} />;
 }

@@ -240,25 +240,11 @@ export function ResourceHUD({ onSignOut }: { onSignOut: () => void }) {
                 <Settings className="h-4 w-4 text-amber-300" /> Settings
               </Link>
               <Link
-                to="/app/guidebook"
-                onClick={() => setSettingsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm"
-              >
-                <Sparkles className="h-4 w-4 text-indigo-300" /> Guidebook
-              </Link>
-              <Link
                 to="/app/notes"
                 onClick={() => setSettingsOpen(false)}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm"
               >
                 <Bell className="h-4 w-4 text-cyan-300" /> Notes
-              </Link>
-              <Link
-                to="/app/announcements"
-                onClick={() => setSettingsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm"
-              >
-                <Bell className="h-4 w-4 text-rose-300" /> Announcements
               </Link>
             </div>
             <div className="pt-3 border-t border-white/10">
