@@ -20,6 +20,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppDormRouteImport } from './routes/app.dorm'
 import { Route as AppJourneyRouteImport } from './routes/app.journey'
+import { Route as AppLegacyRouteImport } from './routes/app.legacy'
 import { Route as AppMarketplaceRouteImport } from './routes/app.marketplace'
 import { Route as AppNotesRouteImport } from './routes/app.notes'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
@@ -39,6 +40,7 @@ import { Route as AppAdminSettingsRouteImport } from './routes/app.admin.setting
 import { Route as AppBuildingLibraryRouteImport } from './routes/app.building.library'
 import { Route as AppBuildingMathRouteImport } from './routes/app.building.math'
 import { Route as AppBuildingScienceRouteImport } from './routes/app.building.science'
+import { Route as AppCertificateIdRouteImport } from './routes/app.certificate.$id'
 import { Route as AppJourneyIndexRouteImport } from './routes/app.journey.index'
 import { Route as AppAdminStudentsIndexRouteImport } from './routes/app.admin.students.index'
 import { Route as AppAdminStudentsIdRouteImport } from './routes/app.admin.students.$id'
@@ -98,6 +100,11 @@ const AppDormRoute = AppDormRouteImport.update({
 const AppJourneyRoute = AppJourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLegacyRoute = AppLegacyRouteImport.update({
+  id: '/legacy',
+  path: '/legacy',
   getParentRoute: () => AppRoute,
 } as any)
 const AppMarketplaceRoute = AppMarketplaceRouteImport.update({
@@ -195,6 +202,11 @@ const AppBuildingScienceRoute = AppBuildingScienceRouteImport.update({
   path: '/building/science',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCertificateIdRoute = AppCertificateIdRouteImport.update({
+  id: '/certificate/$id',
+  path: '/certificate/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppJourneyIndexRoute = AppJourneyIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -233,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/app/content': typeof AppContentRoute
   '/app/dorm': typeof AppDormRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
+  '/app/legacy': typeof AppLegacyRoute
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
@@ -253,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
+  '/app/certificate/$id': typeof AppCertificateIdRoute
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
@@ -268,6 +282,7 @@ export interface FileRoutesByTo {
   '/setup': typeof SetupRoute
   '/app/content': typeof AppContentRoute
   '/app/dorm': typeof AppDormRoute
+  '/app/legacy': typeof AppLegacyRoute
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
@@ -288,6 +303,7 @@ export interface FileRoutesByTo {
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
+  '/app/certificate/$id': typeof AppCertificateIdRoute
   '/app/journey': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
@@ -306,6 +322,7 @@ export interface FileRoutesById {
   '/app/content': typeof AppContentRoute
   '/app/dorm': typeof AppDormRoute
   '/app/journey': typeof AppJourneyRouteWithChildren
+  '/app/legacy': typeof AppLegacyRoute
   '/app/marketplace': typeof AppMarketplaceRoute
   '/app/notes': typeof AppNotesRoute
   '/app/profile': typeof AppProfileRoute
@@ -326,6 +343,7 @@ export interface FileRoutesById {
   '/app/building/library': typeof AppBuildingLibraryRoute
   '/app/building/math': typeof AppBuildingMathRoute
   '/app/building/science': typeof AppBuildingScienceRoute
+  '/app/certificate/$id': typeof AppCertificateIdRoute
   '/app/journey/': typeof AppJourneyIndexRoute
   '/app/admin/students/$id': typeof AppAdminStudentsIdRoute
   '/app/journey/$worldId/$dungeonId': typeof AppJourneyWorldIdDungeonIdRoute
@@ -345,6 +363,7 @@ export interface FileRouteTypes {
     | '/app/content'
     | '/app/dorm'
     | '/app/journey'
+    | '/app/legacy'
     | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
@@ -365,6 +384,7 @@ export interface FileRouteTypes {
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
+    | '/app/certificate/$id'
     | '/app/journey/'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
@@ -380,6 +400,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/app/content'
     | '/app/dorm'
+    | '/app/legacy'
     | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
@@ -400,6 +421,7 @@ export interface FileRouteTypes {
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
+    | '/app/certificate/$id'
     | '/app/journey'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
@@ -417,6 +439,7 @@ export interface FileRouteTypes {
     | '/app/content'
     | '/app/dorm'
     | '/app/journey'
+    | '/app/legacy'
     | '/app/marketplace'
     | '/app/notes'
     | '/app/profile'
@@ -437,6 +460,7 @@ export interface FileRouteTypes {
     | '/app/building/library'
     | '/app/building/math'
     | '/app/building/science'
+    | '/app/certificate/$id'
     | '/app/journey/'
     | '/app/admin/students/$id'
     | '/app/journey/$worldId/$dungeonId'
@@ -531,6 +555,13 @@ declare module '@tanstack/react-router' {
       path: '/journey'
       fullPath: '/app/journey'
       preLoaderRoute: typeof AppJourneyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/legacy': {
+      id: '/app/legacy'
+      path: '/legacy'
+      fullPath: '/app/legacy'
+      preLoaderRoute: typeof AppLegacyRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/marketplace': {
@@ -666,6 +697,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuildingScienceRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/certificate/$id': {
+      id: '/app/certificate/$id'
+      path: '/certificate/$id'
+      fullPath: '/app/certificate/$id'
+      preLoaderRoute: typeof AppCertificateIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/journey/': {
       id: '/app/journey/'
       path: '/'
@@ -724,6 +762,7 @@ interface AppRouteChildren {
   AppContentRoute: typeof AppContentRoute
   AppDormRoute: typeof AppDormRoute
   AppJourneyRoute: typeof AppJourneyRouteWithChildren
+  AppLegacyRoute: typeof AppLegacyRoute
   AppMarketplaceRoute: typeof AppMarketplaceRoute
   AppNotesRoute: typeof AppNotesRoute
   AppProfileRoute: typeof AppProfileRoute
@@ -744,6 +783,7 @@ interface AppRouteChildren {
   AppBuildingLibraryRoute: typeof AppBuildingLibraryRoute
   AppBuildingMathRoute: typeof AppBuildingMathRoute
   AppBuildingScienceRoute: typeof AppBuildingScienceRoute
+  AppCertificateIdRoute: typeof AppCertificateIdRoute
   AppAdminStudentsIdRoute: typeof AppAdminStudentsIdRoute
   AppAdminStudentsIndexRoute: typeof AppAdminStudentsIndexRoute
 }
@@ -752,6 +792,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppContentRoute: AppContentRoute,
   AppDormRoute: AppDormRoute,
   AppJourneyRoute: AppJourneyRouteWithChildren,
+  AppLegacyRoute: AppLegacyRoute,
   AppMarketplaceRoute: AppMarketplaceRoute,
   AppNotesRoute: AppNotesRoute,
   AppProfileRoute: AppProfileRoute,
@@ -772,6 +813,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppBuildingLibraryRoute: AppBuildingLibraryRoute,
   AppBuildingMathRoute: AppBuildingMathRoute,
   AppBuildingScienceRoute: AppBuildingScienceRoute,
+  AppCertificateIdRoute: AppCertificateIdRoute,
   AppAdminStudentsIdRoute: AppAdminStudentsIdRoute,
   AppAdminStudentsIndexRoute: AppAdminStudentsIndexRoute,
 }

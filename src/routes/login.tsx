@@ -5,7 +5,7 @@ import { EntryFlow } from "@/components/entry/EntryFlow";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { mode?: "admin" | "student" } => ({
     mode: search.mode === "admin" ? ("admin" as const) : ("student" as const),
   }),
   beforeLoad: async () => {
@@ -20,5 +20,5 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const { mode } = Route.useSearch();
-  return <EntryFlow initialMode={mode} />;
+  return <EntryFlow initialMode={mode ?? "student"} />;
 }

@@ -170,7 +170,7 @@ function AcademyCommandCenter() {
           <CardContent className="space-y-2">
             <p className="text-xs text-muted-foreground">{overview?.recentResultsCount ?? 0} new submissions in last 24h</p>
             {overview?.pendingTests.map((t: any) => (
-              <Link key={t.id} to="/app/results" className="block text-sm truncate hover:underline">{t.title}</Link>
+              <span key={t.id} className="block text-sm truncate">{t.title}</span>
             ))}
           </CardContent>
         </Card>

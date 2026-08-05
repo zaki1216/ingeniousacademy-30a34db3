@@ -163,6 +163,59 @@ export type Database = {
           },
         ]
       }
+      certificates: {
+        Row: {
+          created_at: string
+          id: string
+          issued_at: string
+          rank_name: string | null
+          serial: string
+          standard_name: string | null
+          student_name: string
+          subject_id: string | null
+          subject_name: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issued_at?: string
+          rank_name?: string | null
+          serial: string
+          standard_name?: string | null
+          student_name: string
+          subject_id?: string | null
+          subject_name: string
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issued_at?: string
+          rank_name?: string | null
+          serial?: string
+          standard_name?: string | null
+          student_name?: string
+          subject_id?: string | null
+          subject_name?: string
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chapter_completions: {
         Row: {
           chapter_id: string
@@ -402,6 +455,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      legacy_events: {
+        Row: {
+          code: string
+          created_at: string
+          detail: string | null
+          icon: string
+          id: string
+          kind: string
+          metadata: Json
+          occurred_at: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          detail?: string | null
+          icon?: string
+          id?: string
+          kind: string
+          metadata?: Json
+          occurred_at?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          detail?: string | null
+          icon?: string
+          id?: string
+          kind?: string
+          metadata?: Json
+          occurred_at?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      legacy_settings: {
+        Row: {
+          celebrations_enabled: boolean
+          ceremony_enabled: boolean
+          certificate_note: string
+          created_at: string
+          graduation_threshold: number
+          hall_categories: Json
+          headmaster_name: string
+          headmaster_signature: string
+          id: boolean
+          seal_text: string
+          updated_at: string
+        }
+        Insert: {
+          celebrations_enabled?: boolean
+          ceremony_enabled?: boolean
+          certificate_note?: string
+          created_at?: string
+          graduation_threshold?: number
+          hall_categories?: Json
+          headmaster_name?: string
+          headmaster_signature?: string
+          id?: boolean
+          seal_text?: string
+          updated_at?: string
+        }
+        Update: {
+          celebrations_enabled?: boolean
+          ceremony_enabled?: boolean
+          certificate_note?: string
+          created_at?: string
+          graduation_threshold?: number
+          hall_categories?: Json
+          headmaster_name?: string
+          headmaster_signature?: string
+          id?: boolean
+          seal_text?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       manual_unlocks: {
         Row: {
@@ -1236,31 +1370,40 @@ export type Database = {
           code: string
           created_at: string
           description: string | null
+          enabled: boolean
+          icon: string
           id: string
           name: string
           rarity: string
           requirement_type: string | null
           requirement_value: number | null
+          sort_order: number
         }
         Insert: {
           code: string
           created_at?: string
           description?: string | null
+          enabled?: boolean
+          icon?: string
           id?: string
           name: string
           rarity?: string
           requirement_type?: string | null
           requirement_value?: number | null
+          sort_order?: number
         }
         Update: {
           code?: string
           created_at?: string
           description?: string | null
+          enabled?: boolean
+          icon?: string
           id?: string
           name?: string
           rarity?: string
           requirement_type?: string | null
           requirement_value?: number | null
+          sort_order?: number
         }
         Relationships: []
       }

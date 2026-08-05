@@ -270,9 +270,6 @@ function LumiDrawer({
         <span className="flex items-center gap-1">
           <Sparkles className="h-3 w-3" /> Lumi has watched over every Cadet since the founding.
         </span>
-        <Link to="/app/guidebook" onClick={closeLumi} className="font-bold text-[var(--rune)] hover:underline">
-          Open full Guidebook
-        </Link>
       </div>
     </div>
   );

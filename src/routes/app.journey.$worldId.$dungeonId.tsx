@@ -34,7 +34,7 @@ function haptic(pattern: number | number[]) {
 }
 
 export const Route = createFileRoute("/app/journey/$worldId/$dungeonId")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { lesson?: string } => ({
     lesson: typeof search.lesson === "string" ? search.lesson : undefined,
   }),
   component: DungeonPage,
