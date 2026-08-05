@@ -47,6 +47,7 @@ const MAP_NODES: MapNode[] = [
   { id: "residence", label: "Residence", to: "/app/profile", x: 78, y: 30, color: "#a78bfa" },
   { id: "marketplace", label: "Market", to: "/app/marketplace", x: 50, y: 18, color: "#fb923c" },
   { id: "dorm", label: "My Academy", to: "/app/dorm", x: 66, y: 46, color: "#f472b6" },
+  { id: "legacy", label: "Legacy", to: "/app/legacy", x: 78, y: 62, color: "#fbbf24" },
   { id: "settings", label: "Settings", to: "/app/settings", x: 22, y: 30, color: "#fcd34d" },
 ];
 
