@@ -8,7 +8,7 @@ import { HallOfFame } from "@/components/legacy/HallOfFame";
 import { LegacyTimeline } from "@/components/legacy/LegacyTimeline";
 import { TitleGallery } from "@/components/legacy/TitleGallery";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/lib/auth/AuthContext";
+import { useHeroProfile } from "@/lib/hero/useHeroProfile";
 import { useEquipTitle, useLegacy } from "@/lib/legacy/useLegacy";
 
 export const Route = createFileRoute("/app/legacy")({
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/app/legacy")({
 
 function LegacyPage() {
   const { data, isLoading } = useLegacy();
-  const { profile } = useAuth();
+  const hero = useHeroProfile();
   const equip = useEquipTitle();
   const [ceremony, setCeremony] = useState<string | null>(null);
 
@@ -145,8 +145,8 @@ function LegacyPage() {
       {ceremony && (
         <GraduationCeremony
           subject={ceremony}
-          avatar={profile?.equipped_avatar ?? "🧑‍🎓"}
-          studentName={profile?.name ?? "Cadet"}
+          avatar={hero.data?.identity.avatar ?? "🧑‍🎓"}
+          studentName={hero.data?.identity.name ?? "Cadet"}
           title={equippedTitle}
           onClose={() => setCeremony(null)}
         />
