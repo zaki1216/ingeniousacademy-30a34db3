@@ -11,7 +11,8 @@ export function TrophyShelf({ trophies }: { trophies: DormTrophy[] }) {
       </div>
       {trophies.length === 0 ? (
         <p className="mt-2 text-sm text-muted-foreground">
-          Clear your first Dungeon and its trophy appears here automatically.
+          You haven't earned any trophies yet. Clear your first Dungeon and its trophy appears
+          here automatically.
         </p>
       ) : (
         <div className="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-2">

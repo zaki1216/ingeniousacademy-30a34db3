@@ -4,6 +4,7 @@ import { ArrowLeft, Coins, Store } from "lucide-react";
 import { toast } from "sonner";
 
 import { MarketplaceItemCard } from "./MarketplaceItemCard";
+import { AcademyEmpty, AcademySkeleton } from "@/components/academy/AcademyStates";
 import { PurchaseCelebration } from "./PurchaseCelebration";
 import { SHOPS, type MarketplaceItemState, type ShopDef } from "@/lib/marketplace/config";
 import { useMarketplace, useMarketplaceActions } from "@/lib/marketplace/useMarketplace";
@@ -90,6 +91,13 @@ export function MarketplaceStreet() {
             className="space-y-4"
           >
             <StreetBackdrop />
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <AcademySkeleton key={i} className="h-24" />
+                ))}
+              </div>
+            ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {SHOPS.map((shop) => {
                 const count = itemsByShop.get(shop.code)?.length ?? 0;
@@ -137,6 +145,7 @@ export function MarketplaceStreet() {
                 );
               })}
             </div>
+            )}
           </motion.div>
         ) : (
           <motion.div
@@ -181,9 +190,11 @@ export function MarketplaceStreet() {
             </div>
 
             {visibleItems.length === 0 ? (
-              <div className="rune-border holo-card p-6 text-center text-sm text-muted-foreground">
-                Nothing on these shelves yet — check back soon.
-              </div>
+              <AcademyEmpty
+                icon="🧺"
+                title="These shelves are still being stocked"
+                description="The merchant is restocking this stall. Earn Coins on Quests and check back soon."
+              />
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 {visibleItems.map((item) => (

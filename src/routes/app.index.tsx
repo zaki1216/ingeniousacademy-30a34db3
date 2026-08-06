@@ -1,3 +1,4 @@
+import { AcademyPageSkeleton } from "@/components/academy/AcademyStates";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -39,7 +40,7 @@ function Dashboard() {
   const { role, user } = useAuth();
   if (role === "admin") return <AdminDashboard />;
   if (role === "student") return <StudentDashboard userId={user?.id} />;
-  return <p className="text-muted-foreground">Loading…</p>;
+  return <AcademyPageSkeleton />;
 }
 
 function AdminDashboard() {
@@ -142,7 +143,9 @@ function AcademyCommandCenter() {
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base">Top Students</CardTitle></CardHeader>
           <CardContent className="space-y-2">
-            {!overview?.topStudents.length && <p className="text-sm text-muted-foreground">No data yet.</p>}
+            {!overview?.topStudents.length && (
+              <p className="text-sm text-muted-foreground">No data yet.</p>
+            )}
             {overview?.topStudents.map((s: any, i: number) => (
               <div key={s.user_id} className="text-sm flex items-center justify-between">
                 <span className="truncate">{i + 1}. {s.profiles?.name ?? "—"}</span>

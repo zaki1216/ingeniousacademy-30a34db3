@@ -132,8 +132,8 @@ export const GardensAndFountain = memo(function GardensAndFountain() {
           <rect x="33" y="20" width="4" height="26" fill="#8a7355" />
           <circle cx="35" cy="18" r="6" fill="#a68a63" />
           <motion.circle
-            cx="35" cy="12" r="3" fill="#c9e6ff" opacity="0.85"
-            animate={{ cy: [12, 8, 12], opacity: [0.85, 0.4, 0.85] }}
+            cx="35" cy="12" r="3" fill="#c9e6ff"
+            animate={{ y: [0, -4, 0], opacity: [0.85, 0.4, 0.85] }}
             transition={{ duration: 2.4, repeat: Infinity }}
           />
         </svg>
@@ -199,9 +199,13 @@ export const Torches = memo(function Torches() {
             <rect x="6" y="12" width="2" height="18" fill="#3a2418" />
             <motion.circle
               cx="7" cy="10" r="4" fill="#fbbf24"
-              animate={{ r: [4, 5, 4], opacity: [0.9, 1, 0.9] }}
+              animate={{ scale: [1, 1.25, 1], opacity: [0.9, 1, 0.9] }}
               transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
-              style={{ filter: "drop-shadow(0 0 6px rgba(251,191,36,0.9))" }}
+              style={{
+                filter: "drop-shadow(0 0 6px rgba(251,191,36,0.9))",
+                transformBox: "fill-box",
+                transformOrigin: "center",
+              }}
             />
           </svg>
         </div>
@@ -226,8 +230,9 @@ export const Birds = memo(function Birds() {
           <motion.path
             d="M0,5 Q5,0 10,5 Q15,0 20,5 Q25,0 30,5"
             fill="none" stroke="#1a1024" strokeWidth="1.5" strokeLinecap="round"
-            animate={{ d: ["M0,5 Q5,0 10,5 Q15,0 20,5 Q25,0 30,5", "M0,5 Q5,3 10,5 Q15,3 20,5 Q25,3 30,5"] }}
+            animate={{ scaleY: [1, 0.55, 1] }}
             transition={{ duration: 0.5, repeat: Infinity }}
+            style={{ transformBox: "fill-box", transformOrigin: "center" }}
           />
         </motion.svg>
       ))}
@@ -299,12 +304,9 @@ export const Banners = memo(function Banners() {
               fill="#7f1d1d"
               stroke="#fbbf24"
               strokeWidth="0.4"
-              animate={{ d: [
-                "M10,4 L18,6 L16,12 L18,18 L10,20 Z",
-                "M10,4 L17,7 L18,12 L17,17 L10,20 Z",
-                "M10,4 L18,6 L16,12 L18,18 L10,20 Z",
-              ] }}
+              animate={{ skewX: [0, 1.5, 0, -1.5, 0] }}
               transition={{ duration: 3 + (i % 2), repeat: Infinity, ease: "easeInOut" }}
+              style={{ transformBox: "fill-box", transformOrigin: "left center" }}
             />
             <circle cx="14" cy="12" r="1.4" fill="#fbbf24" />
           </svg>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, ScrollText, Trophy } from "lucide-react";
 
+import { AcademyPageSkeleton } from "@/components/academy/AcademyStates";
 import { CertificateCard, CertificatesEmpty } from "@/components/legacy/CertificateCard";
 import { GraduationCeremony } from "@/components/legacy/GraduationCeremony";
 import { HallOfFame } from "@/components/legacy/HallOfFame";
@@ -55,7 +56,7 @@ function LegacyPage() {
   }, [data]);
 
   if (isLoading || !data) {
-    return <div className="h-72 rounded-2xl border border-white/10 bg-black/40 animate-pulse" />;
+    return <AcademyPageSkeleton label="Retrieving your Academy records…" />;
   }
 
   const s = data.summary;
