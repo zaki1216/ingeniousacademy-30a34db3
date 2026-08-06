@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { AcademyPageSkeleton } from "@/components/academy/AcademyStates";
 import { DormRoom } from "@/components/dorm/DormRoom";
 import { HeroShowcaseWall } from "@/components/dorm/HeroShowcaseWall";
 import { TrophyShelf } from "@/components/dorm/TrophyShelf";
@@ -71,7 +72,7 @@ function MyAcademy() {
   };
 
   if (isLoading || !data) {
-    return <div className="h-72 rounded-2xl border border-white/10 bg-black/40 animate-pulse" />;
+    return <AcademyPageSkeleton label="Unlocking your quarters…" />;
   }
 
   return (

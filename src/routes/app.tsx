@@ -1,3 +1,4 @@
+import { AcademyPageSkeleton, PageTransition } from "@/components/academy/AcademyStates";
 import { createFileRoute, Link, Outlet, redirect, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
@@ -149,8 +150,8 @@ function AppLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
-        Loading…
+      <div className="min-h-dvh p-4 md:p-6 max-w-6xl w-full mx-auto">
+        <AcademyPageSkeleton label="Waking the Academy…" />
       </div>
     );
   }
@@ -164,7 +165,9 @@ function AppLayout() {
     return (
       <LumiProvider>
         <AcademyHUD onSignOut={handleSignOut}>
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </AcademyHUD>
         <LumiCompanion />
       </LumiProvider>

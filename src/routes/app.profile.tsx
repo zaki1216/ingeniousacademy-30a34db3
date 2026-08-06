@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { BookOpen, GraduationCap, Home, Settings, ShoppingBag } from "lucide-react";
 
+import { AcademySkeleton } from "@/components/academy/AcademyStates";
 import { ContinueLearningCard } from "@/components/learning/ContinueLearningCard";
 import { DailyMissions } from "@/components/learning/DailyMissions";
 import { DailyChestCard } from "@/components/gamification/DailyChestCard";
@@ -47,9 +48,7 @@ export const Route = createFileRoute("/app/profile")({
 });
 
 function SectionFallback({ height = "h-32" }: { height?: string }) {
-  return (
-    <div className={`rounded-2xl border border-white/10 bg-black/40 animate-pulse ${height}`} />
-  );
+  return <AcademySkeleton className={height} />;
 }
 
 function HeroProfilePage() {

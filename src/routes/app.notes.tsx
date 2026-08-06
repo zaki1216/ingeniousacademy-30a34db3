@@ -1,3 +1,4 @@
+import { AcademyEmpty } from "@/components/academy/AcademyStates";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -171,7 +172,11 @@ function NotesPage() {
           </Card>
         ))}
         {visibleNotes.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">No notes yet.</p>
+          <AcademyEmpty
+            icon="📓"
+            title="Your notebook is empty"
+            description="Notes your teachers publish will appear here — check back after your next Quest."
+          />
         )}
       </div>
     </div>

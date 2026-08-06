@@ -663,8 +663,9 @@ function MentorBubble({
           <motion.circle
             cx="45" cy="70" r="42"
             fill="none" stroke="#fbbf24" strokeWidth="0.5"
-            animate={{ opacity: [0.15, 0.4, 0.15], r: [40, 46, 40] }}
+            animate={{ opacity: [0.15, 0.4, 0.15], scale: [0.95, 1.1, 0.95] }}
             transition={{ duration: 4, repeat: Infinity }}
+            style={{ transformBox: "fill-box", transformOrigin: "center" }}
           />
         </svg>
       </div>

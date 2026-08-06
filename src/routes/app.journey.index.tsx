@@ -1,3 +1,4 @@
+import { AcademyEmpty } from "@/components/academy/AcademyStates";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -125,10 +126,12 @@ function JourneyHome() {
           </motion.div>
         ))}
         {worlds.length === 0 && !data.isLoading && (
-          <div className="col-span-full rounded-2xl glass-card p-6 text-center text-sm text-muted-foreground">
-            <Sparkles className="h-5 w-5 mx-auto mb-2 text-amber-300" />
-            No worlds available yet.
-          </div>
+          <AcademyEmpty
+            className="col-span-full"
+            icon="🗺️"
+            title="No worlds have opened yet"
+            description="Your Academy Worlds appear here as soon as the Headmaster assigns your subjects. Explore the campus in the meantime."
+          />
         )}
       </div>
     </div>
