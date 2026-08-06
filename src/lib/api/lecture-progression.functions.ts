@@ -81,11 +81,9 @@ async function computeUnlockState(userId: string) {
       const l = lecs[i];
       const prev = i === 0 ? null : lecs[i - 1];
       const manual = manualMap.get(l.id);
-      let unlocked: boolean;
-      if (manual === true) unlocked = true;
-      else if (manual === false) unlocked = false;
-      else if (!prev) unlocked = true;
-      else unlocked = completedSet.has(prev.id);
+      // Open curriculum: every lecture is available from the start unless an
+      // admin has explicitly locked it.
+      const unlocked = manual !== false;
 
       out.push({
         lecture_id: l.id,

@@ -252,25 +252,8 @@ export const completeVideo = createServerFn({ method: "POST" })
     const { data: manual } = await supabaseAdmin
       .from("manual_unlocks").select("unlocked")
       .eq("user_id", userId).eq("lecture_id", data.lectureId).maybeSingle();
-    let isUnlocked: boolean;
-    if (manual?.unlocked === true) isUnlocked = true;
-    else if (manual?.unlocked === false) isUnlocked = false;
-    else {
-      const { data: siblings } = await supabaseAdmin
-        .from("lectures").select("id, lecture_number")
-        .eq("chapter_id", lectureRow.chapter_id)
-        .order("lecture_number", { ascending: true });
-      const sorted = siblings ?? [];
-      const idx = sorted.findIndex((l) => l.id === data.lectureId);
-      if (idx <= 0) isUnlocked = true;
-      else {
-        const prevId = sorted[idx - 1].id;
-        const { data: prevDone } = await supabaseAdmin
-          .from("video_completions").select("id")
-          .eq("user_id", userId).eq("lecture_id", prevId).maybeSingle();
-        isUnlocked = !!prevDone;
-      }
-    }
+    // All lectures are open by default; only an explicit admin block locks one.
+    const isUnlocked = manual?.unlocked !== false;
     if (!isUnlocked) throw new Error("Lecture is locked");
 
     const { data: existing } = await supabaseAdmin

@@ -179,7 +179,7 @@ export const BUILDINGS: BuildingCurriculum[] = [
     ],
     emptyText: "No dungeons prepared in this wing yet.",
     render: {
-      variant: "hall",
+      variant: "simple",
       tagLabel: "Numeric Halls",
       infoTitle: "Mathematics Building",
       infoSubtitle: "The Numeric Halls",

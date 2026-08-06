@@ -174,7 +174,9 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
       const bossCleared = doneChs.has(c.id);
       const prevBossCleared = i === 0 ? true : doneChs.has(chs[i - 1].id);
       const anyStarted = passed > 0;
-      const unlocked = i === 0 || prevBossCleared || anyStarted;
+      void prevBossCleared; void anyStarted;
+      // Open curriculum: all dungeons are accessible from the start.
+      const unlocked = true;
       const difficulty = Math.min(3, Math.floor(i / 2));
       const full = chapters.find((cc) => cc.id === c.id);
       return {
