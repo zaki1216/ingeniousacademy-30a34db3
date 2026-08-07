@@ -6,6 +6,7 @@
  */
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { subjectIdsForStandard } from "@/lib/curriculum/shared.server";
 import { MINUTES_PER_LESSON } from "@/lib/learning/missions";
 import type { HeroBuildingProgress, HeroProfileResult, HeroTimelineEvent } from "@/lib/hero/types";
 
@@ -66,10 +67,14 @@ export async function computeHeroProfile(userId: string): Promise<HeroProfileRes
   const chapterNames = new Map<string, string>();
 
   if (profile?.standard_id) {
-    const { data: subjects } = await supabaseAdmin
-      .from("subjects")
-      .select("id, subject_name")
-      .eq("standard_id", profile.standard_id);
+    const linkedIds = await subjectIdsForStandard(supabaseAdmin, profile.standard_id);
+    const { data: subjects } = linkedIds.length
+      ? await supabaseAdmin
+          .from("subjects")
+          .select("id, subject_name")
+          .in("id", linkedIds)
+          .eq("status", "active")
+      : { data: [] as { id: string; subject_name: string }[] };
     const subjectIds = (subjects ?? []).map((s) => s.id);
     const { data: chapters } = subjectIds.length
       ? await supabaseAdmin

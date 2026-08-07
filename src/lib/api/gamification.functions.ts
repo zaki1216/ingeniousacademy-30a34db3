@@ -235,17 +235,22 @@ export const completeVideo = createServerFn({ method: "POST" })
     // Gate: verify lecture belongs to student's standard and is unlocked before granting rewards.
     const { data: lectureRow } = await supabaseAdmin
       .from("lectures")
-      .select("id, chapter_id, chapters!inner(subject_id, subjects!inner(standard_id))")
+      .select("id, chapter_id, chapters!inner(subject_id)")
       .eq("id", data.lectureId)
       .maybeSingle();
     if (!lectureRow) throw new Error("Lecture not found");
 
     const { data: profile } = await supabaseAdmin
       .from("profiles").select("standard_id").eq("id", userId).maybeSingle();
-    const lectureStandardId = (lectureRow as unknown as {
-      chapters: { subjects: { standard_id: string } };
-    }).chapters?.subjects?.standard_id;
-    if (!profile?.standard_id || profile.standard_id !== lectureStandardId) {
+    const lectureSubjectId = (lectureRow as unknown as {
+      chapters: { subject_id: string };
+    }).chapters?.subject_id;
+    const { lectureAllowedForStandard } = await import("@/lib/curriculum/shared.server");
+    if (
+      !profile?.standard_id ||
+      !lectureSubjectId ||
+      !(await lectureAllowedForStandard(supabaseAdmin, lectureSubjectId, profile.standard_id))
+    ) {
       throw new Error("Lecture not available for your class");
     }
 
@@ -355,8 +360,12 @@ export const getGamificationDashboard = createServerFn({ method: "GET" })
       .from("profiles").select("standard_id").eq("id", userId).maybeSingle();
     let subjectProgress: { id: string; name: string; total: number; watched: number }[] = [];
     if (profile?.standard_id) {
-      const { data: subjects } = await supabaseAdmin
-        .from("subjects").select("id, subject_name").eq("standard_id", profile.standard_id);
+      const { subjectIdsForStandard } = await import("@/lib/curriculum/shared.server");
+      const linkedIds = await subjectIdsForStandard(supabaseAdmin, profile.standard_id);
+      const { data: subjects } = linkedIds.length
+        ? await supabaseAdmin
+            .from("subjects").select("id, subject_name").in("id", linkedIds).eq("status", "active")
+        : { data: [] as { id: string; subject_name: string }[] };
       const subjectIds = (subjects ?? []).map((s) => s.id);
       const { data: chapters } = subjectIds.length
         ? await supabaseAdmin.from("chapters").select("id, subject_id").in("subject_id", subjectIds)
