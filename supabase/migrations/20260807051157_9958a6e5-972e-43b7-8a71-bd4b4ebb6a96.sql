@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.tg_subject_sync_standard_link() FROM PUBLIC, anon, authenticated;

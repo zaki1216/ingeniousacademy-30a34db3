@@ -1216,29 +1216,90 @@ export type Database = {
         }
         Relationships: []
       }
+      subject_standards: {
+        Row: {
+          created_at: string
+          id: string
+          standard_id: string
+          subject_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          standard_id: string
+          subject_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          standard_id?: string
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subject_standards_standard_id_fkey"
+            columns: ["standard_id"]
+            isOneToOne: false
+            referencedRelation: "standards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subject_standards_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subjects: {
         Row: {
           created_at: string
           description: string | null
           id: string
-          standard_id: string
+          is_shared: boolean
+          previous_version_id: string | null
+          standard_id: string | null
+          status: string
           subject_name: string
+          updated_at: string
+          updated_by: string | null
+          version: number
         }
         Insert: {
           created_at?: string
           description?: string | null
           id?: string
-          standard_id: string
+          is_shared?: boolean
+          previous_version_id?: string | null
+          standard_id?: string | null
+          status?: string
           subject_name: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: string
-          standard_id?: string
+          is_shared?: boolean
+          previous_version_id?: string | null
+          standard_id?: string | null
+          status?: string
           subject_name?: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "subjects_previous_version_id_fkey"
+            columns: ["previous_version_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "subjects_standard_id_fkey"
             columns: ["standard_id"]

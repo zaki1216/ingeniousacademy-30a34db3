@@ -285,7 +285,11 @@ export const adminGetStudentAdminInfo = createServerFn({ method: "POST" })
     if (profile?.standard_id) {
       const [{ data: std }, { data: subs }] = await Promise.all([
         db.from("standards").select("name").eq("id", profile.standard_id).maybeSingle(),
-        db.from("subjects").select("id, subject_name").eq("standard_id", profile.standard_id).order("subject_name"),
+        (async () => {
+          const { subjectsForStandard } = await import("@/lib/curriculum/shared.server");
+          const rows = await subjectsForStandard(db as any, profile.standard_id!);
+          return { data: rows.sort((a, b) => a.subject_name.localeCompare(b.subject_name)) };
+        })(),
       ]);
       standardName = std?.name ?? null;
       subjects = subs ?? [];

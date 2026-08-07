@@ -44,8 +44,8 @@ async function computeUnlockState(userId: string) {
   const standardId = profileRes.data?.standard_id;
   if (!standardId) return [] as LectureUnlockState[];
 
-  const subjectsRes = await supabaseAdmin.from("subjects").select("id").eq("standard_id", standardId);
-  const subjectIds = (subjectsRes.data ?? []).map((s) => s.id);
+  const { subjectsForStandard } = await import("@/lib/curriculum/shared.server");
+  const subjectIds = (await subjectsForStandard(supabaseAdmin, standardId)).map((s) => s.id);
   if (subjectIds.length === 0) return [];
 
   const chaptersRes = await supabaseAdmin

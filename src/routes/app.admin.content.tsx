@@ -10,7 +10,7 @@ export const Route = createFileRoute("/app/admin/content")({
 });
 
 const tiles = [
-  { to: "/app/content", label: "Curriculum Editor", desc: "Boards, Classes, Subjects, Chapters, Lectures", icon: BookOpen },
+  { to: "/app/content", label: "Curriculum Editor", desc: "Shared courses, Classes, Subjects, Chapters, Lectures", icon: BookOpen },
   { to: "/app/notes", label: "Notes & Resources", desc: "PDF notes and downloadable resources", icon: FileText },
   { to: "/app/admin/lecture-views", label: "Engagement Analytics", desc: "Watch counts, drop-off, viewers", icon: Eye },
 ] as const;
