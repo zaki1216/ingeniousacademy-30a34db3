@@ -41,11 +41,13 @@ function NotesPage() {
   const allChapters = useQuery({
     queryKey: ["chapters-all"],
     queryFn: async () => {
-      const subs = (await supabase.from("subjects").select("id, subject_name, standard_id")).data ?? [];
+      const subs = (await supabase.from("subjects").select("id, subject_name")).data ?? [];
+      const links = (await supabase.from("subject_standards").select("subject_id, standard_id")).data ?? [];
       const chs = (await supabase.from("chapters").select("id, chapter_name, chapter_number, subject_id").order("chapter_number")).data ?? [];
       return chs.map((c) => {
         const s = subs.find((x) => x.id === c.subject_id);
-        return { ...c, subject_name: s?.subject_name, standard_id: s?.standard_id };
+        const standardIds = links.filter((l) => l.subject_id === c.subject_id).map((l) => l.standard_id);
+        return { ...c, subject_name: s?.subject_name, standard_ids: standardIds };
       });
     },
   });
@@ -60,7 +62,7 @@ function NotesPage() {
     if (role === "admin") return list;
     const stdId = profile.data?.standard_id;
     if (!stdId) return [];
-    const chapterIds = new Set((allChapters.data ?? []).filter((c) => c.standard_id === stdId).map((c) => c.id));
+    const chapterIds = new Set((allChapters.data ?? []).filter((c) => c.standard_ids.includes(stdId)).map((c) => c.id));
     return list.filter((n) => chapterIds.has(n.chapter_id));
   }, [notes.data, allChapters.data, role, profile.data]);
 

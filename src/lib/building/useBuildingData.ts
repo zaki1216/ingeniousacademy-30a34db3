@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { supabase } from "@/integrations/supabase/client";
+import { fetchSubjectsForStandard } from "@/lib/curriculum/shared";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getLectureProgress } from "@/lib/api/lecture-progression.functions";
 import { resolveWings } from "@/lib/curriculum";
@@ -91,11 +92,7 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
     queryKey: ["building-subjects", building.id, standardId],
     enabled: !!standardId,
     queryFn: async () => {
-      const list =
-        (await supabase
-          .from("subjects")
-          .select("id, subject_name")
-          .eq("standard_id", standardId!)).data ?? [];
+      const list = await fetchSubjectsForStandard(standardId!);
       return list.filter((s) =>
         building.subjectMatcher({ subject_name: s.subject_name ?? "" }),
       );

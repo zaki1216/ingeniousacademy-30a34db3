@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Map as MapIcon, ChevronRight, Sparkles } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { fetchSubjectsForStandard } from "@/lib/curriculum/shared";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 export const Route = createFileRoute("/app/journey/")({ component: JourneyHome });
@@ -36,7 +37,7 @@ function JourneyHome() {
     queryKey: ["journey-worlds", standardId, user?.id],
     enabled: !!standardId && !!user?.id,
     queryFn: async () => {
-      const subs = (await supabase.from("subjects").select("id, subject_name").eq("standard_id", standardId!)).data ?? [];
+      const subs = await fetchSubjectsForStandard(standardId!);
       const subIds = subs.map((s) => s.id);
       const chs = subIds.length
         ? (await supabase.from("chapters").select("id, subject_id").in("subject_id", subIds)).data ?? []
