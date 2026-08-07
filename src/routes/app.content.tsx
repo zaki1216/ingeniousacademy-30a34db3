@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Pencil, Trash2, BookOpen, GraduationCap, Layers, PlayCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, BookOpen, GraduationCap, Layers, PlayCircle, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { supabase } from "@/integrations/supabase/client";
+import { fetchSubjectsForStandard } from "@/lib/curriculum/shared";
+import { SharedCurriculumManager } from "@/components/admin/SharedCurriculumManager";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 export const Route = createFileRoute("/app/content")({ component: ContentPage });
@@ -33,16 +35,18 @@ function ContentPage() {
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold">Content Library</h1>
-        <p className="text-sm text-muted-foreground">Manage standards, subjects, chapters and lectures.</p>
+        <p className="text-sm text-muted-foreground">Manage standards, shared courses, subjects, chapters and lectures.</p>
       </div>
       <Tabs defaultValue="standards">
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className="grid grid-cols-5 w-full">
           <TabsTrigger value="standards"><GraduationCap className="h-4 w-4 mr-1 hidden sm:inline" />Standards</TabsTrigger>
+          <TabsTrigger value="courses"><Share2 className="h-4 w-4 mr-1 hidden sm:inline" />Courses</TabsTrigger>
           <TabsTrigger value="subjects"><BookOpen className="h-4 w-4 mr-1 hidden sm:inline" />Subjects</TabsTrigger>
           <TabsTrigger value="chapters"><Layers className="h-4 w-4 mr-1 hidden sm:inline" />Chapters</TabsTrigger>
           <TabsTrigger value="lectures"><PlayCircle className="h-4 w-4 mr-1 hidden sm:inline" />Lectures</TabsTrigger>
         </TabsList>
         <TabsContent value="standards" className="mt-4"><StandardsTab /></TabsContent>
+        <TabsContent value="courses" className="mt-4"><SharedCurriculumManager /></TabsContent>
         <TabsContent value="subjects" className="mt-4"><SubjectsTab /></TabsContent>
         <TabsContent value="chapters" className="mt-4"><ChaptersTab /></TabsContent>
         <TabsContent value="lectures" className="mt-4"><LecturesTab /></TabsContent>
@@ -124,7 +128,7 @@ function SubjectsTab() {
   const { data } = useQuery({
     queryKey: ["subjects", standardId],
     enabled: !!standardId,
-    queryFn: async () => (await supabase.from("subjects").select("*").eq("standard_id", standardId).order("subject_name")).data ?? [],
+    queryFn: async () => await fetchSubjectsForStandard(standardId, { includeDrafts: true }),
   });
 
   return (
@@ -204,7 +208,7 @@ function ChaptersTab() {
   const subjects = useQuery({
     queryKey: ["subjects", standardId],
     enabled: !!standardId,
-    queryFn: async () => (await supabase.from("subjects").select("*").eq("standard_id", standardId).order("subject_name")).data ?? [],
+    queryFn: async () => await fetchSubjectsForStandard(standardId, { includeDrafts: true }),
   });
   const chapters = useQuery({
     queryKey: ["chapters", subjectId],
@@ -299,7 +303,7 @@ function LecturesTab() {
   const subjects = useQuery({
     queryKey: ["subjects", standardId],
     enabled: !!standardId,
-    queryFn: async () => (await supabase.from("subjects").select("*").eq("standard_id", standardId)).data ?? [],
+    queryFn: async () => await fetchSubjectsForStandard(standardId, { includeDrafts: true }),
   });
   const chapters = useQuery({
     queryKey: ["chapters", subjectId],
