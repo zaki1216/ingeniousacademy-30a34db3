@@ -33,8 +33,9 @@ import {
 } from "@/lib/api/curriculum.functions";
 import { AcademyEmpty, AcademySkeleton } from "@/components/academy/AcademyStates";
 
-type Course = Awaited<ReturnType<typeof listType>>["courses"][number];
-declare function listType(): ReturnType<typeof adminListCourses>;
+import type { CourseSummary } from "@/lib/curriculum/types.shared";
+
+type Course = CourseSummary;
 
 export function SharedCurriculumManager() {
   const qc = useQueryClient();
@@ -58,7 +59,7 @@ export function SharedCurriculumManager() {
   };
 
   const saveMut = useMutation({
-    mutationFn: (input: Parameters<typeof save>[0]["data"]) => save({ data: input }),
+    mutationFn: (input: CourseFormValues & { id?: string }) => save({ data: input }),
     onSuccess: () => { toast.success("Course saved"); invalidate(); },
     onError: (e: Error) => toast.error(e.message || "Could not save this course"),
   });
