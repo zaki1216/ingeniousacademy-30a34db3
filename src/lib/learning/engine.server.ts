@@ -34,11 +34,16 @@ async function loadCurriculum(userId: string): Promise<Curriculum | null> {
   const standardId = profile?.standard_id ?? null;
   if (!standardId) return null;
 
-  const { data: subjects } = await supabaseAdmin
-    .from("subjects")
-    .select("id, subject_name, created_at")
-    .eq("standard_id", standardId)
-    .order("created_at", { ascending: true });
+  const linkedIds = await subjectIdsForStandard(supabaseAdmin, standardId);
+  const { data: subjects } = linkedIds.length
+    ? await supabaseAdmin
+        .from("subjects")
+        .select("id, subject_name, created_at")
+        .in("id", linkedIds)
+        .eq("status", "active")
+        .order("created_at", { ascending: true })
+    : { data: [] as { id: string; subject_name: string; created_at: string }[] };
+
 
   const subjectIds = (subjects ?? []).map((s) => s.id);
   const empty: Curriculum = { subjects: [], chapters: [], lectures: [], done: new Set() };
