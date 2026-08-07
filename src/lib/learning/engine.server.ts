@@ -5,7 +5,9 @@
  */
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { subjectIdsForStandard } from "@/lib/curriculum/shared.server";
 import { levelFromXp } from "@/lib/gamification/leveling";
+
 import { MINUTES_PER_LESSON, MISSION_DEFS, type MissionCode } from "@/lib/learning/missions";
 import type {
   ContinueLearningResult,
