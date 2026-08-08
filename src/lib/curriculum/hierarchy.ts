@@ -263,7 +263,7 @@ export async function saveChapter(input: {
     if (error) throw new Error(error.message);
     return input.id;
   }
-  const row = unwrap(await supabase.from("chapters").insert(payload).select("id").single());
+  const id = takeId(await supabase.from("chapters").insert(payload).select("id").single());
   return id;
 }
 
