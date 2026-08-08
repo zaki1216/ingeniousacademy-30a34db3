@@ -63,7 +63,7 @@ function DungeonPage() {
     queryKey: ["dungeon-meta", dungeonId],
     queryFn: async () => {
       const ch = (await supabase.from("chapters").select("id, chapter_name, chapter_number, subject_id, completion_xp, completion_coins").eq("id", dungeonId).maybeSingle()).data;
-      const lecs = (await supabase.from("lectures").select("id, lecture_title, lecture_number, youtube_url").eq("chapter_id", dungeonId).order("lecture_number")).data ?? [];
+      const lecs = (await supabase.from("lectures").select("id, lecture_title, lecture_number, youtube_url").eq("chapter_id", dungeonId).eq("status", "published").order("lecture_number")).data ?? [];
       return { ch, lecs };
     },
   });

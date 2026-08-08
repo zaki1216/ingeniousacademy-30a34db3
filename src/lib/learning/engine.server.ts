@@ -55,6 +55,7 @@ async function loadCurriculum(userId: string): Promise<Curriculum | null> {
     .from("chapters")
     .select("id, chapter_name, chapter_number, subject_id")
     .in("subject_id", subjectIds)
+    .eq("is_active", true)
     .order("chapter_number", { ascending: true });
 
   const chapterIds = (chapters ?? []).map((c) => c.id);
@@ -63,6 +64,7 @@ async function loadCurriculum(userId: string): Promise<Curriculum | null> {
         .from("lectures")
         .select("id, lecture_title, lecture_number, chapter_id")
         .in("chapter_id", chapterIds)
+        .eq("status", "published")
         .order("lecture_number", { ascending: true })
     : { data: [] as Curriculum["lectures"] };
 
