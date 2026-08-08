@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      academic_subjects: {
+        Row: {
+          building_id: string | null
+          created_at: string
+          display_name: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          standard_id: string
+          updated_at: string
+        }
+        Insert: {
+          building_id?: string | null
+          created_at?: string
+          display_name?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          standard_id: string
+          updated_at?: string
+        }
+        Update: {
+          building_id?: string | null
+          created_at?: string
+          display_name?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          standard_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academic_subjects_standard_id_fkey"
+            columns: ["standard_id"]
+            isOneToOne: false
+            referencedRelation: "standards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       academy_ranks: {
         Row: {
           code: string
@@ -163,6 +210,33 @@ export type Database = {
           },
         ]
       }
+      boards: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       certificates: {
         Row: {
           created_at: string
@@ -260,6 +334,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_active: boolean
           subject_id: string
         }
         Insert: {
@@ -270,6 +345,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_active?: boolean
           subject_id: string
         }
         Update: {
@@ -280,6 +356,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_active?: boolean
           subject_id?: string
         }
         Relationships: [
@@ -423,27 +500,36 @@ export type Database = {
           chapter_id: string
           created_at: string
           description: string | null
+          duration_seconds: number | null
           id: string
           lecture_number: number
           lecture_title: string
+          status: string
+          thumbnail_url: string | null
           youtube_url: string
         }
         Insert: {
           chapter_id: string
           created_at?: string
           description?: string | null
+          duration_seconds?: number | null
           id?: string
           lecture_number?: number
           lecture_title: string
+          status?: string
+          thumbnail_url?: string | null
           youtube_url: string
         }
         Update: {
           chapter_id?: string
           created_at?: string
           description?: string | null
+          duration_seconds?: number | null
           id?: string
           lecture_number?: number
           lecture_title?: string
+          status?: string
+          thumbnail_url?: string | null
           youtube_url?: string
         }
         Relationships: [
@@ -1197,45 +1283,66 @@ export type Database = {
       }
       standards: {
         Row: {
+          board_id: string | null
           created_at: string
           display_order: number
           id: string
           name: string
         }
         Insert: {
+          board_id?: string | null
           created_at?: string
           display_order?: number
           id?: string
           name: string
         }
         Update: {
+          board_id?: string | null
           created_at?: string
           display_order?: number
           id?: string
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "standards_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subject_standards: {
         Row: {
+          academic_subject_id: string | null
           created_at: string
           id: string
           standard_id: string
           subject_id: string
         }
         Insert: {
+          academic_subject_id?: string | null
           created_at?: string
           id?: string
           standard_id: string
           subject_id: string
         }
         Update: {
+          academic_subject_id?: string | null
           created_at?: string
           id?: string
           standard_id?: string
           subject_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "subject_standards_academic_subject_id_fkey"
+            columns: ["academic_subject_id"]
+            isOneToOne: false
+            referencedRelation: "academic_subjects"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "subject_standards_standard_id_fkey"
             columns: ["standard_id"]
@@ -1259,6 +1366,7 @@ export type Database = {
           id: string
           is_shared: boolean
           previous_version_id: string | null
+          sort_order: number
           standard_id: string | null
           status: string
           subject_name: string
@@ -1272,6 +1380,7 @@ export type Database = {
           id?: string
           is_shared?: boolean
           previous_version_id?: string | null
+          sort_order?: number
           standard_id?: string | null
           status?: string
           subject_name: string
@@ -1285,6 +1394,7 @@ export type Database = {
           id?: string
           is_shared?: boolean
           previous_version_id?: string | null
+          sort_order?: number
           standard_id?: string | null
           status?: string
           subject_name?: string
