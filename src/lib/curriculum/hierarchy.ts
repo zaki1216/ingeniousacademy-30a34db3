@@ -145,6 +145,14 @@ export async function fetchLectures(
 
 /* ------------------------------- writes ------------------------------ */
 
+type IdRes = { data: { id: string } | null; error: { message: string } | null };
+function takeId(res: unknown): string {
+  const r = res as IdRes;
+  if (r.error) throw new Error(r.error.message);
+  if (!r.data) throw new Error("Save failed");
+  return r.data.id;
+}
+
 function unwrap<T>(res: { data: T | null; error: { message: string } | null }): NonNullable<T> {
   if (res.error) throw new Error(res.error.message);
   return res.data as NonNullable<T>;
@@ -164,8 +172,8 @@ export async function saveAcademicSubject(input: Partial<AcademicSubject> & { st
     unwrap(await supabase.from("academic_subjects").update(payload).eq("id", input.id).select("id").single());
     return input.id;
   }
-  const row = unwrap(await supabase.from("academic_subjects").insert(payload).select("id").single());
-  return row.id;
+  const id = takeId(await supabase.from("academic_subjects").insert(payload).select("id").single());
+  return id;
 }
 
 export async function deleteAcademicSubject(id: string) {
@@ -197,7 +205,7 @@ export async function saveCourse(input: {
   if (courseId) {
     unwrap(await supabase.from("subjects").update(payload).eq("id", courseId).select("id").single());
   } else {
-    const row = unwrap(await supabase.from("subjects").insert(payload).select("id").single());
+    const id = takeId(await supabase.from("subjects").insert(payload).select("id").single());
     courseId = row.id;
   }
   await syncCourseMappings(courseId!, input.mappings);
@@ -257,7 +265,7 @@ export async function saveChapter(input: {
     return input.id;
   }
   const row = unwrap(await supabase.from("chapters").insert(payload).select("id").single());
-  return row.id;
+  return id;
 }
 
 export async function deleteChapter(id: string) {
@@ -291,8 +299,8 @@ export async function saveLecture(input: {
     if (error) throw new Error(error.message);
     return input.id;
   }
-  const row = unwrap(await supabase.from("lectures").insert(payload).select("id").single());
-  return row.id;
+  const id = takeId(await supabase.from("lectures").insert(payload).select("id").single());
+  return id;
 }
 
 export async function deleteLecture(id: string) {
