@@ -205,8 +205,7 @@ export async function saveCourse(input: {
   if (courseId) {
     unwrap(await supabase.from("subjects").update(payload).eq("id", courseId).select("id").single());
   } else {
-    const id = takeId(await supabase.from("subjects").insert(payload).select("id").single());
-    courseId = row.id;
+    courseId = takeId(await supabase.from("subjects").insert(payload).select("id").single());
   }
   await syncCourseMappings(courseId!, input.mappings);
   return courseId!;
