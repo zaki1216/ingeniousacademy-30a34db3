@@ -119,6 +119,7 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
           .from("chapters")
           .select("id, chapter_name, chapter_number, subject_id, completion_xp, completion_coins")
           .in("subject_id", matchedSubjects.map((s) => s.id))
+          .eq("is_active", true)
           .order("chapter_number")).data ?? [];
       const chapterCompletions =
         (await supabase
