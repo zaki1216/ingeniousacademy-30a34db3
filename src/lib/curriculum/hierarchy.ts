@@ -145,9 +145,9 @@ export async function fetchLectures(
 
 /* ------------------------------- writes ------------------------------ */
 
-function unwrap<T>(res: { data: T | null; error: { message: string } | null }): T {
+function unwrap<T>(res: { data: T | null; error: { message: string } | null }): NonNullable<T> {
   if (res.error) throw new Error(res.error.message);
-  return res.data as T;
+  return res.data as NonNullable<T>;
 }
 
 export async function saveAcademicSubject(input: Partial<AcademicSubject> & { standard_id: string; name: string }) {
@@ -307,8 +307,8 @@ export async function swapOrder(
   a: { id: string; value: number },
   b: { id: string; value: number },
 ) {
-  const first = await supabase.from(table).update({ [column]: b.value }).eq("id", a.id);
+  const first = await supabase.from(table).update({ [column]: b.value } as never).eq("id", a.id);
   if (first.error) throw new Error(first.error.message);
-  const second = await supabase.from(table).update({ [column]: a.value }).eq("id", b.id);
+  const second = await supabase.from(table).update({ [column]: a.value } as never).eq("id", b.id);
   if (second.error) throw new Error(second.error.message);
 }
