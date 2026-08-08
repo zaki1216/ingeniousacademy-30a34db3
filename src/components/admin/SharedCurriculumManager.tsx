@@ -1,118 +1,113 @@
 /**
- * Shared Curriculum manager — admin surface.
+ * Shared Courses — dedicated admin view.
  *
- * Lets an administrator create a course once and assign it to any number of
- * standards. Shared and standard-specific courses are clearly distinguished,
- * with filters and per-course analytics.
+ * A shared course exists exactly once (one row in `subjects`, one chapter
+ * tree, one lecture set) and is mapped to any number of standard + subject
+ * pairs. This view manages those mappings and the course content without
+ * ever duplicating records.
  */
 import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { Plus, Pencil, Share2, Layers3, GitBranch, Search } from "lucide-react";
-import { toast } from "sonner";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Layers3, Plus, Search, Share2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-
-import {
-  adminCreateCourseVersion,
-  adminListCourses,
-  adminSaveCourse,
-} from "@/lib/api/curriculum.functions";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AcademyEmpty, AcademySkeleton } from "@/components/academy/AcademyStates";
+import { CourseDialog, CourseContentPanel } from "@/components/admin/CurriculumExplorer";
 
-import type { CourseSummary } from "@/lib/curriculum/types.shared";
-
-type Course = CourseSummary;
+import {
+  fetchAcademicSubjects, fetchAllCourses, fetchChapters, fetchCourseMappings,
+  fetchLectures, fetchStandards, type Course,
+} from "@/lib/curriculum/hierarchy";
 
 export function SharedCurriculumManager() {
   const qc = useQueryClient();
-  const list = useServerFn(adminListCourses);
-  const save = useServerFn(adminSaveCourse);
-  const newVersion = useServerFn(adminCreateCourseVersion);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin-courses"],
-    queryFn: () => list(),
-  });
-
-  const [kind, setKind] = useState<"all" | "shared" | "specific">("all");
-  const [standardFilter, setStandardFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [kind, setKind] = useState<"shared" | "specific" | "all">("shared");
+  const [standardFilter, setStandardFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [openCourse, setOpenCourse] = useState<Course | null>(null);
 
-  const invalidate = () => {
-    qc.invalidateQueries({ queryKey: ["admin-courses"] });
-    qc.invalidateQueries({ queryKey: ["subjects"] });
-  };
+  const standards = useQuery({ queryKey: ["cx-standards", ""], queryFn: () => fetchStandards() });
+  const courses = useQuery({ queryKey: ["admin-courses"], queryFn: fetchAllCourses });
+  const mappings = useQuery({ queryKey: ["admin-course-mappings"], queryFn: () => fetchCourseMappings({}) });
 
-  const saveMut = useMutation({
-    mutationFn: (input: CourseFormValues & { id?: string }) => save({ data: input }),
-    onSuccess: () => { toast.success("Course saved"); invalidate(); },
-    onError: (e: Error) => toast.error(e.message || "Could not save this course"),
-  });
-
-  const versionMut = useMutation({
-    mutationFn: (courseId: string) => newVersion({ data: { courseId } }),
-    onSuccess: (r: { version: number }) => {
-      toast.success(`Draft version ${r.version} created`);
-      invalidate();
+  const subjectsByStandard = useQuery({
+    queryKey: ["admin-subject-names", standards.data?.length ?? 0],
+    enabled: !!standards.data?.length,
+    queryFn: async () => {
+      const lists = await Promise.all((standards.data ?? []).map((s) => fetchAcademicSubjects(s.id)));
+      return Object.fromEntries(lists.flat().map((s) => [s.id, s.display_name || s.name]));
     },
-    onError: (e: Error) => toast.error(e.message || "Could not create a new version"),
   });
 
-  const courses = data?.courses ?? [];
-  const standards = data?.standards ?? [];
+  const counts = useQuery({
+    queryKey: ["admin-course-counts", courses.data?.length ?? 0],
+    enabled: !!courses.data?.length,
+    queryFn: async () => {
+      const chapters = (await Promise.all((courses.data ?? []).map((c) => fetchChapters(c.id, { includeInactive: true })))).flat();
+      const lectures = await fetchLectures(chapters.map((c) => c.id), { includeUnpublished: true });
+      const out: Record<string, { chapters: number; lectures: number }> = {};
+      for (const c of courses.data ?? []) {
+        const chs = chapters.filter((ch) => ch.subject_id === c.id);
+        out[c.id] = { chapters: chs.length, lectures: lectures.filter((l) => chs.some((ch) => ch.id === l.chapter_id)).length };
+      }
+      return out;
+    },
+  });
+
+  const standardName = new Map((standards.data ?? []).map((s) => [s.id, s.name]));
 
   const filtered = useMemo(() => {
-    return courses.filter((c) => {
+    return (courses.data ?? []).filter((c) => {
       if (kind === "shared" && !c.is_shared) return false;
       if (kind === "specific" && c.is_shared) return false;
-      if (standardFilter !== "all" && !c.standard_ids.includes(standardFilter)) return false;
       if (statusFilter !== "all" && c.status !== statusFilter) return false;
+      if (standardFilter !== "all" && !(mappings.data ?? []).some((m) => m.subject_id === c.id && m.standard_id === standardFilter)) return false;
       if (search && !c.subject_name.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [courses, kind, standardFilter, statusFilter, search]);
+  }, [courses.data, mappings.data, kind, statusFilter, standardFilter, search]);
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["admin-courses"] });
+    qc.invalidateQueries({ queryKey: ["admin-course-mappings"] });
+    qc.invalidateQueries({ queryKey: ["admin-course-counts"] });
+    qc.invalidateQueries({ queryKey: ["cx-courses"] });
+  };
+
+  if (openCourse) {
+    return (
+      <div className="space-y-3">
+        <Button variant="outline" size="sm" onClick={() => setOpenCourse(null)}>← Back to shared courses</Button>
+        <CourseContentPanel course={openCourse} onChanged={invalidate} />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full overflow-x-hidden">
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[180px]">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            className="pl-8"
-            placeholder="Search courses"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            aria-label="Search courses"
-          />
+          <Input className="pl-8" placeholder="Search courses" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search courses" />
         </div>
         <Select value={kind} onValueChange={(v) => setKind(v as typeof kind)}>
           <SelectTrigger className="w-[170px]"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All courses</SelectItem>
             <SelectItem value="shared">Shared courses</SelectItem>
             <SelectItem value="specific">Standard-specific</SelectItem>
+            <SelectItem value="all">All courses</SelectItem>
           </SelectContent>
         </Select>
         <Select value={standardFilter} onValueChange={setStandardFilter}>
           <SelectTrigger className="w-[160px]"><SelectValue placeholder="Standard" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All standards</SelectItem>
-            {standards.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+            {standards.data?.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -123,220 +118,54 @@ export function SharedCurriculumManager() {
             <SelectItem value="draft">Draft</SelectItem>
           </SelectContent>
         </Select>
-        <CourseDialog
-          standards={standards}
-          onSubmit={(vals) => saveMut.mutateAsync(vals)}
-          trigger={<Button><Plus className="h-4 w-4 mr-2" />New course</Button>}
-        />
+        <CourseDialog onSaved={invalidate} trigger={<Button><Plus className="h-4 w-4 mr-1" />New course</Button>} />
       </div>
 
-      {isLoading && <AcademySkeleton className="h-40" />}
-
-      {!isLoading && filtered.length === 0 && (
-        <AcademyEmpty
-          icon="📚"
-          title="No courses match this filter"
-          description="Create a course once and assign it to every standard that should study it."
-        />
+      {courses.isLoading && <AcademySkeleton />}
+      {!courses.isLoading && filtered.length === 0 && (
+        <AcademyEmpty title="No courses found" description="Create a shared course such as English Grammar and map it to several standards." />
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        {filtered.map((c) => (
-          <Card key={c.id}>
-            <CardContent className="p-3 space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div className="font-semibold truncate">{c.subject_name}</div>
-                  {c.description && (
-                    <div className="text-xs text-muted-foreground line-clamp-2">{c.description}</div>
-                  )}
+      <div className="grid gap-3 md:grid-cols-2">
+        {filtered.map((c) => {
+          const rows = (mappings.data ?? []).filter((m) => m.subject_id === c.id);
+          return (
+            <Card key={c.id} className="min-w-0">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-semibold truncate">{c.subject_name}</div>
+                    <Badge variant={c.is_shared ? "default" : "outline"} className="mt-1">
+                      {c.is_shared ? <><Share2 className="h-3 w-3 mr-1" />Shared</> : "Standard-specific"}
+                    </Badge>
+                  </div>
+                  {c.status !== "active" && <Badge variant="outline">{c.status}</Badge>}
                 </div>
-                <div className="flex flex-col items-end gap-1 shrink-0">
-                  <Badge variant={c.is_shared ? "default" : "secondary"} className="gap-1">
-                    {c.is_shared ? <Share2 className="h-3 w-3" /> : <Layers3 className="h-3 w-3" />}
-                    {c.is_shared ? "Shared" : "Standard"}
-                  </Badge>
-                  <Badge variant={c.status === "active" ? "outline" : "secondary"}>
-                    {c.status === "active" ? "Active" : "Draft"}
-                  </Badge>
+
+                <ul className="text-sm text-muted-foreground space-y-0.5">
+                  {rows.length === 0 && <li>No assignments yet</li>}
+                  {rows.map((m) => (
+                    <li key={m.id} className="truncate">
+                      {standardName.get(m.standard_id) ?? "—"}
+                      {m.academic_subject_id ? ` · ${subjectsByStandard.data?.[m.academic_subject_id] ?? "—"}` : ""}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Layers3 className="h-3.5 w-3.5" />
+                  {counts.data?.[c.id]?.chapters ?? 0} chapters • {counts.data?.[c.id]?.lectures ?? 0} lectures
                 </div>
-              </div>
 
-              <div className="flex flex-wrap gap-1">
-                {c.standard_names.length === 0 && (
-                  <span className="text-xs text-muted-foreground">Not assigned to any standard</span>
-                )}
-                {c.standard_names.map((n, i) => (
-                  <Badge key={`${c.id}-${i}`} variant="outline" className="text-[10px]">{n}</Badge>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                <span>Students: <b className="text-foreground">{c.student_count}</b></span>
-                <span>Completion: <b className="text-foreground">{c.completion_rate}%</b></span>
-                <span>Chapters: <b className="text-foreground">{c.chapter_count}</b></span>
-                <span>Lessons: <b className="text-foreground">{c.lecture_count}</b></span>
-                <span>Version: <b className="text-foreground">v{c.version}</b></span>
-                <span className="truncate">
-                  Updated: <b className="text-foreground">
-                    {c.updated_at ? new Date(c.updated_at).toLocaleDateString() : "—"}
-                  </b>
-                </span>
-                {c.updated_by_name && (
-                  <span className="col-span-2 truncate">Last edited by {c.updated_by_name}</span>
-                )}
-              </div>
-
-              <div className="flex gap-2 pt-1">
-                <CourseDialog
-                  standards={standards}
-                  course={c}
-                  onSubmit={(vals) => saveMut.mutateAsync({ ...vals, id: c.id })}
-                  trigger={
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Pencil className="h-4 w-4 mr-1" />Edit
-                    </Button>
-                  }
-                />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="flex-1"
-                  disabled={versionMut.isPending}
-                  onClick={() => versionMut.mutate(c.id)}
-                >
-                  <GitBranch className="h-4 w-4 mr-1" />New version
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" onClick={() => setOpenCourse(c)}>Manage content</Button>
+                  <CourseDialog initial={c} onSaved={invalidate} trigger={<Button size="sm" variant="outline">Edit &amp; assignments</Button>} />
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
-  );
-}
-
-type CourseFormValues = {
-  subject_name: string;
-  description: string | null;
-  is_shared: boolean;
-  status: "active" | "draft";
-  standard_ids: string[];
-};
-
-function CourseDialog({
-  standards,
-  course,
-  onSubmit,
-  trigger,
-}: {
-  standards: { id: string; name: string }[];
-  course?: Course;
-  onSubmit: (vals: CourseFormValues) => Promise<unknown>;
-  trigger: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState(course?.subject_name ?? "");
-  const [description, setDescription] = useState(course?.description ?? "");
-  const [isShared, setIsShared] = useState(course?.is_shared ?? false);
-  const [status, setStatus] = useState<"active" | "draft">(
-    (course?.status as "active" | "draft") ?? "active",
-  );
-  const [selected, setSelected] = useState<string[]>(course?.standard_ids ?? []);
-  const [assignMode, setAssignMode] = useState<"all" | "new">("all");
-  const [busy, setBusy] = useState(false);
-
-  const toggle = (id: string) =>
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-
-  const submit = async () => {
-    if (!name.trim()) return toast.error("Give the course a name");
-    if (selected.length === 0) return toast.error("Select at least one standard");
-    setBusy(true);
-    try {
-      await onSubmit({
-        subject_name: name.trim(),
-        description: description.trim() || null,
-        is_shared: isShared || selected.length > 1,
-        status,
-        standard_ids: selected,
-      });
-      setOpen(false);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{course ? "Edit course" : "New course"}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="course-name">Course name</Label>
-            <Input id="course-name" value={name} onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="course-desc">Description</Label>
-            <Textarea id="course-desc" value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-
-          <div className="flex items-center justify-between rounded-lg border p-3">
-            <div>
-              <div className="text-sm font-medium">Shared course</div>
-              <p className="text-xs text-muted-foreground">
-                One copy of the content, reused by every selected standard.
-              </p>
-            </div>
-            <Switch checked={isShared} onCheckedChange={setIsShared} aria-label="Shared course" />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Applicable standards</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {standards.map((s) => (
-                <label key={s.id} className="flex items-center gap-2 rounded-md border p-2 text-sm">
-                  <Checkbox checked={selected.includes(s.id)} onCheckedChange={() => toggle(s.id)} />
-                  {s.name}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Status</Label>
-            <Select value={status} onValueChange={(v) => setStatus(v as "active" | "draft")}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active — visible to students</SelectItem>
-                <SelectItem value="draft">Draft — hidden from students</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Assignment</Label>
-            <Select value={assignMode} onValueChange={(v) => setAssignMode(v as "all" | "new")}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Assign to all current students in these standards</SelectItem>
-                <SelectItem value="new">Keep as draft for newly enrolled students only</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              {assignMode === "all"
-                ? "Every student in the selected standards sees this course as soon as it is active."
-                : "Set the course to Draft so only future rollouts pick it up."}
-            </p>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button onClick={submit} disabled={busy}>{busy ? "Saving…" : "Save course"}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
