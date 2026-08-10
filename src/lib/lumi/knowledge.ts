@@ -243,7 +243,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
   {
     id: "hall-of-fame",
     title: "Hall of Fame",
-    category: "arena",
+    category: "progression",
     summary: "The eternal leaderboard of Ingenious Academy.",
     body: [
       "Rankings update daily. Only the finest Hunters see their names shine at the top.",
