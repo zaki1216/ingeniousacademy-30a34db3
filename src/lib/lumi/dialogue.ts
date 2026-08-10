@@ -29,10 +29,10 @@ export function lumiSay(tone: LumiTone, message: string): string {
 export const LUMI_VOICE = {
   purchaseSuccess: "Wonderful choice. I've safely placed it inside your Inventory Chest.",
   purchaseFailNoCoins: "You are close, but not quite ready. A few more Quests will earn the coins you need.",
-  accessLocked: "Only Cadets who complete the previous Quest may continue. Return, prove your mastery, and the path will open.",
+  accessLocked: "Complete the previous Learning Quest and this path will open for you.",
   questLocked: "This path is still sealed. Let's master the previous Learning Quest first.",
   streakSafe: "Your streak is safe — a Streak Shield glimmers in your Inventory.",
   dailyClaimed: "You already accepted today's blessing. Return tomorrow for the next.",
   chestReady: "A chest is glowing in your Residence — the Academy has a gift for you.",
-  bossUnlocked: "Every Quest of this Dungeon is cleared. The Boss Gate is open — approach when you are ready.",
+  chapterCleared: "Every Quest of this Dungeon is complete. The Master Trial is cleared — your Knowledge Chest awaits.",
 } as const;

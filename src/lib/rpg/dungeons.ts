@@ -24,7 +24,7 @@ export type DungeonMeta = {
   recommendedLevel: number;
   rewardXp: number;
   rewardCoins: number;
-  bossAvailable: boolean;
+  trialAvailable: boolean;
   shadow: ShadowStatus;
 };
 
@@ -77,7 +77,7 @@ export function dungeonMeta(
   const recommendedLevel = Math.max(1, chapterNumber * 2);
   const rewardXp = 50 + chapterNumber * 25;
   const rewardCoins = 10 + chapterNumber * 5;
-  const bossAvailable = totalLectures > 0 && watchedLectures >= Math.max(1, totalLectures - 1);
+  const trialAvailable = totalLectures > 0 && watchedLectures >= Math.max(1, totalLectures - 1);
 
   const rank = rankFromLevel(playerLevel);
   const eligible = chapterNumber >= 6 && totalLectures > 0;
@@ -102,7 +102,7 @@ export function dungeonMeta(
     recommendedLevel,
     rewardXp,
     rewardCoins,
-    bossAvailable,
+    trialAvailable,
     shadow,
   };
 }

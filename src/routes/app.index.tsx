@@ -82,12 +82,11 @@ function AcademyCommandCenter() {
   const stats = useQuery({
     queryKey: ["admin-cc-stats"],
     queryFn: async () => {
-      const [students, active, tests] = await Promise.all([
+      const [students, active] = await Promise.all([
         supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("profiles").select("id", { count: "exact", head: true }).eq("is_active", true),
-        supabase.from("tests").select("id", { count: "exact", head: true }),
       ]);
-      return { students: students.count ?? 0, active: active.count ?? 0, tests: tests.count ?? 0 };
+      return { students: students.count ?? 0, active: active.count ?? 0 };
     },
   });
 
@@ -108,7 +107,6 @@ function AcademyCommandCenter() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard icon={Users} label="Students" value={stats.data?.students ?? "—"} />
         <StatCard icon={Users} label="Active" value={stats.data?.active ?? "—"} />
-        <StatCard icon={ClipboardList} label="Tests" value={stats.data?.tests ?? "—"} />
         <StatCard
           icon={Target}
           label="Today's Attendance"
@@ -168,15 +166,6 @@ function AcademyCommandCenter() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base">Tests To Evaluate</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-xs text-muted-foreground">{overview?.recentResultsCount ?? 0} new submissions in last 24h</p>
-            {overview?.pendingTests.map((t: any) => (
-              <span key={t.id} className="block text-sm truncate">{t.title}</span>
-            ))}
-          </CardContent>
-        </Card>
       </div>
 
       {announcements.data && announcements.data.length > 0 && (

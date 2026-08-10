@@ -8,7 +8,13 @@ async function assertAdmin(supabase: any, userId: string) {
   if (error || !data) throw new Error("Forbidden");
 }
 
-// Class-wide analytics dashboard
+/** Percentage helper for offline marks. */
+function pct(obtained: number, max: number): number {
+  if (!max || max <= 0) return 0;
+  return Math.round((obtained / max) * 1000) / 10;
+}
+
+// Class-wide analytics dashboard — offline assessments + lecture activity only.
 export const adminGetOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -17,24 +23,22 @@ export const adminGetOverview = createServerFn({ method: "GET" })
     const [
       { data: studentsRoles },
       { data: profiles },
-      { data: results },
-      { data: tests },
+      { data: marks },
+      { data: offlineTests },
       { data: views },
       { data: lectures },
       { data: chapters },
       { data: subjects },
-      { data: questions },
       { data: attendance },
     ] = await Promise.all([
       supabaseAdmin.from("user_roles").select("user_id").eq("role", "student"),
       supabaseAdmin.from("profiles").select("id, name, email, standard_id, is_active"),
-      supabaseAdmin.from("results").select("student_id, test_id, percentage, score, total_marks, answers, attempt_date"),
-      supabaseAdmin.from("tests").select("id, title, chapter_id, total_marks"),
+      supabaseAdmin.from("offline_marks").select("student_id, offline_test_id, marks_obtained, created_at"),
+      supabaseAdmin.from("offline_tests").select("id, title, subject_id, chapter_id, max_marks, test_date"),
       supabaseAdmin.from("video_completions").select("lecture_id, user_id, watch_count"),
       supabaseAdmin.from("lectures").select("id, lecture_title, lecture_number, chapter_id"),
       supabaseAdmin.from("chapters").select("id, chapter_name, chapter_number, subject_id"),
       supabaseAdmin.from("subjects").select("id, subject_name"),
-      supabaseAdmin.from("questions").select("id, test_id, question_text, correct_option"),
       supabaseAdmin.from("attendance").select("student_id, status, date"),
     ]);
 
@@ -42,15 +46,19 @@ export const adminGetOverview = createServerFn({ method: "GET" })
     const totalStudents = studentIds.size;
     const activeStudents = (profiles ?? []).filter((p) => studentIds.has(p.id) && p.is_active !== false).length;
 
-    // class-wide test averages
+    const testById = new Map((offlineTests ?? []).map((t) => [t.id, t]));
+
+    // per offline test averages
     const perTest = new Map<string, { sum: number; n: number }>();
-    for (const r of results ?? []) {
-      const cur = perTest.get(r.test_id) ?? { sum: 0, n: 0 };
-      cur.sum += Number(r.percentage ?? 0);
+    for (const m of marks ?? []) {
+      const t = testById.get(m.offline_test_id);
+      if (!t) continue;
+      const cur = perTest.get(m.offline_test_id) ?? { sum: 0, n: 0 };
+      cur.sum += pct(Number(m.marks_obtained ?? 0), Number(t.max_marks ?? 0));
       cur.n += 1;
-      perTest.set(r.test_id, cur);
+      perTest.set(m.offline_test_id, cur);
     }
-    const testStats = (tests ?? []).map((t) => {
+    const testStats = (offlineTests ?? []).map((t) => {
       const s = perTest.get(t.id);
       return {
         id: t.id,
@@ -61,7 +69,10 @@ export const adminGetOverview = createServerFn({ method: "GET" })
     }).sort((a, b) => b.attempts - a.attempts);
 
     const overallAvg = (() => {
-      const all = (results ?? []).map((r) => Number(r.percentage ?? 0));
+      const all = (marks ?? []).map((m) => {
+        const t = testById.get(m.offline_test_id);
+        return t ? pct(Number(m.marks_obtained ?? 0), Number(t.max_marks ?? 0)) : null;
+      }).filter((x): x is number => x !== null);
       if (all.length === 0) return 0;
       return Math.round((all.reduce((s, x) => s + x, 0) / all.length) * 10) / 10;
     })();
@@ -69,7 +80,7 @@ export const adminGetOverview = createServerFn({ method: "GET" })
     // most-watched lectures
     const lecAgg = new Map<string, { viewers: Set<string>; totalWatches: number }>();
     for (const v of views ?? []) {
-      const cur = lecAgg.get(v.lecture_id) ?? { viewers: new Set(), totalWatches: 0 };
+      const cur = lecAgg.get(v.lecture_id) ?? { viewers: new Set<string>(), totalWatches: 0 };
       cur.viewers.add(v.user_id);
       cur.totalWatches += v.watch_count ?? 1;
       lecAgg.set(v.lecture_id, cur);
@@ -87,35 +98,6 @@ export const adminGetOverview = createServerFn({ method: "GET" })
       };
     }).sort((a, b) => b.totalWatches - a.totalWatches).slice(0, 10);
 
-    // hardest questions: % wrong across results.answers (answers stored per-question map)
-    const qStats = new Map<string, { right: number; total: number }>();
-    for (const r of results ?? []) {
-      const ans = (r.answers as Record<string, number> | null) ?? {};
-      for (const [qid, picked] of Object.entries(ans)) {
-        const q = questions?.find((x) => x.id === qid);
-        if (!q) continue;
-        const cur = qStats.get(qid) ?? { right: 0, total: 0 };
-        cur.total += 1;
-        if (Number(picked) === q.correct_option) cur.right += 1;
-        qStats.set(qid, cur);
-      }
-    }
-    const hardestQuestions = Array.from(qStats.entries())
-      .map(([qid, s]) => {
-        const q = questions?.find((x) => x.id === qid)!;
-        const t = tests?.find((x) => x.id === q.test_id);
-        return {
-          id: qid,
-          question_text: q.question_text,
-          test_title: t?.title ?? "—",
-          correct_pct: s.total > 0 ? Math.round((s.right / s.total) * 1000) / 10 : 0,
-          attempts: s.total,
-        };
-      })
-      .filter((x) => x.attempts >= 1)
-      .sort((a, b) => a.correct_pct - b.correct_pct)
-      .slice(0, 10);
-
     // attendance rate
     const attN = attendance?.length ?? 0;
     const attP = (attendance ?? []).filter((a) => a.status === "present").length;
@@ -125,19 +107,18 @@ export const adminGetOverview = createServerFn({ method: "GET" })
       totals: {
         totalStudents,
         activeStudents,
-        totalAttempts: results?.length ?? 0,
+        totalAttempts: marks?.length ?? 0,
         overallAvg,
         attendanceRate,
         totalLectures: lectures?.length ?? 0,
-        totalTests: tests?.length ?? 0,
+        totalTests: offlineTests?.length ?? 0,
       },
       testStats: testStats.slice(0, 15),
       topLectures,
-      hardestQuestions,
     };
   });
 
-// Per-student report card
+// Per-student report card — offline assessments + lecture activity.
 export const adminGetStudentReportCard = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ studentId: z.string().uuid() }).parse(d))
@@ -148,43 +129,41 @@ export const adminGetStudentReportCard = createServerFn({ method: "POST" })
     const [
       { data: profile },
       { data: stats },
-      { data: results },
-      { data: tests },
+      { data: marks },
+      { data: offlineTests },
       { data: chapters },
       { data: subjects },
       { data: views },
       { data: attendance },
-      { data: questions },
     ] = await Promise.all([
       supabaseAdmin.from("profiles").select("id, name, email, phone, standard_id").eq("id", studentId).maybeSingle(),
       supabaseAdmin.from("gamification_stats").select("*").eq("user_id", studentId).maybeSingle(),
-      supabaseAdmin.from("results").select("id, test_id, percentage, score, total_marks, attempt_date, answers").eq("student_id", studentId).order("attempt_date", { ascending: false }),
-      supabaseAdmin.from("tests").select("id, title, chapter_id, total_marks"),
+      supabaseAdmin.from("offline_marks").select("id, offline_test_id, marks_obtained, created_at").eq("student_id", studentId).order("created_at", { ascending: false }),
+      supabaseAdmin.from("offline_tests").select("id, title, subject_id, chapter_id, max_marks, test_date"),
       supabaseAdmin.from("chapters").select("id, chapter_name, chapter_number, subject_id"),
       supabaseAdmin.from("subjects").select("id, subject_name, standard_id"),
       supabaseAdmin.from("video_completions").select("lecture_id, watch_count, last_watched_at, completed_at").eq("user_id", studentId),
       supabaseAdmin.from("attendance").select("date, status").eq("student_id", studentId),
-      supabaseAdmin.from("questions").select("id, test_id, correct_option"),
     ]);
 
     const attN = attendance?.length ?? 0;
     const attP = (attendance ?? []).filter((a) => a.status === "present").length;
     const attendancePct = attN > 0 ? Math.round((attP / attN) * 1000) / 10 : 0;
 
-    const testRows = (results ?? []).map((r) => {
-      const t = tests?.find((x) => x.id === r.test_id);
+    const testRows = (marks ?? []).map((m) => {
+      const t = offlineTests?.find((x) => x.id === m.offline_test_id);
       const ch = chapters?.find((c) => c.id === t?.chapter_id);
-      const sub = subjects?.find((s) => s.id === ch?.subject_id);
+      const sub = subjects?.find((s) => s.id === (t?.subject_id ?? ch?.subject_id));
       return {
-        result_id: r.id,
+        result_id: m.id,
         test_title: t?.title ?? "—",
         subject: sub?.subject_name ?? "—",
         chapter: ch?.chapter_name ?? "—",
         chapter_id: ch?.id ?? null,
-        score: r.score,
-        total: r.total_marks,
-        percentage: Number(r.percentage ?? 0),
-        attempt_date: r.attempt_date,
+        score: Number(m.marks_obtained ?? 0),
+        total: Number(t?.max_marks ?? 0),
+        percentage: pct(Number(m.marks_obtained ?? 0), Number(t?.max_marks ?? 0)),
+        attempt_date: t?.test_date ?? m.created_at,
       };
     });
 

@@ -5,7 +5,7 @@ export type TalentEffect =
   | { kind: "xp_multiplier"; perTier: number }       // +n% xp per unlocked tier
   | { kind: "coin_multiplier"; perTier: number }     // +n% coins per unlocked tier
   | { kind: "streak_shield"; perTier: number }       // +n missed-day grace per tier
-  | { kind: "hint_orb"; perTier: number };           // +n hints per quiz per tier
+  | { kind: "hint_orb"; perTier: number };           // +n study hints per tier
 
 export type Talent = {
   code: string;
@@ -23,7 +23,7 @@ export const TALENTS: Talent[] = [
   {
     code: "coin_multiplier",
     name: "Treasure Hunter",
-    description: "Earn more coins from every quest and battle.",
+    description: "Earn more coins from every Learning Quest.",
     icon: "💰",
     color: "from-amber-400 to-yellow-600",
     maxTier: 5,
@@ -53,7 +53,7 @@ export const TALENTS: Talent[] = [
   {
     code: "hint_orb",
     name: "Hint Orb",
-    description: "Reveal mystic hints during quizzes and battles.",
+    description: "Reveal mystic study hints along your Learning Quests.",
     icon: "🔮",
     color: "from-emerald-400 to-teal-600",
     maxTier: 3,

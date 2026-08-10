@@ -42,8 +42,8 @@ export function AdventureDashboard({ cadetName, interiorTitle, dungeons, stats, 
     });
   };
 
-  const totalRewardXp = dungeons.reduce((s, d) => s + (d.bossCleared ? 0 : d.rewardXp), 0);
-  const totalRewardCoins = dungeons.reduce((s, d) => s + (d.bossCleared ? 0 : d.rewardCoins), 0);
+  const totalRewardXp = dungeons.reduce((s, d) => s + (d.chapterCleared ? 0 : d.rewardXp), 0);
+  const totalRewardCoins = dungeons.reduce((s, d) => s + (d.chapterCleared ? 0 : d.rewardCoins), 0);
 
   return (
     <motion.div

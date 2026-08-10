@@ -11,7 +11,7 @@ const LINES = [
   "Welcome to Ingenious Academy",
   "Every Lecture is a Quest",
   "Every Chapter is a Dungeon",
-  "Every Test is a Boss Battle",
+  "Every Chapter ends in a Master Trial",
   "Your adventure begins now.",
 ];
 

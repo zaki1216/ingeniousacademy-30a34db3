@@ -6,7 +6,7 @@ export type BuildingObjective = {
   subjectId: string;
   name: string;
   nextQuest: number | null;
-  bossReady?: boolean;
+  trialReady?: boolean;
 };
 
 /**
@@ -56,8 +56,8 @@ export function BuildingObjectiveBar({
     },
   }[accent];
 
-  const questLine = objective.bossReady
-    ? "Boss Battle Ready"
+  const questLine = objective.trialReady
+    ? "Master Trial Ready"
     : objective.nextQuest !== null
       ? `Learning Quest ${String(objective.nextQuest).padStart(2, "0")}`
       : "Continue the campaign";

@@ -115,7 +115,7 @@ async function evaluateAchievements(userId: string): Promise<RewardSummary["newA
 
   const stats = statsRes.data;
   const videosWatched = vcRes.count ?? 0;
-  const bossesDefeated = chapterCompRes.count ?? 0;
+  const chaptersCleared = chapterCompRes.count ?? 0;
   const coinsEarned = (coinTxRes.data ?? []).reduce((s, r) => s + r.amount, 0);
   const owned = new Set((uaRes.data ?? []).map((r) => r.achievement_id));
   const achievements = achRes.data ?? [];
@@ -128,7 +128,7 @@ async function evaluateAchievements(userId: string): Promise<RewardSummary["newA
       case "streak_days": return stats?.streak_days ?? 0;
       case "level": return stats?.level ?? 1;
       case "coins_earned": return coinsEarned;
-      case "bosses_defeated": return bossesDefeated;
+      case "bosses_defeated": return chaptersCleared;
       default: return 0;
     }
   };

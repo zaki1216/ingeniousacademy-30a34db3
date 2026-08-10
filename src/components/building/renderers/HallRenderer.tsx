@@ -561,7 +561,7 @@ function DungeonGate({
           ))}
         </svg>
 
-        {d.bossCleared && (
+        {d.chapterCleared && (
           <div className="absolute top-2 right-2 h-7 px-2 rounded-full bg-amber-500/25 border border-amber-400/60 flex items-center gap-1 text-[10px] font-black text-amber-200">
             <Trophy className="h-3 w-3" /> CLEARED
           </div>
@@ -612,7 +612,7 @@ function DungeonGate({
         </div>
       </div>
 
-      {!locked && !d.bossCleared && (
+      {!locked && !d.chapterCleared && (
         <motion.div
           className="absolute inset-0 pointer-events-none rounded-2xl"
           animate={{ opacity: [0.15, 0.35, 0.15] }}

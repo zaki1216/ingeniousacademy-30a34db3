@@ -34,23 +34,13 @@ const ROUTE_TIPS: { match: (path: string) => boolean; tip: LumiTip; seenId: stri
     },
   },
   {
-    seenId: "tip.arena.first",
-    match: (p) => p.startsWith("/app/pvp"),
-    tip: {
-      id: "tip.arena.first",
-      title: "The Arena awaits",
-      message:
-        "Challenge another Hunter to a Duel or enter a Battle Royale. Every victory earns Coins and climbs you up the Hall of Fame.",
-    },
-  },
-  {
     seenId: "tip.journey.first",
     match: (p) => p.startsWith("/app/journey"),
     tip: {
       id: "tip.journey.first",
       title: "Choose your World",
       message:
-        "Each Subject is a World, each Chapter a Dungeon. Clear every Quest to awaken the Boss inside.",
+        "Each Subject is a World, each Chapter a Dungeon. Complete every Quest to clear the Chapter's Master Trial.",
     },
   },
   {
@@ -299,7 +289,7 @@ const SUGGESTED_QUESTIONS = [
   "What are Keys?",
   "How do I earn Coins?",
   "How do Passes work?",
-  "What is a Boss Battle?",
+  "What is a Master Trial?",
   "How do I raise my Rank?",
   "What are Shadows?",
 ];

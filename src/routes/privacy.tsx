@@ -64,7 +64,7 @@ function PrivacyPage() {
         <Section title="Data we store">
           <ul className="list-disc pl-5 space-y-1">
             <li>Profile details provided by the academy (name, contact numbers, class/standard).</li>
-            <li>Learning activity: lecture views, quiz attempts, test results, and gamification stats.</li>
+            <li>Learning activity: lecture views, offline test results recorded by teachers, and gamification stats.</li>
             <li>Operational records such as attendance and announcements.</li>
           </ul>
           <p>
