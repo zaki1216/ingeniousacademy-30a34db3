@@ -30,7 +30,7 @@ export interface EngineDungeon {
   total: number;
   passed: number;
   pct: number;
-  bossCleared: boolean;
+  chapterCleared: boolean;
   unlocked: boolean;
   difficulty: number;
   rewardXp: number;
@@ -169,10 +169,10 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
       const total = agg?.total ?? 0;
       const passed = agg?.passed ?? 0;
       const pct = agg?.percent ?? 0;
-      const bossCleared = doneChs.has(c.id);
-      const prevBossCleared = i === 0 ? true : doneChs.has(chs[i - 1].id);
+      const chapterCleared = doneChs.has(c.id);
+      const prevChapterCleared = i === 0 ? true : doneChs.has(chs[i - 1].id);
       const anyStarted = passed > 0;
-      void prevBossCleared; void anyStarted;
+      void prevChapterCleared; void anyStarted;
       // Open curriculum: all dungeons are accessible from the start.
       const unlocked = true;
       const difficulty = Math.min(3, Math.floor(i / 2));
@@ -185,7 +185,7 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
         total,
         passed,
         pct,
-        bossCleared,
+        chapterCleared,
         unlocked,
         difficulty,
         rewardXp: full?.completion_xp ?? 100,
@@ -197,13 +197,13 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
 
   const stats = useMemo<EngineStats>(() => {
     const totalDungeons = dungeons.length;
-    const cleared = dungeons.filter((d) => d.bossCleared).length;
+    const cleared = dungeons.filter((d) => d.chapterCleared).length;
     const totalQuests = dungeons.reduce((s, d) => s + d.total, 0);
     const passedQuests = dungeons.reduce((s, d) => s + d.passed, 0);
     const pct = totalQuests > 0 ? Math.round((passedQuests / totalQuests) * 100) : 0;
     const recommended =
-      dungeons.find((d) => d.unlocked && !d.bossCleared && d.nextQuest !== null) ??
-      dungeons.find((d) => d.unlocked && !d.bossCleared) ??
+      dungeons.find((d) => d.unlocked && !d.chapterCleared && d.nextQuest !== null) ??
+      dungeons.find((d) => d.unlocked && !d.chapterCleared) ??
       null;
     return { totalDungeons, cleared, totalQuests, passedQuests, pct, recommended };
   }, [dungeons]);
@@ -216,7 +216,7 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
       subjectId: cand.subjectId,
       name: cand.name,
       nextQuest: cand.nextQuest,
-      bossReady: cand.total > 0 && cand.passed >= cand.total,
+      trialReady: cand.total > 0 && cand.passed >= cand.total,
     };
   }, [stats]);
 

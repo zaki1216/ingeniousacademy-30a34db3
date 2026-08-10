@@ -77,7 +77,7 @@ function WorldPage() {
     return chs.map((c, i) => {
       const agg = aggMap.get(c.id);
       const theme = DUNGEON_THEMES[i % DUNGEON_THEMES.length];
-      const bossCleared = doneChs.has(c.id);
+      const chapterCleared = doneChs.has(c.id);
       const total = agg?.total ?? 0;
       const passed = agg?.passed ?? 0;
       const pct = agg?.percent ?? 0;
@@ -88,7 +88,7 @@ function WorldPage() {
         total,
         passed,
         pct,
-        bossCleared,
+        chapterCleared,
         difficulty,
         nextQuest: agg?.next_to_unlock?.lecture_number ?? null,
       };
@@ -97,11 +97,11 @@ function WorldPage() {
 
   const stats = useMemo(() => {
     const totalDungeons = dungeons.length;
-    const clearedDungeons = dungeons.filter((d) => d.bossCleared).length;
+    const clearedDungeons = dungeons.filter((d) => d.chapterCleared).length;
     const totalQuests = dungeons.reduce((s, d) => s + d.total, 0);
     const passedQuests = dungeons.reduce((s, d) => s + d.passed, 0);
     const pct = totalQuests > 0 ? Math.round((passedQuests / totalQuests) * 100) : 0;
-    const recommended = dungeons.find((d) => d.nextQuest !== null) ?? dungeons.find((d) => !d.bossCleared) ?? null;
+    const recommended = dungeons.find((d) => d.nextQuest !== null) ?? dungeons.find((d) => !d.chapterCleared) ?? null;
     return { totalDungeons, clearedDungeons, totalQuests, passedQuests, pct, recommended };
   }, [dungeons]);
 
@@ -202,8 +202,8 @@ function WorldPage() {
         </div>
         <div className="grid sm:grid-cols-2 gap-3">
           {dungeons.map((d, i) => {
-            const bossState: "cleared" | "ready" | "locked" =
-              d.bossCleared ? "cleared" : d.total > 0 && d.passed === d.total ? "ready" : "locked";
+            const trialState: "cleared" | "ready" | "locked" =
+              d.chapterCleared ? "cleared" : d.total > 0 && d.passed === d.total ? "ready" : "locked";
             return (
               <motion.button
                 key={d.id}
@@ -226,7 +226,7 @@ function WorldPage() {
                 />
                 <div className="flex items-center gap-3">
                   <div className={`h-14 w-14 rounded-xl bg-gradient-to-br ${d.theme.grad} grid place-items-center text-2xl shadow-lg shrink-0 border border-white/20`}>
-                    {d.bossCleared ? <Crown className="h-7 w-7 text-amber-200 drop-shadow" /> : <span>{d.theme.emoji}</span>}
+                    {d.chapterCleared ? <Crown className="h-7 w-7 text-amber-200 drop-shadow" /> : <span>{d.theme.emoji}</span>}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
@@ -250,12 +250,12 @@ function WorldPage() {
                       <RewardChip icon={<Ghost className="h-3 w-3" />} label="Shadow" />
                     </div>
                     <div className={`mt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest ${
-                      bossState === "cleared" ? "text-amber-300"
-                      : bossState === "ready" ? "text-rose-300"
+                      trialState === "cleared" ? "text-amber-300"
+                      : trialState === "ready" ? "text-rose-300"
                       : "text-muted-foreground"
                     }`}>
-                      {bossState === "cleared" ? <><Crown className="h-3 w-3" /> Boss Defeated</>
-                      : bossState === "ready" ? <><Crown className="h-3 w-3" /> Boss: Ready</>
+                      {trialState === "cleared" ? <><Crown className="h-3 w-3" /> Boss Defeated</>
+                      : trialState === "ready" ? <><Crown className="h-3 w-3" /> Boss: Ready</>
                       : <><Crown className="h-3 w-3" /> Boss: Locked</>}
                     </div>
                   </div>

@@ -15,7 +15,7 @@ export interface DungeonCardData {
   total: number;
   passed: number;
   pct: number;
-  bossCleared: boolean;
+  chapterCleared: boolean;
   unlocked: boolean;
   rewardXp: number;
   rewardCoins: number;
@@ -59,7 +59,7 @@ export function DungeonCard({
         <div className="text-3xl sm:text-4xl font-black text-white/90 font-serif" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
           {String(d.number).padStart(2, "0")}
         </div>
-        {d.bossCleared && (
+        {d.chapterCleared && (
           <div className="absolute top-2 right-2 h-6 px-2 rounded-full bg-black/40 border border-white/30 flex items-center gap-1 text-[9px] font-black text-white">
             <Crown className="h-3 w-3" /> CLEARED
           </div>
