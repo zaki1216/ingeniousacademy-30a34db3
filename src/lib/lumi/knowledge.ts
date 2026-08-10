@@ -13,7 +13,6 @@ export type LumiCategoryId =
   | "progression"
   | "merchant"
   | "inventory"
-  | "arena"
   | "collections"
   | "seasons"
   | "records"
@@ -40,7 +39,6 @@ export const LUMI_CATEGORIES: { id: LumiCategoryId; label: string; icon: string;
   { id: "progression",     label: "XP, Ranks & Titles", icon: "⚔️", blurb: "How Cadets rise to Legends." },
   { id: "merchant",        label: "Merchant's Emporium", icon: "🛒", blurb: "Where hard-won coins become treasures." },
   { id: "inventory",       label: "Inventory & Passes", icon: "🎒", blurb: "Your chest of scrolls, shields and tokens." },
-  { id: "arena",           label: "Arena",           icon: "⚔️", blurb: "Duels and Battle Royales for glory." },
   { id: "collections",     label: "Shadows & Pets",  icon: "👻", blurb: "Companions and spirits you gather." },
   { id: "seasons",         label: "Season System",   icon: "🌙", blurb: "Limited chapters with exclusive rewards." },
   { id: "records",         label: "Report Card & Records", icon: "📖", blurb: "Attendance, offline tests and history." },
@@ -241,18 +239,6 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     ],
     keywords: ["spin", "wheel", "daily", "fortune"],
     icon: "🎡",
-  },
-  {
-    id: "arena",
-    title: "The Arena",
-    category: "arena",
-    summary: "Duels and Battle Royales against other Cadets.",
-    body: [
-      "Challenge another Hunter to a Duel, or enter a Battle Royale for many rivals at once.",
-      "Every victory adds to your Arena Wins and climbs you up the Hall of Fame.",
-    ],
-    keywords: ["arena", "pvp", "duel", "battle royale", "fight"],
-    icon: "⚔️",
   },
   {
     id: "hall-of-fame",
