@@ -165,7 +165,7 @@ function WorldPage() {
           <StatChip label="Progress" value={`${stats.pct}%`} icon={<Sparkles className="h-3.5 w-3.5" />} />
           <StatChip label="Dungeons" value={`${stats.clearedDungeons}/${stats.totalDungeons}`} icon={<Castle className="h-3.5 w-3.5" />} />
           <StatChip label="Quests" value={`${stats.passedQuests}/${stats.totalQuests}`} icon={<Swords className="h-3.5 w-3.5" />} />
-          <StatChip label="Bosses" value={`${stats.clearedDungeons}`} icon={<Crown className="h-3.5 w-3.5" />} />
+          <StatChip label="Trials" value={`${stats.clearedDungeons}`} icon={<Crown className="h-3.5 w-3.5" />} />
         </div>
 
         {/* Progress bar */}
@@ -254,9 +254,9 @@ function WorldPage() {
                       : trialState === "ready" ? "text-rose-300"
                       : "text-muted-foreground"
                     }`}>
-                      {trialState === "cleared" ? <><Crown className="h-3 w-3" /> Boss Defeated</>
-                      : trialState === "ready" ? <><Crown className="h-3 w-3" /> Boss: Ready</>
-                      : <><Crown className="h-3 w-3" /> Boss: Locked</>}
+                      {trialState === "cleared" ? <><Crown className="h-3 w-3" /> Trial Cleared</>
+                      : trialState === "ready" ? <><Crown className="h-3 w-3" /> Trial: Ready</>
+                      : <><Crown className="h-3 w-3" /> Trial: Pending</>}
                     </div>
                   </div>
                 </div>
