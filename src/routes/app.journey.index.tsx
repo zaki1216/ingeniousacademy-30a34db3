@@ -90,7 +90,7 @@ function JourneyHome() {
           <MapIcon className="h-6 w-6 text-primary" /> Choose Your World
         </h1>
         <p className="text-sm text-muted-foreground">
-          Every Subject is a World. Enter to raid its Dungeons, conquer Quests, and defeat the Chapter Boss.
+          Every Subject is a World. Enter to explore its Dungeons, complete Quests, and clear each Chapter.
         </p>
       </div>
 

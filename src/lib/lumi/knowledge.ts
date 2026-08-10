@@ -8,8 +8,7 @@ export type LumiCategoryId =
   | "buildings"
   | "journey"
   | "quests"
-  | "quizzes"
-  | "bosses"
+  | "trials"
   | "economy"
   | "progression"
   | "merchant"
@@ -36,8 +35,7 @@ export const LUMI_CATEGORIES: { id: LumiCategoryId; label: string; icon: string;
   { id: "buildings",       label: "Buildings",       icon: "🏛️", blurb: "Every hall, chamber and gate you can enter." },
   { id: "journey",         label: "Journey",         icon: "🗺️", blurb: "Worlds and dungeons that guide your studies." },
   { id: "quests",          label: "Learning Quests", icon: "📜", blurb: "Lectures, tasks and rewards along the path." },
-  { id: "quizzes",         label: "Quizzes",         icon: "🎯", blurb: "How assessments unlock the next chamber." },
-  { id: "bosses",          label: "Boss Battles",    icon: "🐉", blurb: "Final challenges that seal each chapter." },
+  { id: "trials",          label: "Master Trials",   icon: "🏆", blurb: "Chapter finales you reach by completing every lecture." },
   { id: "economy",         label: "Coins & Keys",    icon: "🪙", blurb: "Currencies you earn through effort." },
   { id: "progression",     label: "XP, Ranks & Titles", icon: "⚔️", blurb: "How Cadets rise to Legends." },
   { id: "merchant",        label: "Merchant's Emporium", icon: "🛒", blurb: "Where hard-won coins become treasures." },
@@ -56,7 +54,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "getting-started",
     summary: "The Academy is a living world where studying earns you real adventure.",
     body: [
-      "You are a Cadet of Ingenious Academy. Every lecture you master, every quiz you clear and every day you attend shapes your Hunter Rank.",
+      "You are a Cadet of Ingenious Academy. Every lecture you master and every day you attend shapes your Hunter Rank.",
       "Explore the Campus at your own pace — the buildings will glow whenever a new adventure awaits you.",
     ],
     keywords: ["welcome", "start", "begin", "intro", "cadet", "new"],
@@ -81,7 +79,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     summary: "Worlds and dungeons that mirror your subjects and chapters.",
     body: [
       "Every Subject is a World. Every Chapter is a Dungeon. Every Lecture is a Quest.",
-      "Complete Quests in order — each one you clear opens the path to the next. Finish every Quest in a Dungeon to challenge the Boss Battle at its tail.",
+      "Complete Quests at your own pace. Finish every Quest in a Dungeon to reach its Master Trial and claim the Knowledge Chest.",
     ],
     keywords: ["journey", "world", "dungeon", "chapter", "subject"],
     icon: "🗺️",
@@ -92,35 +90,23 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "quests",
     summary: "Lectures and study tasks that reward XP and coins.",
     body: [
-      "Each Quest holds a lecture and a short assessment. Watch the lecture and answer the Quiz Gate to prove your mastery.",
-      "Passing a Quest awards XP, Coins and unlocks the next stone on the dungeon path.",
+      "Each Quest holds a lecture. Watch it to the end and the Quest is complete — there is no test to pass.",
+      "Completing a Quest awards XP and Coins, and the next stone on the dungeon path lights up.",
     ],
     keywords: ["quest", "lecture", "learning", "video", "task"],
     icon: "📜",
   },
   {
-    id: "quizzes",
-    title: "Quizzes & Quiz Gates",
-    category: "quizzes",
-    summary: "Short assessments at the end of every Quest.",
+    id: "trials",
+    title: "Master Trials",
+    category: "trials",
+    summary: "The chapter finale you reach by completing every lecture.",
     body: [
-      "A Quiz Gate seals each Quest. You may attempt it as many times as you need — only your best attempt counts toward unlocking the next path.",
-      "Passing every Quiz Gate in a Dungeon awakens the Boss Battle.",
+      "When every Quest of a Dungeon is complete, the Master Trial is cleared and a Knowledge Chest opens with bonus XP, Coins and a trophy.",
+      "There is nothing to pass or score — finishing your lectures is what completes the chapter.",
     ],
-    keywords: ["quiz", "test", "assessment", "gate", "score", "attempt"],
-    icon: "🎯",
-  },
-  {
-    id: "bosses",
-    title: "Boss Battles",
-    category: "bosses",
-    summary: "The chapter-final challenge that grants legendary rewards.",
-    body: [
-      "When every Quest of a Dungeon is cleared, the Boss Gate opens. Defeating a Boss rewards bonus XP, Coins, a trophy and often a rare drop.",
-      "Bosses are optional in progress, but they are the surest way to gain Rank.",
-    ],
-    keywords: ["boss", "battle", "final", "chapter", "trophy"],
-    icon: "🐉",
+    keywords: ["master trial", "chapter", "trophy", "knowledge chest", "complete"],
+    icon: "🏆",
   },
   {
     id: "coins",
@@ -128,7 +114,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "economy",
     summary: "The primary currency earned by studying and attending.",
     body: [
-      "Coins drop from Quests, Quizzes, Boss Battles, streaks and daily attendance.",
+      "Coins drop from Quests, completed chapters, streaks and daily attendance.",
       "Spend them at the Merchant's Emporium for cosmetics, at the Spin Wheel for surprise rewards, or save toward rare Passes.",
     ],
     keywords: ["coin", "coins", "gold", "currency", "money", "earn"],
@@ -140,7 +126,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "economy",
     summary: "Sacred keys that open sealed treasure chests.",
     body: [
-      "Keys are rarer than Coins and only appear from Boss Battles, streak milestones and seasonal events.",
+      "Keys are rarer than Coins and only appear from completed chapters, streak milestones and seasonal events.",
       "Use them to unlock premium chests inside the Treasure Chest Corner.",
     ],
     keywords: ["key", "keys", "chest", "unlock"],
@@ -152,7 +138,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "progression",
     summary: "The energy of learning — it raises your Level.",
     body: [
-      "Every Quest, Quiz and Boss awards XP. XP fills your Level bar; each new Level pushes you closer to the next Rank.",
+      "Every Quest and completed chapter awards XP. XP fills your Level bar; each new Level pushes you closer to the next Rank.",
       "An XP Potion doubles all XP gains for 24 hours.",
     ],
     keywords: ["xp", "experience", "level", "levels"],
@@ -164,7 +150,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "progression",
     summary: "Your title of power — E-Rank Cadet all the way to Monarch.",
     body: [
-      "Ranks are earned through Levels, streaks and Boss victories. Each Rank unlocks new frames, badges and Arena tiers.",
+      "Ranks are earned through Levels, streaks and completed chapters. Each Rank unlocks new frames, badges and Arena tiers.",
       "The path is E → D → C → B → A → S → National → Monarch. Very few reach Monarch — but every Cadet begins the climb the same way: one Quest at a time.",
     ],
     keywords: ["rank", "hunter", "monarch", "tier", "s rank"],
@@ -176,7 +162,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "progression",
     summary: "Cosmetic names earned or purchased.",
     body: [
-      "Titles like Rookie Hunter, Homework Slayer, Dungeon Explorer or Quiz Assassin appear beneath your name.",
+      "Titles like Rookie Hunter, Homework Slayer or Dungeon Explorer appear beneath your name.",
       "You may equip one Title at a time from your Wardrobe in the Residence.",
     ],
     keywords: ["title", "titles", "name", "wardrobe"],
@@ -186,7 +172,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     id: "badges",
     title: "Badges & Achievements",
     category: "progression",
-    summary: "Trophies for milestones — 7-day Streak, First Boss, Perfect Quiz and more.",
+    summary: "Trophies for milestones — 7-day Streak, first chapter cleared and more.",
     body: [
       "Badges are permanent proof of your feats. Rarer badges have colored glows and can be pinned to your Player Card.",
       "See them all on the Achievement Wall inside your Residence.",
@@ -227,10 +213,9 @@ export const LUMI_ENTRIES: LumiEntry[] = [
       "Homework Shield — skip one homework, teacher approval required, once per month.",
       "Holiday Pass — one approved leave, cannot be used during exams, once per term.",
       "Streak Shield — protects one missed day of your streak.",
-      "Quiz Retry Token — attempt any failed quiz once more.",
       "XP Potion — double XP for 24 hours.",
     ],
-    keywords: ["pass", "passes", "homework", "holiday", "streak", "retry", "potion"],
+    keywords: ["pass", "passes", "homework", "holiday", "streak", "potion"],
     icon: "📜",
   },
   {
@@ -240,7 +225,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     summary: "Common, Rare, Epic and Legendary — each brimming with surprises.",
     body: [
       "Chests may contain Coins, Passes, Titles, Cosmetics and one day Shadows and Pets.",
-      "Legendary Chests appear only from Boss Battles, top Arena finishes and rare Seasonal events.",
+      "Legendary Chests appear only from completed chapters and rare Seasonal events.",
     ],
     keywords: ["chest", "chests", "treasure", "loot"],
     icon: "🎁",
@@ -323,7 +308,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "records",
     summary: "Your official academic record inside the Academy.",
     body: [
-      "The Report Card tracks quizzes, offline tests, attendance and teacher notes.",
+      "The Report Card tracks offline tests recorded by your teachers, attendance and teacher notes.",
       "It is the mirror between your adventures and your school life.",
     ],
     keywords: ["report", "card", "grades", "record"],
@@ -345,7 +330,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     id: "shadows",
     title: "Shadow Collection",
     category: "collections",
-    summary: "Spirits you collect from Bosses, chests and rare events.",
+    summary: "Spirits you collect from cleared chapters, chests and rare events.",
     body: [
       "Each Shadow has a rarity, an unlock source and a lore description. Locked Shadows appear as silhouettes until you claim them.",
       "The full collection lives in the Shadow Gallery of your Residence.",
@@ -381,10 +366,10 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     id: "how-to-unlock",
     title: "How do I unlock the next Quest?",
     category: "faq",
-    summary: "Clear the previous Quiz Gate — that path is your key.",
+    summary: "Finish the lecture before it — completing a Quest opens the next.",
     body: [
-      "Every Quest is sealed until you pass the Quiz Gate of the Quest before it.",
-      "If a path glows grey and rune-locked, return to the previous Quest and clear the Quiz — you can retry as many times as needed.",
+      "Complete the lecture of the Quest you are on and the next Quest opens immediately. There is no quiz between them.",
+      "If a path still looks dim, return to the previous Quest and watch its lecture to the end.",
     ],
     keywords: ["unlock", "next quest", "locked", "path", "gate"],
     icon: "🔓",
@@ -395,7 +380,7 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     category: "faq",
     summary: "Study, attend and adventure — the Academy rewards effort.",
     body: [
-      "Coins drop from Quests, Quizzes, Boss Battles, daily attendance, the Spin Wheel and streak milestones.",
+      "Coins drop from Quests, completed chapters, daily attendance, the Spin Wheel and streak milestones.",
       "The Merchant sometimes hands out bonus Coins during Seasons — keep watch.",
     ],
     keywords: ["earn coins", "get coins", "farm", "money"],
@@ -417,9 +402,9 @@ export const LUMI_ENTRIES: LumiEntry[] = [
     id: "raise-rank",
     title: "How do I raise my Rank?",
     category: "faq",
-    summary: "Levels, Boss victories and long streaks lift you upward.",
+    summary: "Levels, completed chapters and long streaks lift you upward.",
     body: [
-      "Ranks respond to sustained effort. Level up through XP, defeat Bosses, hold a strong streak and finish each Season with pride.",
+      "Ranks respond to sustained effort. Level up through XP, clear chapters, hold a strong streak and finish each Season with pride.",
       "There are no shortcuts — but every day of study counts.",
     ],
     keywords: ["rank up", "increase rank", "promotion"],

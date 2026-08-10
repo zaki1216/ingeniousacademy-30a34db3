@@ -57,7 +57,7 @@ export function BuildingObjectiveBar({
   }[accent];
 
   const questLine = objective.bossReady
-    ? "Boss Battle Ready"
+    ? "Master Trial Ready"
     : objective.nextQuest !== null
       ? `Learning Quest ${String(objective.nextQuest).padStart(2, "0")}`
       : "Continue the campaign";
