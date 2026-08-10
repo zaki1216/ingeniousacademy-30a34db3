@@ -120,14 +120,14 @@ function Overview() {
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <StatCard icon={Users} label="Cadets" value={t.totalStudents} sub={`${t.activeStudents} active`} />
-        <StatCard icon={TrendingUp} label="Avg Score" value={`${t.overallAvg}%`} sub={`${t.totalAttempts} attempts`} />
+        <StatCard icon={TrendingUp} label="Offline Avg" value={`${t.overallAvg}%`} sub={`${t.totalAttempts} attempts`} />
         <StatCard icon={CalendarCheck} label="Attendance" value={`${t.attendanceRate}%`} sub="Today's roll" />
-        <StatCard icon={BookOpen} label="Library" value={t.totalLectures} sub={`${t.totalTests} tests`} />
+        <StatCard icon={BookOpen} label="Library" value={t.totalLectures} sub={`${t.totalTests} offline tests`} />
       </div>
 
       <div className="grid md:grid-cols-2 gap-3">
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><ClipboardList className="h-4 w-4" />Test performance</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><ClipboardList className="h-4 w-4" />Offline test performance</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {data.testStats.length === 0 && <p className="text-sm text-muted-foreground">No attempts yet.</p>}
             {data.testStats.map((t) => (
@@ -162,21 +162,6 @@ function Overview() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Award className="h-4 w-4" />Hardest questions</CardTitle></CardHeader>
-        <CardContent className="space-y-2">
-          {data.hardestQuestions.length === 0 && <p className="text-sm text-muted-foreground">Not enough data.</p>}
-          {data.hardestQuestions.map((q) => (
-            <div key={q.id} className="flex items-start justify-between gap-2 text-sm border-b last:border-0 pb-2 last:pb-0">
-              <div className="min-w-0">
-                <div className="truncate">{q.question_text}</div>
-                <div className="text-[11px] text-muted-foreground">{q.test_title} · {q.attempts} attempts</div>
-              </div>
-              <Badge variant={q.correct_pct < 40 ? "destructive" : "secondary"} className="shrink-0">{q.correct_pct}% correct</Badge>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
     </div>
   );
 }
@@ -255,7 +240,7 @@ function Reports() {
     lines.push("Subject,Chapter,Avg %,Attempts");
     for (const w of weakChapters) lines.push(`${w.subject},${w.name},${w.avg},${w.attempts}`);
     lines.push("");
-    lines.push("Test Attempts");
+    lines.push("Offline Test Results");
     lines.push("Date,Test,Subject,Chapter,Score,Total,Percentage");
     for (const r of tests.rows) {
       lines.push([
@@ -321,7 +306,7 @@ function Reports() {
           </Card>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <StatCard icon={TrendingUp} label="Test Avg" value={`${card.data.tests.average}%`} sub={`${card.data.tests.count} attempts`} />
+            <StatCard icon={TrendingUp} label="Offline Test Avg" value={`${card.data.tests.average}%`} sub={`${card.data.tests.count} attempts`} />
             <StatCard icon={CalendarCheck} label="Attendance" value={`${card.data.attendance.percentage}%`} sub={`${card.data.attendance.present}/${card.data.attendance.total}`} />
             <StatCard icon={BookOpen} label="Lectures" value={card.data.lectures.unique} sub={`${card.data.lectures.totalWatches} watches`} />
             <StatCard icon={Award} label="Weak chapters" value={card.data.weakChapters.length} />
