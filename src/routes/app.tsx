@@ -34,7 +34,7 @@ const adminNav: NavItem[] = [
   { to: "/app/admin/dashboard", label: "Command Center", icon: LayoutDashboard },
   { to: "/app/admin/students", label: "Student Management", icon: ShieldCheck },
   { to: "/app/admin/attendance", label: "Attendance", icon: LayoutDashboard },
-  { to: "/app/admin/content", label: "Academy Content", icon: Library },
+  { to: "/app/content", label: "Academy Content", icon: Library },
   { to: "/app/admin/progress", label: "Progress & Rewards", icon: Gamepad2 },
   { to: "/app/admin/marketplace", label: "Marketplace", icon: ShoppingBag },
   { to: "/app/admin/settings", label: "Academy Settings", icon: Cog },

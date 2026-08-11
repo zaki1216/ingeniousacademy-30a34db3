@@ -24,18 +24,34 @@ import { CurriculumExplorer } from "@/components/admin/CurriculumExplorer";
 import { SharedCurriculumManager } from "@/components/admin/SharedCurriculumManager";
 import { useAuth } from "@/lib/auth/AuthContext";
 
-export const Route = createFileRoute("/app/content")({ component: ContentPage });
+export const Route = createFileRoute("/app/content")({
+  head: () => ({
+    meta: [
+      { title: "Academy Content — Curriculum Explorer" },
+      { name: "description", content: "Manage Standards, Subjects, Courses, Chapters and Lectures in one place." },
+      { property: "og:title", content: "Academy Content — Curriculum Explorer" },
+      { property: "og:description", content: "Manage Standards, Subjects, Courses, Chapters and Lectures in one place." },
+    ],
+  }),
+  component: ContentPage,
+});
 
 function ContentPage() {
   const { role } = useAuth();
   if (role !== "admin") return <p className="text-muted-foreground">Admins only.</p>;
   return (
     <div className="space-y-4 w-full max-w-full overflow-x-hidden">
-      <div>
-        <h1 className="text-2xl font-bold">Academy Content</h1>
-        <p className="text-sm text-muted-foreground">
-          Board → Standard → Subject → Course → Chapter → Lecture, in one place.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">Academy Content</h1>
+          <p className="text-sm text-muted-foreground">
+            Standard → Subject → Course → Chapter → Lecture, in one place.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link to="/app/notes"><Button size="sm" variant="outline"><FileText className="h-4 w-4 mr-1" />Notes</Button></Link>
+          <Link to="/app/admin/lecture-views"><Button size="sm" variant="outline"><Eye className="h-4 w-4 mr-1" />Engagement</Button></Link>
+        </div>
       </div>
       <Tabs defaultValue="explorer">
         <TabsList className="grid grid-cols-3 w-full">
@@ -50,6 +66,7 @@ function ContentPage() {
     </div>
   );
 }
+
 
 /* ---------------------- Boards & standards ---------------------- */
 

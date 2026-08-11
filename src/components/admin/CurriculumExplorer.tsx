@@ -111,6 +111,7 @@ export function CurriculumExplorer() {
       {/* Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
         {[
+          { label: "Academy Content", onClick: () => { setStandardId(""); setSubjectId(""); setCourseId(""); } },
           { label: board?.name ?? "Board", onClick: () => { setStandardId(""); setSubjectId(""); setCourseId(""); } },
           ...(standard ? [{ label: standard.name, onClick: () => { setSubjectId(""); setCourseId(""); } }] : []),
           ...(subject ? [{ label: subject.display_name || subject.name, onClick: () => setCourseId("") }] : []),
