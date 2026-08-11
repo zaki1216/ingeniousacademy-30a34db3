@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { loginWithAcademyId } from "@/lib/api/login.functions";
 import { EntryStage } from "./EntryStage";
 import { SplashScene } from "./SplashScene";
 import { StoryIntroScene } from "./StoryIntroScene";
