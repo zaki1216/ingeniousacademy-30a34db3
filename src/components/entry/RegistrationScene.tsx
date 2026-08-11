@@ -101,14 +101,17 @@ export function RegistrationScene({ mode, onModeChange, onSubmit, loading }: Pro
                 {isAdmin ? "Headmaster Email" : "Academy ID"}
               </Label>
               <Input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                autoComplete="username"
                 maxLength={255}
                 className="bg-black/40 border-amber-500/20 text-amber-50 placeholder:text-amber-100/30"
-                placeholder="cadet@ingenious.academy"
+                placeholder={isAdmin ? "headmaster@ingenious.academy" : "Your Academy ID"}
               />
             </div>
             <div className="space-y-1.5">
