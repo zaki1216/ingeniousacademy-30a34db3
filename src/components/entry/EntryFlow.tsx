@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { loginWithAcademyId } from "@/lib/api/login.functions";
 import { EntryStage } from "./EntryStage";
 import { SplashScene } from "./SplashScene";
 import { StoryIntroScene } from "./StoryIntroScene";
@@ -35,24 +36,30 @@ export function EntryFlow({ initialMode = "student" }: { initialMode?: "student"
   const advanceFromGate = useCallback(() => setStep("auth"), []);
 
   const handleAuth = useCallback(
-    async (email: string, password: string) => {
+    async (identifier: string, password: string) => {
       setLoading(true);
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("is_active")
-          .eq("id", data.user.id)
-          .maybeSingle();
-        if (profile && profile.is_active === false) {
-          await supabase.auth.signOut();
-          throw new Error("Your account is disabled. Please contact your admin.");
+        const result = await loginWithAcademyId({
+          data: { identifier: identifier.trim(), password },
+        });
+        if (!result.ok) {
+          if (result.code === "inactive") {
+            toast.error("Your Academy account is currently inactive. Please contact the Academy.");
+          } else if (result.code === "not_found") {
+            toast.error("We couldn't find an Academy account with this ID.");
+          } else {
+            toast.error("Academy ID or password is incorrect.");
+          }
+          return;
         }
+        const { error } = await supabase.auth.setSession({
+          access_token: result.access_token,
+          refresh_token: result.refresh_token,
+        });
+        if (error) throw error;
         setStep("loading");
-      } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : "Registration failed";
-        toast.error(msg);
+      } catch {
+        toast.error("Academy ID or password is incorrect.");
       } finally {
         setLoading(false);
       }
