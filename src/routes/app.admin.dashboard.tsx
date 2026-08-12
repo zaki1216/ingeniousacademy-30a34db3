@@ -1,26 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
 import {
-  Users, BookOpen, ClipboardList, TrendingUp, CalendarCheck, Award, Download, Search,
-  Plus, FileText, ListChecks, GraduationCap, Ticket, Megaphone, Crown, LayoutDashboard,
+  Users, BookOpen, TrendingUp, CalendarCheck, UserPlus,
+  ClipboardEdit, Plus, LayoutDashboard, AlertTriangle,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { HeadmasterHeader } from "@/components/admin/HeadmasterHeader";
-import { getLeaderboard } from "@/lib/api/gamification.functions";
-
-import { adminGetOverview, adminGetStudentReportCard } from "@/lib/api/admin-analytics.functions";
-import { adminListStudentsForViews } from "@/lib/api/lecture-views.functions";
+import { adminGetOverview } from "@/lib/api/admin-analytics.functions";
 
 export const Route = createFileRoute("/app/admin/dashboard")({
   head: () => ({ meta: [{ title: "Command Center — Academy Office" }] }),
@@ -28,12 +17,10 @@ export const Route = createFileRoute("/app/admin/dashboard")({
 });
 
 const QUICK_ACTIONS: { to: string; label: string; icon: any }[] = [
-  { to: "/app/admin/students", label: "Student Management", icon: Users },
-  { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
-  { to: "/app/content", label: "Curriculum", icon: BookOpen },
-  { to: "/app/notes", label: "Notes", icon: FileText },
-  { to: "/app/admin/progress", label: "Progress & Rewards", icon: TrendingUp },
-  { to: "/app/admin/settings", label: "Settings", icon: LayoutDashboard },
+  { to: "/app/admin/students", label: "Add Student", icon: UserPlus },
+  { to: "/app/admin/attendance", label: "Mark Attendance", icon: CalendarCheck },
+  { to: "/app/content", label: "Add Course", icon: Plus },
+  { to: "/app/admin/offline-tests", label: "Record Test", icon: ClipboardEdit },
 ];
 
 function CommandCenter() {
@@ -42,16 +29,15 @@ function CommandCenter() {
       <HeadmasterHeader
         icon={<LayoutDashboard className="h-7 w-7" />}
         title="Command Center"
-        tagline="Every heartbeat of Ingenious Academy — at a single glance."
-        lumi="This is your Headmaster's desk. Every Cadet, every Quest, every reward flows through the halls beyond this door."
+        tagline="What needs your attention today."
+        lumi="This is your Headmaster's desk — a quick pulse of the Academy, and the actions you use most."
       />
 
-      {/* Quick Actions */}
       <div>
         <div className="mb-2 text-xs font-orbitron uppercase tracking-widest text-amber-300/80">
-          Headmaster Quick Actions
+          Quick Actions
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {QUICK_ACTIONS.map((a) => {
             const Icon = a.icon;
             return (
@@ -70,22 +56,7 @@ function CommandCenter() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview">
-        <TabsList>
-          <TabsTrigger value="overview">Live Pulse</TabsTrigger>
-          <TabsTrigger value="cadets">Top Cadets</TabsTrigger>
-          <TabsTrigger value="reports">Report Cards</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="mt-4">
-          <Overview />
-        </TabsContent>
-        <TabsContent value="cadets" className="mt-4">
-          <TopCadets />
-        </TabsContent>
-        <TabsContent value="reports" className="mt-4">
-          <Reports />
-        </TabsContent>
-      </Tabs>
+      <Overview />
     </div>
   );
 }
@@ -116,236 +87,37 @@ function Overview() {
   }
 
   const t = data.totals;
+  const inactive = Math.max(0, t.totalStudents - t.activeStudents);
+  const pending: { label: string; to: string }[] = [];
+  if (inactive > 0) pending.push({ label: `${inactive} inactive student account${inactive > 1 ? "s" : ""}`, to: "/app/admin/students" });
+  if (t.attendanceRate === 0) pending.push({ label: "Attendance not marked today", to: "/app/admin/attendance" });
+  if (t.totalLectures === 0) pending.push({ label: "No lectures published yet", to: "/app/content" });
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <StatCard icon={Users} label="Cadets" value={t.totalStudents} sub={`${t.activeStudents} active`} />
-        <StatCard icon={TrendingUp} label="Offline Avg" value={`${t.overallAvg}%`} sub={`${t.totalAttempts} attempts`} />
-        <StatCard icon={CalendarCheck} label="Attendance" value={`${t.attendanceRate}%`} sub="Today's roll" />
-        <StatCard icon={BookOpen} label="Library" value={t.totalLectures} sub={`${t.totalTests} offline tests`} />
+        <StatCard icon={Users} label="Active Students" value={t.activeStudents} sub={`of ${t.totalStudents} enrolled`} />
+        <StatCard icon={CalendarCheck} label="Today's Attendance" value={`${t.attendanceRate}%`} sub="Today's roll" />
+        <StatCard icon={BookOpen} label="Learning Activity" value={t.totalLectures} sub="lectures available" />
+        <StatCard icon={TrendingUp} label="Assessments" value={t.totalTests} sub={`${t.totalAttempts} attempts`} />
       </div>
 
-      <div className="grid md:grid-cols-2 gap-3">
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><ClipboardList className="h-4 w-4" />Offline test performance</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {data.testStats.length === 0 && <p className="text-sm text-muted-foreground">No attempts yet.</p>}
-            {data.testStats.map((t) => (
-              <div key={t.id} className="flex items-center justify-between text-sm gap-2">
-                <div className="min-w-0 truncate">{t.title}</div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-xs text-muted-foreground">{t.attempts}x</span>
-                  <Badge variant={t.avg_percentage >= 75 ? "default" : t.avg_percentage >= 40 ? "secondary" : "destructive"}>{t.avg_percentage}%</Badge>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><BookOpen className="h-4 w-4" />Most-watched lectures</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {data.topLectures.length === 0 && <p className="text-sm text-muted-foreground">No views yet.</p>}
-            {data.topLectures.map((l) => (
-              <div key={l.id} className="flex items-center justify-between text-sm gap-2">
-                <div className="min-w-0">
-                  <div className="truncate">{l.title}</div>
-                  <div className="text-[11px] text-muted-foreground truncate">{l.chapter}</div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-sm font-semibold">{l.totalWatches}</div>
-                  <div className="text-[11px] text-muted-foreground">{l.viewers} viewers</div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-    </div>
-  );
-}
-
-function TopCadets() {
-  const fn = useServerFn(getLeaderboard);
-  const { data, isLoading } = useQuery({
-    queryKey: ["hof", "hunter", "weekly", "admin"],
-    queryFn: () => fn({ data: { period: "weekly" } }),
-  });
-  if (isLoading) return <Skeleton className="h-40" />;
-  const rows: any[] = data?.rows?.slice(0, 10) ?? [];
-  if (rows.length === 0) return <p className="text-sm text-muted-foreground">No activity yet this week.</p>;
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base flex items-center gap-2"><Crown className="h-4 w-4 text-amber-400" />Today's Top Cadets (weekly XP)</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {rows.map((r) => (
-          <div key={r.user_id} className="flex items-center gap-3 text-sm">
-            <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-400 grid place-items-center font-orbitron font-bold text-xs shrink-0">
-              #{r.rank}
-            </div>
-            <div className="flex-1 min-w-0 truncate">{r.name}</div>
-            <div className="text-xs font-orbitron">Lv {r.level}</div>
-            <div className="text-sm font-bold font-orbitron w-20 text-right">{r.xp?.toLocaleString?.() ?? 0}</div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-
-function Reports() {
-  const listFn = useServerFn(adminListStudentsForViews);
-  const cardFn = useServerFn(adminGetStudentReportCard);
-  const [studentId, setStudentId] = useState<string>("");
-  const [search, setSearch] = useState("");
-
-  const students = useQuery({ queryKey: ["admin-students-list"], queryFn: () => listFn() });
-  const filtered = useMemo(() => {
-    const s = (students.data?.students ?? []) as { id: string; name: string | null; email: string | null }[];
-    const q = search.trim().toLowerCase();
-    if (!q) return s;
-    return s.filter((x) => (x.name ?? "").toLowerCase().includes(q) || (x.email ?? "").toLowerCase().includes(q));
-  }, [students.data, search]);
-
-  const card = useQuery({
-    queryKey: ["admin-report-card", studentId],
-    enabled: !!studentId,
-    queryFn: () => cardFn({ data: { studentId } }),
-  });
-
-  function exportCsv() {
-    if (!card.data) return;
-    const { profile, attendance, tests, lectures, stats, weakChapters } = card.data;
-    const lines: string[] = [];
-    lines.push("Report Card");
-    lines.push(`Name,${profile?.name ?? ""}`);
-    lines.push(`Email,${profile?.email ?? ""}`);
-    lines.push(`Phone,${profile?.phone ?? ""}`);
-    lines.push("");
-    lines.push("Summary");
-    lines.push(`Test Average,${tests.average}%`);
-    lines.push(`Tests Attempted,${tests.count}`);
-    lines.push(`Attendance,${attendance.present}/${attendance.total} (${attendance.percentage}%)`);
-    lines.push(`Lectures Watched,${lectures.unique}`);
-    lines.push(`Total Re-watches,${lectures.totalWatches}`);
-    lines.push(`XP,${stats?.xp ?? 0}`);
-    lines.push(`Coins,${stats?.coins ?? 0}`);
-    lines.push(`Level,${stats?.level ?? 1}`);
-    lines.push(`Streak,${stats?.streak_days ?? 0}`);
-    lines.push("");
-    lines.push("Weak Chapters (avg < 50%)");
-    lines.push("Subject,Chapter,Avg %,Attempts");
-    for (const w of weakChapters) lines.push(`${w.subject},${w.name},${w.avg},${w.attempts}`);
-    lines.push("");
-    lines.push("Offline Test Results");
-    lines.push("Date,Test,Subject,Chapter,Score,Total,Percentage");
-    for (const r of tests.rows) {
-      lines.push([
-        new Date(r.attempt_date).toLocaleString(),
-        `"${(r.test_title ?? "").replace(/"/g, '""')}"`,
-        r.subject, r.chapter, r.score, r.total, r.percentage,
-      ].join(","));
-    }
-    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `report-${profile?.name ?? "student"}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="grid md:grid-cols-[1fr_auto] gap-2 items-end">
-        <div>
-          <label className="text-xs text-muted-foreground">Select Cadet</label>
-          <Select value={studentId} onValueChange={setStudentId}>
-            <SelectTrigger><SelectValue placeholder="Pick a Cadet" /></SelectTrigger>
-            <SelectContent>
-              <div className="p-2">
-                <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-3 w-3 text-muted-foreground" />
-                  <Input className="pl-7 h-8" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
-                </div>
-              </div>
-              {filtered.map((s) => (
-                <SelectItem key={s.id} value={s.id}>{s.name ?? "—"} · {s.email}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Button onClick={exportCsv} disabled={!card.data} variant="outline">
-          <Download className="h-4 w-4 mr-2" />Export CSV
-        </Button>
-      </div>
-
-      {!studentId && <p className="text-sm text-muted-foreground">Pick a Cadet to see their Report Card.</p>}
-
-      {card.isLoading && <Skeleton className="h-40" />}
-      {card.data && (
-        <div className="space-y-3">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                <div>
-                  <div className="text-lg font-bold">{card.data.profile?.name ?? "—"}</div>
-                  <div className="text-xs text-muted-foreground">{card.data.profile?.email}</div>
-                </div>
-                <div className="flex gap-2">
-                  <Badge variant="secondary">Lv {card.data.stats?.level ?? 1}</Badge>
-                  <Badge variant="secondary">{card.data.stats?.xp ?? 0} XP</Badge>
-                  <Badge variant="secondary">{card.data.stats?.coins ?? 0} coins</Badge>
-                  <Badge variant="secondary">🔥 {card.data.stats?.streak_days ?? 0}d</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <StatCard icon={TrendingUp} label="Offline Test Avg" value={`${card.data.tests.average}%`} sub={`${card.data.tests.count} attempts`} />
-            <StatCard icon={CalendarCheck} label="Attendance" value={`${card.data.attendance.percentage}%`} sub={`${card.data.attendance.present}/${card.data.attendance.total}`} />
-            <StatCard icon={BookOpen} label="Lectures" value={card.data.lectures.unique} sub={`${card.data.lectures.totalWatches} watches`} />
-            <StatCard icon={Award} label="Weak chapters" value={card.data.weakChapters.length} />
-          </div>
-
-          {card.data.weakChapters.length > 0 && (
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-base">Weak chapters</CardTitle></CardHeader>
-              <CardContent className="space-y-2">
-                {card.data.weakChapters.map((w) => (
-                  <div key={w.id} className="flex items-center justify-between text-sm">
-                    <div className="min-w-0 truncate">{w.subject} · {w.name}</div>
-                    <Badge variant="destructive" className="shrink-0">{w.avg}% ({w.attempts}x)</Badge>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
-
-          <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-base">Recent attempts</CardTitle></CardHeader>
-            <CardContent className="space-y-2">
-              {card.data.tests.rows.length === 0 && <p className="text-sm text-muted-foreground">No attempts yet.</p>}
-              {card.data.tests.rows.slice(0, 20).map((r) => (
-                <div key={r.result_id} className="flex items-center justify-between gap-2 text-sm">
-                  <div className="min-w-0">
-                    <div className="truncate">{r.test_title}</div>
-                    <div className="text-[11px] text-muted-foreground">{new Date(r.attempt_date).toLocaleString()} · {r.subject} · {r.chapter}</div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <Badge variant={r.percentage >= 75 ? "default" : r.percentage >= 40 ? "secondary" : "destructive"}>{r.percentage}%</Badge>
-                    <div className="text-[11px] text-muted-foreground">{r.score}/{r.total}</div>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-400" />Pending Actions
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {pending.length === 0 && <p className="text-sm text-muted-foreground">Nothing needs your attention right now.</p>}
+          {pending.map((p) => (
+            <Link key={p.label} to={p.to} className="flex items-center justify-between text-sm hover:text-amber-400 transition gap-2">
+              <span className="min-w-0 truncate">{p.label}</span>
+              <span className="text-xs shrink-0">Open →</span>
+            </Link>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }
