@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Compass, GraduationCap, Pencil, Plus, Share2, Trash2 } from "lucide-react";
+import { Compass, Eye, FileText, GraduationCap, Pencil, Plus, Share2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
