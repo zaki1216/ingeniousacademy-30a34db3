@@ -86,9 +86,8 @@ function ProgressHub() {
 
         <TabsContent value="ranks" className="mt-4 space-y-3">
           <Card>
-            <CardHeader className="pb-2 flex-row items-center justify-between">
+            <CardHeader className="pb-2">
               <CardTitle className="text-base">Rank Distribution</CardTitle>
-              <Link to="/app/admin/ranks" className="text-xs text-amber-400 hover:underline">Manage ranks →</Link>
             </CardHeader>
             <CardContent className="space-y-2">
               {ranksQ.isLoading ? <Skeleton className="h-20" /> :
@@ -98,6 +97,7 @@ function ProgressHub() {
               {rankDistribution.size === 0 && <p className="text-sm text-muted-foreground">No cadets yet.</p>}
             </CardContent>
           </Card>
+          <RankManager />
         </TabsContent>
 
         <TabsContent value="xp" className="mt-4 space-y-3">
