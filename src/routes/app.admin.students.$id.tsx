@@ -250,10 +250,10 @@ function AccountActions({ userId, onDone }: { userId: string; onDone: () => void
       <CardHeader className="pb-2"><CardTitle className="text-base">Account Actions</CardTitle></CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-end gap-2 flex-wrap">
-          <Button size="sm" variant="outline" onClick={() => safe(() => setActive({ data: { ids: [userId], isActive: true } }), "Account activated")}>
+          <Button size="sm" variant="outline" onClick={() => safe(() => setActive({ data: { userIds: [userId], isActive: true } }), "Account activated")}>
             <Power className="h-3 w-3 mr-1" />Activate
           </Button>
-          <Button size="sm" variant="outline" onClick={() => safe(() => setActive({ data: { ids: [userId], isActive: false } }), "Account deactivated")}>
+          <Button size="sm" variant="outline" onClick={() => safe(() => setActive({ data: { userIds: [userId], isActive: false } }), "Account deactivated")}>
             <Power className="h-3 w-3 mr-1" />Deactivate
           </Button>
         </div>
@@ -262,7 +262,7 @@ function AccountActions({ userId, onDone }: { userId: string; onDone: () => void
             <Label className="text-xs">New password</Label>
             <Input type="text" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Temporary password" />
           </div>
-          <Button size="sm" disabled={pwd.length < 6} onClick={() => safe(async () => { await resetPwd({ data: { id: userId, password: pwd } }); setPwd(""); }, "Password reset")}>
+          <Button size="sm" disabled={pwd.length < 6} onClick={() => safe(async () => { await resetPwd({ data: { userId, password: pwd } }); setPwd(""); }, "Password reset")}>
             <KeyRound className="h-3 w-3 mr-1" />Reset password
           </Button>
         </div>

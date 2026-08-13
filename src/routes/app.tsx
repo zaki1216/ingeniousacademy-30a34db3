@@ -5,7 +5,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard,
   LogOut, Menu, Map, Swords, ShoppingBag, Home,
-  ShieldCheck, Gamepad2, Library, ScrollText, Cog,
+  ShieldCheck, Gamepad2, Library, ScrollText, Cog, CalendarCheck, Eye, Sparkles,
 } from "lucide-react";
 
 
@@ -32,14 +32,27 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; end?: 
 // Academy Office — hubs (assessments removed with quiz system)
 const adminNav: NavItem[] = [
   { to: "/app/admin/dashboard", label: "Command Center", icon: LayoutDashboard },
-  { to: "/app/admin/students", label: "Student Management", icon: ShieldCheck },
-  { to: "/app/admin/attendance", label: "Attendance", icon: LayoutDashboard },
-  { to: "/app/content", label: "Academy Content", icon: Library },
-  { to: "/app/admin/progress", label: "Progress & Rewards", icon: Gamepad2 },
-  { to: "/app/admin/marketplace", label: "Marketplace", icon: ShoppingBag },
-  { to: "/app/admin/settings", label: "Academy Settings", icon: Cog },
+  { to: "/app/admin/students", label: "Students", icon: ShieldCheck },
 ];
 
+// Academic operations
+const adminAcademicNav: NavItem[] = [
+  { to: "/app/content", label: "Curriculum", icon: Library },
+  { to: "/app/admin/attendance", label: "Attendance", icon: CalendarCheck },
+  { to: "/app/admin/offline-tests", label: "Tests & Reports", icon: ScrollText },
+  { to: "/app/admin/lecture-views", label: "Learning Engagement", icon: Eye },
+];
+
+// Rewards & progression
+const adminRewardsNav: NavItem[] = [
+  { to: "/app/admin/progress", label: "XP, Coins & Ranks", icon: Gamepad2 },
+  { to: "/app/admin/marketplace", label: "Marketplace", icon: ShoppingBag },
+];
+
+const adminSystemNav: NavItem[] = [
+  { to: "/app/admin/lumi", label: "Lumi & Announcements", icon: Sparkles },
+  { to: "/app/admin/settings", label: "Settings", icon: Cog },
+];
 
 const adminSecondaryNav: NavItem[] = [];
 
