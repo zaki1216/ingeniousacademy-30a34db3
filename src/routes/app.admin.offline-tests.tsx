@@ -126,6 +126,11 @@ function AdminOfflineTests() {
           <p className="text-sm text-muted-foreground text-center py-8">No offline tests yet.</p>
         )}
       </div>
+
+      <div className="pt-4 border-t border-white/10 space-y-3">
+        <h2 className="text-lg font-bold">Student Report Cards</h2>
+        <ReportCards />
+      </div>
     </div>
   );
 }
