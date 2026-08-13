@@ -60,15 +60,17 @@ const adminSecondaryNav: NavItem[] = [];
 const studentNav: NavItem[] = [];
 
 
-function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
-  const { role } = useAuth();
-  const path = useRouterState({ select: (s) => s.location.pathname });
-  const items = role === "admin" ? adminNav : studentNav;
-  const secondary = role === "admin" ? adminSecondaryNav : [];
-  const showSecondary = role === "admin";
-
+function NavGroup({
+  label, items, path, onNavigate,
+}: { label?: string; items: NavItem[]; path: string; onNavigate?: () => void }) {
+  if (items.length === 0) return null;
   return (
-    <nav className="space-y-1">
+    <>
+      {label && (
+        <div className="pt-3 pb-1 px-3 text-[10px] font-orbitron font-bold tracking-widest text-muted-foreground uppercase">
+          {label}
+        </div>
+      )}
       {items.map((it) => {
         const active = it.end ? path === it.to : path === it.to || path.startsWith(it.to + "/");
         const Icon = it.icon;
@@ -89,33 +91,28 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           </Link>
         );
       })}
-      {showSecondary && secondary.length > 0 && (
-        <>
-          <div className="pt-3 pb-1 px-3 text-[10px] font-orbitron font-bold tracking-widest text-muted-foreground uppercase">
-            More
-          </div>
-          {secondary.map((it) => {
-            const active = path === it.to || path.startsWith(it.to + "/");
-            const Icon = it.icon;
-            return (
-              <Link
-                key={it.to}
-                to={it.to}
-                onClick={onNavigate}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all",
-                  active
-                    ? "bg-white/10 text-foreground"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/40 hover:text-sidebar-accent-foreground",
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {it.label}
-              </Link>
-            );
-          })}
-        </>
-      )}
+    </>
+  );
+}
+
+function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+  const { role } = useAuth();
+  const path = useRouterState({ select: (s) => s.location.pathname });
+
+  if (role !== "admin") {
+    return (
+      <nav className="space-y-1">
+        <NavGroup items={studentNav} path={path} onNavigate={onNavigate} />
+      </nav>
+    );
+  }
+
+  return (
+    <nav className="space-y-1">
+      <NavGroup items={adminNav} path={path} onNavigate={onNavigate} />
+      <NavGroup label="Academic" items={adminAcademicNav} path={path} onNavigate={onNavigate} />
+      <NavGroup label="Rewards" items={adminRewardsNav} path={path} onNavigate={onNavigate} />
+      <NavGroup label="System" items={adminSystemNav} path={path} onNavigate={onNavigate} />
     </nav>
   );
 }
