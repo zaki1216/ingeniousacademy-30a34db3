@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard,
-  LogOut, Menu, Map, Swords, ShoppingBag, Home,
+  LogOut, Menu, ShoppingBag,
   ShieldCheck, Gamepad2, Library, ScrollText, Cog, CalendarCheck, Eye, Sparkles,
 } from "lucide-react";
 
@@ -53,8 +53,6 @@ const adminSystemNav: NavItem[] = [
   { to: "/app/admin/lumi", label: "Lumi & Announcements", icon: Sparkles },
   { to: "/app/admin/settings", label: "Settings", icon: Cog },
 ];
-
-const adminSecondaryNav: NavItem[] = [];
 
 // Student navigation now happens via the Academy World HUD (AcademyHUD).
 const studentNav: NavItem[] = [];
