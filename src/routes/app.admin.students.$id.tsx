@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { ArrowLeft, Coins, Award, Crown, Ticket, Ghost, Minus, Plus, ChevronDown, ChevronRight, ListChecks } from "lucide-react";
+import { ArrowLeft, Coins, Award, Crown, Minus, Plus, ChevronDown, ChevronRight, ListChecks, KeyRound, Power } from "lucide-react";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,9 +17,8 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { rankFromLevel } from "@/lib/rpg/ranks";
 import {
   adminGetStudentCommandCenter, adminAwardCoins, adminAwardBadge, adminAwardTitle,
-  adminGrantPass, adminUnlockShadow,
 } from "@/lib/api/admin-rewards.functions";
-import { adminGetStudentAdminInfo } from "@/lib/api/students.functions";
+import { adminGetStudentAdminInfo, adminSetStudentsActive, adminResetStudentPassword } from "@/lib/api/students.functions";
 
 export const Route = createFileRoute("/app/admin/students/$id")({ component: StudentCommandCenter });
 
@@ -72,6 +71,7 @@ function StudentCommandCenter() {
 
       <StudentRecord userId={id} />
 
+      <AccountActions userId={id} onDone={refresh} />
       <QuickActions userId={id} onDone={refresh} />
 
       <div className="grid md:grid-cols-2 gap-3">
@@ -93,23 +93,6 @@ function StudentCommandCenter() {
           ))}
         </StatList>
 
-        <StatList title="Passes" empty="No passes">
-          {d.passes.map((p: any) => (
-            <div key={p.id} className="text-sm flex items-center justify-between">
-              <span>{p.pass_code}</span>
-              <Badge variant={p.status === "approved" ? "default" : "secondary"} className="text-[10px]">{p.status}</Badge>
-            </div>
-          ))}
-        </StatList>
-
-        <StatList title="Shadow Collection" empty="No shadows unlocked">
-          {d.shadows.map((s: any, i) => (
-            <div key={i} className="text-sm flex items-center gap-2">
-              <Ghost className="h-3 w-3" /> {s.shadow?.name}
-              <Badge variant="outline" className="text-[10px] ml-auto">{s.shadow?.rarity}</Badge>
-            </div>
-          ))}
-        </StatList>
       </div>
 
     </div>
@@ -191,18 +174,13 @@ function QuickActions({ userId, onDone }: { userId: string; onDone: () => void }
   const awardCoins = useServerFn(adminAwardCoins);
   const awardBadge = useServerFn(adminAwardBadge);
   const awardTitle = useServerFn(adminAwardTitle);
-  const grantPass = useServerFn(adminGrantPass);
-  const unlockShadow = useServerFn(adminUnlockShadow);
 
   const [coinAmt, setCoinAmt] = useState(50);
   const [badgeId, setBadgeId] = useState("");
   const [titleCode, setTitleCode] = useState("");
-  const [passCode, setPassCode] = useState("");
-  const [shadowCode, setShadowCode] = useState("");
 
   const badges = useQuery({ queryKey: ["all-achievements"], queryFn: async () => (await supabase.from("achievements").select("id,name,code")).data ?? [] });
   const titles = useQuery({ queryKey: ["all-titles"], queryFn: async () => (await supabase.from("titles").select("code,name")).data ?? [] });
-  const shadows = useQuery({ queryKey: ["all-shadows"], queryFn: async () => (await supabase.from("shadows").select("code,name")).data ?? [] });
 
   async function safe(fn: () => Promise<unknown>, ok: string) {
     try { await fn(); toast.success(ok); onDone(); }
@@ -252,26 +230,40 @@ function QuickActions({ userId, onDone }: { userId: string; onDone: () => void }
           </Button>
         </div>
 
+      </CardContent>
+    </Card>
+  );
+}
+
+function AccountActions({ userId, onDone }: { userId: string; onDone: () => void }) {
+  const setActive = useServerFn(adminSetStudentsActive);
+  const resetPwd = useServerFn(adminResetStudentPassword);
+  const [pwd, setPwd] = useState("");
+
+  async function safe(fn: () => Promise<unknown>, ok: string) {
+    try { await fn(); toast.success(ok); onDone(); }
+    catch (e: any) { toast.error(e?.message ?? "Failed"); }
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-2"><CardTitle className="text-base">Account Actions</CardTitle></CardHeader>
+      <CardContent className="space-y-3">
         <div className="flex items-end gap-2 flex-wrap">
-          <div className="flex-1 min-w-[160px]">
-            <Label className="text-xs">Pass code</Label>
-            <Input value={passCode} onChange={(e) => setPassCode(e.target.value)} placeholder="e.g. reroll_pass" />
-          </div>
-          <Button size="sm" disabled={!passCode} onClick={() => safe(() => grantPass({ data: { userId, passCode } }), "Pass granted")}>
-            <Ticket className="h-3 w-3 mr-1" />Grant Pass
+          <Button size="sm" variant="outline" onClick={() => safe(() => setActive({ data: { userIds: [userId], isActive: true } }), "Account activated")}>
+            <Power className="h-3 w-3 mr-1" />Activate
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => safe(() => setActive({ data: { userIds: [userId], isActive: false } }), "Account deactivated")}>
+            <Power className="h-3 w-3 mr-1" />Deactivate
           </Button>
         </div>
-
         <div className="flex items-end gap-2 flex-wrap">
           <div className="flex-1 min-w-[160px]">
-            <Label className="text-xs">Shadow</Label>
-            <Select value={shadowCode} onValueChange={setShadowCode}>
-              <SelectTrigger><SelectValue placeholder="Pick shadow" /></SelectTrigger>
-              <SelectContent>{(shadows.data ?? []).map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
-            </Select>
+            <Label className="text-xs">New password</Label>
+            <Input type="text" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Temporary password" />
           </div>
-          <Button size="sm" disabled={!shadowCode} onClick={() => safe(() => unlockShadow({ data: { userId, shadowCode } }), "Shadow unlocked")}>
-            <Ghost className="h-3 w-3 mr-1" />Unlock Shadow
+          <Button size="sm" disabled={pwd.length < 6} onClick={() => safe(async () => { await resetPwd({ data: { userId, password: pwd } }); setPwd(""); }, "Password reset")}>
+            <KeyRound className="h-3 w-3 mr-1" />Reset password
           </Button>
         </div>
       </CardContent>

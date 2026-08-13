@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -15,6 +15,7 @@ import { adminListStudents } from "@/lib/api/students.functions";
 import { getLeaderboard } from "@/lib/api/gamification.functions";
 import { rankFromXp, type AcademyRank } from "@/lib/rpg/academyRanks";
 import { adminListAcademyRanks } from "@/lib/api/ranks.functions";
+import { RankManager } from "@/components/admin/RankManager";
 
 export const Route = createFileRoute("/app/admin/progress")({
   head: () => ({ meta: [{ title: "Progress & Rewards — Academy Office" }] }),
@@ -81,7 +82,7 @@ function ProgressHub() {
           <TabsTrigger value="ranks"><Trophy className="h-3.5 w-3.5 mr-1" />Ranks</TabsTrigger>
           <TabsTrigger value="xp"><Zap className="h-3.5 w-3.5 mr-1" />XP</TabsTrigger>
           <TabsTrigger value="coins"><Coins className="h-3.5 w-3.5 mr-1" />Coins</TabsTrigger>
-          <TabsTrigger value="guardian"><Shield className="h-3.5 w-3.5 mr-1" />Guardian</TabsTrigger>
+          <TabsTrigger value="guardian"><Shield className="h-3.5 w-3.5 mr-1" />Streaks</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ranks" className="mt-4 space-y-3">

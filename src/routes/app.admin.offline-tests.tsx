@@ -19,6 +19,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import { ReportCards } from "@/components/admin/ReportCards";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import {
@@ -64,9 +65,9 @@ function AdminOfflineTests() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <GraduationCap className="h-6 w-6 text-primary" /> Offline Tests
+            <GraduationCap className="h-6 w-6 text-primary" /> Tests & Reports
           </h1>
-          <p className="text-sm text-muted-foreground">Teacher-entered marks. Drives the Report Card and Scholar leaderboard.</p>
+          <p className="text-sm text-muted-foreground">Teacher-entered marks and student report cards.</p>
         </div>
         <OfflineTestDialog
           subjects={subjects.data ?? []}
@@ -125,6 +126,11 @@ function AdminOfflineTests() {
         {(tests.data?.tests?.length ?? 0) === 0 && !tests.isLoading && (
           <p className="text-sm text-muted-foreground text-center py-8">No offline tests yet.</p>
         )}
+      </div>
+
+      <div className="pt-4 border-t border-white/10 space-y-3">
+        <h2 className="text-lg font-bold">Student Report Cards</h2>
+        <ReportCards />
       </div>
     </div>
   );
