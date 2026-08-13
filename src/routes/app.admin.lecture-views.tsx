@@ -30,10 +30,10 @@ function Page() {
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Eye className="h-6 w-6 text-primary" /> Lecture Views
+          <Eye className="h-6 w-6 text-primary" /> Learning Engagement
         </h1>
         <p className="text-sm text-muted-foreground">
-          Track which students watched which lectures and how many times.
+          Track which students watched which lectures, how often, and by standard.
         </p>
       </div>
 

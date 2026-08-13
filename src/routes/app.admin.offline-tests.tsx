@@ -64,9 +64,9 @@ function AdminOfflineTests() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <GraduationCap className="h-6 w-6 text-primary" /> Offline Tests
+            <GraduationCap className="h-6 w-6 text-primary" /> Tests & Reports
           </h1>
-          <p className="text-sm text-muted-foreground">Teacher-entered marks. Drives the Report Card and Scholar leaderboard.</p>
+          <p className="text-sm text-muted-foreground">Teacher-entered marks and student report cards.</p>
         </div>
         <OfflineTestDialog
           subjects={subjects.data ?? []}
