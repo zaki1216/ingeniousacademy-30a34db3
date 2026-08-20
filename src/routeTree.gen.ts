@@ -33,6 +33,7 @@ import { Route as AppAdminDashboardRouteImport } from './routes/app.admin.dashbo
 import { Route as AppAdminLectureViewsRouteImport } from './routes/app.admin.lecture-views'
 import { Route as AppAdminLumiRouteImport } from './routes/app.admin.lumi'
 import { Route as AppAdminMarketplaceRouteImport } from './routes/app.admin.marketplace'
+import { Route as AppAdminNotificationsRouteImport } from './routes/app.admin.notifications'
 import { Route as AppAdminOfflineTestsRouteImport } from './routes/app.admin.offline-tests'
 import { Route as AppAdminProgressRouteImport } from './routes/app.admin.progress'
 import { Route as AppAdminRanksRouteImport } from './routes/app.admin.ranks'
@@ -167,6 +168,11 @@ const AppAdminMarketplaceRoute = AppAdminMarketplaceRouteImport.update({
   path: '/admin/marketplace',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminNotificationsRoute = AppAdminNotificationsRouteImport.update({
+  id: '/admin/notifications',
+  path: '/admin/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminOfflineTestsRoute = AppAdminOfflineTestsRouteImport.update({
   id: '/admin/offline-tests',
   path: '/admin/offline-tests',
@@ -259,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/marketplace': typeof AppAdminMarketplaceRoute
+  '/app/admin/notifications': typeof AppAdminNotificationsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/marketplace': typeof AppAdminMarketplaceRoute
+  '/app/admin/notifications': typeof AppAdminNotificationsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
@@ -336,6 +344,7 @@ export interface FileRoutesById {
   '/app/admin/lecture-views': typeof AppAdminLectureViewsRoute
   '/app/admin/lumi': typeof AppAdminLumiRoute
   '/app/admin/marketplace': typeof AppAdminMarketplaceRoute
+  '/app/admin/notifications': typeof AppAdminNotificationsRoute
   '/app/admin/offline-tests': typeof AppAdminOfflineTestsRoute
   '/app/admin/progress': typeof AppAdminProgressRoute
   '/app/admin/ranks': typeof AppAdminRanksRoute
@@ -377,6 +386,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/marketplace'
+    | '/app/admin/notifications'
     | '/app/admin/offline-tests'
     | '/app/admin/progress'
     | '/app/admin/ranks'
@@ -414,6 +424,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/marketplace'
+    | '/app/admin/notifications'
     | '/app/admin/offline-tests'
     | '/app/admin/progress'
     | '/app/admin/ranks'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/app/admin/lecture-views'
     | '/app/admin/lumi'
     | '/app/admin/marketplace'
+    | '/app/admin/notifications'
     | '/app/admin/offline-tests'
     | '/app/admin/progress'
     | '/app/admin/ranks'
@@ -648,6 +660,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminMarketplaceRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/notifications': {
+      id: '/app/admin/notifications'
+      path: '/admin/notifications'
+      fullPath: '/app/admin/notifications'
+      preLoaderRoute: typeof AppAdminNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/offline-tests': {
       id: '/app/admin/offline-tests'
       path: '/admin/offline-tests'
@@ -776,6 +795,7 @@ interface AppRouteChildren {
   AppAdminLectureViewsRoute: typeof AppAdminLectureViewsRoute
   AppAdminLumiRoute: typeof AppAdminLumiRoute
   AppAdminMarketplaceRoute: typeof AppAdminMarketplaceRoute
+  AppAdminNotificationsRoute: typeof AppAdminNotificationsRoute
   AppAdminOfflineTestsRoute: typeof AppAdminOfflineTestsRoute
   AppAdminProgressRoute: typeof AppAdminProgressRoute
   AppAdminRanksRoute: typeof AppAdminRanksRoute
@@ -806,6 +826,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminLectureViewsRoute: AppAdminLectureViewsRoute,
   AppAdminLumiRoute: AppAdminLumiRoute,
   AppAdminMarketplaceRoute: AppAdminMarketplaceRoute,
+  AppAdminNotificationsRoute: AppAdminNotificationsRoute,
   AppAdminOfflineTestsRoute: AppAdminOfflineTestsRoute,
   AppAdminProgressRoute: AppAdminProgressRoute,
   AppAdminRanksRoute: AppAdminRanksRoute,
