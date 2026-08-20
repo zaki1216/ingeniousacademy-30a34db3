@@ -24,6 +24,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { toEmbeddablePdfUrl, toDownloadPdfUrl } from "@/lib/utils/pdf";
+import { notifyNotesPublished } from "@/lib/api/notifications.functions";
 
 export const Route = createFileRoute("/app/notes")({ component: NotesPage });
 

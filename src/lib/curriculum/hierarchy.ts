@@ -1,3 +1,4 @@
+import { notifyLecturePublished } from "@/lib/api/notifications.functions";
 /**
  * Curriculum hierarchy data layer (client side).
  *
@@ -299,6 +300,9 @@ export async function saveLecture(input: {
     return input.id;
   }
   const id = takeId(await supabase.from("lectures").insert(payload).select("id").single());
+  if (payload.status === "published") {
+    void notifyLecturePublished({ data: { lectureId: id } }).catch(() => undefined);
+  }
   return id;
 }
 

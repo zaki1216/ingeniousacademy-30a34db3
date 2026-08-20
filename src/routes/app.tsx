@@ -50,6 +50,7 @@ const adminRewardsNav: NavItem[] = [
 ];
 
 const adminSystemNav: NavItem[] = [
+  { to: "/app/admin/notifications", label: "Send Notification", icon: Bell },
   { to: "/app/admin/lumi", label: "Lumi & Announcements", icon: Sparkles },
   { to: "/app/admin/settings", label: "Settings", icon: Cog },
 ];
