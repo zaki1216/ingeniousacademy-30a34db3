@@ -5,7 +5,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard,
   LogOut, Menu, ShoppingBag,
-  ShieldCheck, Gamepad2, Library, ScrollText, Cog, CalendarCheck, Eye, Sparkles,
+  ShieldCheck, Gamepad2, Library, ScrollText, Cog, CalendarCheck, Eye, Sparkles, Bell,
 } from "lucide-react";
 
 
@@ -50,6 +50,7 @@ const adminRewardsNav: NavItem[] = [
 ];
 
 const adminSystemNav: NavItem[] = [
+  { to: "/app/admin/notifications", label: "Send Notification", icon: Bell },
   { to: "/app/admin/lumi", label: "Lumi & Announcements", icon: Sparkles },
   { to: "/app/admin/settings", label: "Settings", icon: Cog },
 ];

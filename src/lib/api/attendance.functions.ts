@@ -63,6 +63,22 @@ export const markAttendance = createServerFn({ method: "POST" })
       });
     }
 
+    if (!existing || existing.status !== data.status) {
+      const { notifyStudents } = await import("@/lib/notifications/service.server");
+      await notifyStudents({
+        target: { kind: "users", userIds: [data.studentId] },
+        type: "attendance",
+        title: data.status === "present" ? "✅ Attendance Marked" : "⚠️ Attendance Update",
+        body:
+          data.status === "present"
+            ? "Your attendance has been marked Present today."
+            : "Your attendance has been marked Absent today.",
+        url: "/app/report-card",
+        metadata: { date: data.date, status: data.status },
+        eventKey: `attendance:${data.studentId}:${data.date}:${data.status}`,
+      });
+    }
+
     return { ok: true };
   });
 

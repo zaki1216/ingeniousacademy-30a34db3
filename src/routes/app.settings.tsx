@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { UsernameSettings } from "@/components/student/UsernameSettings";
+import { NotificationSettings } from "@/components/notifications/NotificationSettings";
 
 export const Route = createFileRoute("/app/settings")({ component: SettingsPage });
 
@@ -47,6 +48,8 @@ function SettingsPage() {
       </Card>
 
       <UsernameSettings />
+
+      <NotificationSettings />
 
       <Card>
         <CardHeader>

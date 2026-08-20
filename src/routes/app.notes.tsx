@@ -24,6 +24,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { toEmbeddablePdfUrl, toDownloadPdfUrl } from "@/lib/utils/pdf";
+import { notifyNotesPublished } from "@/lib/api/notifications.functions";
 
 export const Route = createFileRoute("/app/notes")({ component: NotesPage });
 
@@ -82,9 +83,12 @@ function NotesPage() {
           <NoteDialog
             chapters={allChapters.data ?? []}
             onSubmit={async (vals) => {
-              const { error } = await supabase.from("notes").insert(vals as any);
+              const { data, error } = await supabase.from("notes").insert(vals as any).select("id").single();
               if (error) throw error;
               qc.invalidateQueries({ queryKey: ["notes"] });
+              if (data?.id) {
+                void notifyNotesPublished({ data: { noteId: data.id } }).catch(() => undefined);
+              }
             }}
             trigger={<Button><Plus className="h-4 w-4 mr-2" />Add note</Button>}
           />

@@ -212,6 +212,35 @@ async function grantRewards(
     ? levelFromXp(before.xp - streakResult.weeklyBonus.xp)
     : before.level;
 
+  // Reward notifications (never block the reward flow).
+  try {
+    const { notifyStudents } = await import("@/lib/notifications/service.server");
+    for (const a of newAchievements ?? []) {
+      const name = (a as { name?: string })?.name;
+      if (!name) continue;
+      await notifyStudents({
+        target: { kind: "users", userIds: [userId] },
+        type: "achievement",
+        title: "🏆 Achievement Unlocked",
+        body: `${name} — well done, cadet!`,
+        url: "/app/profile",
+        eventKey: `achievement:${userId}:${name}`,
+      });
+    }
+    if (after.level > preGrantLevel) {
+      await notifyStudents({
+        target: { kind: "users", userIds: [userId] },
+        type: "rank",
+        title: "⭐ Academy Promotion",
+        body: `You reached Level ${after.level}. Your Academy rank has advanced!`,
+        url: "/app/profile",
+        eventKey: `level:${userId}:${after.level}`,
+      });
+    }
+  } catch (e) {
+    console.error("[notifications] reward notify failed", e);
+  }
+
   return {
     xpAwarded: xpAmount + (streakResult.weeklyBonus?.xp ?? 0),
     coinsAwarded: coinAmount + (streakResult.weeklyBonus?.coins ?? 0),

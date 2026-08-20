@@ -27,6 +27,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RankPromotionModal } from "@/components/rpg/RankPromotionModal";
 import { AcademyRankCard } from "@/components/rpg/AcademyRankCard";
 import { ContinueLearningCard } from "@/components/learning/ContinueLearningCard";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { NotificationOptIn } from "@/components/notifications/NotificationOptIn";
 
 
 
@@ -206,12 +208,7 @@ export function ResourceHUD({ onSignOut }: { onSignOut: () => void }) {
           glow="rgba(148,163,184,0.2)"
         />
       </div>
-      <button
-        className="h-8 w-8 rounded-lg flex items-center justify-center bg-black/55 border border-white/10 backdrop-blur-xl text-amber-100/80 hover:text-amber-100 hover:border-amber-400/40"
-        aria-label="Notifications"
-      >
-        <Bell className="h-3.5 w-3.5" />
-      </button>
+      <NotificationBell />
       <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
         <SheetTrigger asChild>
           <button
@@ -404,6 +401,7 @@ export function AcademyHUD({
         <AdventureBar />
       </div>
       <RankPromotionModal />
+      <NotificationOptIn />
     </div>
   );
 }
