@@ -5,7 +5,7 @@ import logoAsset from "@/assets/ingenious-logo.jpg.asset.json";
 import {
   LayoutDashboard,
   LogOut, Menu, ShoppingBag,
-  ShieldCheck, Gamepad2, Library, ScrollText, Cog, CalendarCheck, Eye, Sparkles,
+  ShieldCheck, Gamepad2, Library, ScrollText, Cog, CalendarCheck, Eye, Sparkles, Bell,
 } from "lucide-react";
 
 
