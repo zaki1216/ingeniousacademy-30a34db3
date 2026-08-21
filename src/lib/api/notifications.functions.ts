@@ -182,6 +182,49 @@ export const notifyNotesPublished = createServerFn({ method: "POST" })
     });
   });
 
+export const notifyLectureResourcePublished = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ resourceId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
+    const db = await admin();
+    const { notifyStudents } = await service();
+
+    const res = await db
+      .from("lecture_resources")
+      .select("id, title, kind, status, lecture_id")
+      .eq("id", data.resourceId)
+      .maybeSingle();
+    if (!res.data || res.data.status !== "published") return { skipped: true };
+
+    const lecture = await db
+      .from("lectures")
+      .select("id, lecture_title, chapter_id")
+      .eq("id", res.data.lecture_id)
+      .maybeSingle();
+    if (!lecture.data) return { skipped: true };
+
+    const chapter = await db
+      .from("chapters")
+      .select("chapter_name, subject_id")
+      .eq("id", lecture.data.chapter_id)
+      .maybeSingle();
+    const subject = chapter.data?.subject_id
+      ? (await db.from("subjects").select("subject_name").eq("id", chapter.data.subject_id).maybeSingle()).data
+      : null;
+
+    const icon = res.data.kind === "ppt" ? "📊" : "📄";
+    return notifyStudents({
+      target: { kind: "chapter", chapterId: lecture.data.chapter_id },
+      type: "notes",
+      title: `${icon} New Study Material`,
+      body: `${subject?.subject_name ?? "Academy"} — ${lecture.data.lecture_title}\n${res.data.title} is now available. Tap to open.`,
+      url: `/app/journey`,
+      metadata: { resourceId: res.data.id, lectureId: lecture.data.id },
+      eventKey: `lecture_resource:${res.data.id}`,
+    });
+  });
+
 /* --------------------------- Admin: send manually --------------------------- */
 
 export const adminSendNotification = createServerFn({ method: "POST" })
