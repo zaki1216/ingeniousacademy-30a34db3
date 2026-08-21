@@ -3,7 +3,7 @@ import { BellRing } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { enablePush, isPushEnabledHere, isPushSupported } from "@/lib/notifications/push.client";
+import { enablePush, isPushEnabledHere, isPushSupported } from "@/lib/notifications/pushBrowser";
 
 const DISMISS_KEY = "academy-push-prompt-dismissed";
 

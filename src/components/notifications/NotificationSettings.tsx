@@ -13,7 +13,7 @@ import {
   enablePush,
   isPushEnabledHere,
   isPushSupported,
-} from "@/lib/notifications/push.client";
+} from "@/lib/notifications/pushBrowser";
 
 export function NotificationSettings() {
   const qc = useQueryClient();
