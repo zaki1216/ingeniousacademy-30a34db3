@@ -495,6 +495,56 @@ export type Database = {
         }
         Relationships: []
       }
+      lecture_resources: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          file_path: string | null
+          file_url: string
+          id: string
+          kind: string
+          lecture_id: string
+          published_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          file_path?: string | null
+          file_url: string
+          id?: string
+          kind?: string
+          lecture_id: string
+          published_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          file_path?: string | null
+          file_url?: string
+          id?: string
+          kind?: string
+          lecture_id?: string
+          published_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lecture_resources_lecture_id_fkey"
+            columns: ["lecture_id"]
+            isOneToOne: false
+            referencedRelation: "lectures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lectures: {
         Row: {
           chapter_id: string
