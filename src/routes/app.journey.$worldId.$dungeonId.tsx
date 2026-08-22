@@ -331,7 +331,8 @@ function DungeonPage() {
                   {ADVENTURE_TERMS.quest} {activeLecture.number}
                 </div>
                 <div className="font-semibold truncate">{activeLecture.title}</div>
-              </div>
+            </div>
+            <LectureMaterials lectureId={activeLecture.id} />
               <button className="text-sm text-muted-foreground shrink-0" onClick={() => setActiveLecture(null)}>Close</button>
             </div>
             {(claimReady || claimDone) && (
