@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
+import { LectureMaterials } from "@/components/learning/LectureMaterials";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 import { AdventureMap } from "@/components/adventure/AdventureMap";

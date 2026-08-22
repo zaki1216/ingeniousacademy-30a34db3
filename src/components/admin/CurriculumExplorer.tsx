@@ -30,6 +30,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { LectureResources } from "@/components/admin/LectureResources";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
 import { AcademyEmpty } from "@/components/academy/AcademyStates";
 
@@ -796,6 +797,7 @@ function LectureDialog({
               </SelectContent>
             </Select>
           </div>
+          {initial?.id && <LectureResources lectureId={initial.id} />}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
