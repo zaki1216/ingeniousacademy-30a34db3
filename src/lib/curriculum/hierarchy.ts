@@ -212,21 +212,49 @@ export async function saveCourse(input: {
   return courseId!;
 }
 
-/** Replace the mapping set of a course without duplicating the course. */
+/**
+ * Replace the mapping set of a course without duplicating the course.
+ *
+ * `subject_standards` is unique on (subject_id, standard_id) — a course may be
+ * linked to a standard exactly once. A link row can already exist with a
+ * different (or NULL) academic_subject_id, e.g. created by the database trigger
+ * that mirrors `subjects.standard_id`. Those rows are reused and updated in
+ * place; only genuinely new standards are inserted, so re-saving a course or
+ * changing its subject mapping never violates the unique constraint.
+ */
 export async function syncCourseMappings(courseId: string, mappings: CourseMappingInput[]) {
   const existing = await fetchCourseMappings({ courseIds: [courseId] });
-  const key = (m: { standard_id: string; academic_subject_id: string | null }) =>
-    `${m.standard_id}::${m.academic_subject_id ?? ""}`;
-  const wanted = new Map(mappings.map((m) => [key(m), m]));
-  const present = new Set(existing.map(key));
+  // One mapping per standard — later entries win if the caller passes duplicates.
+  const wanted = new Map(mappings.map((m) => [m.standard_id, m]));
+  const seen = new Set<string>();
 
-  const toAdd = Array.from(wanted.entries())
-    .filter(([k]) => !present.has(k))
-    .map(([, m]) => ({ subject_id: courseId, standard_id: m.standard_id, academic_subject_id: m.academic_subject_id }));
-  const toRemove = existing.filter((m) => !wanted.has(key(m))).map((m) => m.id);
+  const toRemove: string[] = [];
+  for (const row of existing) {
+    const want = wanted.get(row.standard_id);
+    if (!want || seen.has(row.standard_id)) {
+      // Standard no longer selected, or a stale duplicate row: drop it.
+      toRemove.push(row.id);
+      continue;
+    }
+    seen.add(row.standard_id);
+    if ((row.academic_subject_id ?? null) !== (want.academic_subject_id ?? null)) {
+      const { error } = await supabase
+        .from("subject_standards")
+        .update({ academic_subject_id: want.academic_subject_id })
+        .eq("id", row.id);
+      if (error) throw new Error(error.message);
+    }
+  }
+
+  const toAdd = Array.from(wanted.values())
+    .filter((m) => !seen.has(m.standard_id))
+    .map((m) => ({ subject_id: courseId, standard_id: m.standard_id, academic_subject_id: m.academic_subject_id }));
 
   if (toAdd.length) {
-    const { error } = await supabase.from("subject_standards").insert(toAdd);
+    // Upsert guards against the trigger inserting the same link concurrently.
+    const { error } = await supabase
+      .from("subject_standards")
+      .upsert(toAdd, { onConflict: "subject_id,standard_id" });
     if (error) throw new Error(error.message);
   }
   if (toRemove.length) {
