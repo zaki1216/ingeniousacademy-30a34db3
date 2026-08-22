@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { YouTubePlayer } from "@/components/gamification/YouTubePlayer";
+import { LectureMaterials } from "@/components/learning/LectureMaterials";
 import { RewardPopup, type RewardPayload } from "@/components/gamification/RewardPopup";
 import { FloatingReward, type FloatingRewardPayload } from "@/components/rpg/FloatingReward";
 import { AdventureMap } from "@/components/adventure/AdventureMap";
@@ -331,7 +332,8 @@ function DungeonPage() {
                   {ADVENTURE_TERMS.quest} {activeLecture.number}
                 </div>
                 <div className="font-semibold truncate">{activeLecture.title}</div>
-              </div>
+            </div>
+            <LectureMaterials lectureId={activeLecture.id} />
               <button className="text-sm text-muted-foreground shrink-0" onClick={() => setActiveLecture(null)}>Close</button>
             </div>
             {(claimReady || claimDone) && (
