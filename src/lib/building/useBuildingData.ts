@@ -100,9 +100,34 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
     staleTime: 60_000,
   });
 
+  /**
+   * Subjects that own chapters directly (no course/module in between). They are
+   * surfaced as ordinary wings so students never see an empty "course" level.
+   */
+  const directSubjects = useQuery({
+    queryKey: ["building-direct-subjects", building.id, standardId],
+    enabled: !!standardId,
+    queryFn: async () => {
+      const subs =
+        (await supabase
+          .from("academic_subjects")
+          .select("id, name, display_name")
+          .eq("standard_id", standardId!)
+          .eq("is_active", true)
+          .order("sort_order")).data ?? [];
+      return subs
+        .map((s) => ({ id: s.id, subject_name: s.display_name || s.name || "" }))
+        .filter((s) => building.subjectMatcher({ subject_name: s.subject_name }));
+    },
+    staleTime: 60_000,
+  });
+
   const matchedSubjects = useMemo(
-    () => (subjects.data ?? []).map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
-    [subjects.data],
+    () => [
+      ...(subjects.data ?? []).map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
+      ...(directSubjects.data ?? []),
+    ],
+    [subjects.data, directSubjects.data],
   );
 
   const world = useQuery({
@@ -114,13 +139,23 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
     ],
     enabled: !!user?.id && matchedSubjects.length > 0,
     queryFn: async () => {
-      const chs =
+      // Chapters can hang off a course/module (subject_id) or straight off a
+      // subject (academic_subject_id). Both are surfaced the same way.
+      const ids = matchedSubjects.map((s) => s.id);
+      const list = ids.map((id) => `"${id}"`).join(",");
+      const raw =
         (await supabase
           .from("chapters")
-          .select("id, chapter_name, chapter_number, subject_id, completion_xp, completion_coins")
-          .in("subject_id", matchedSubjects.map((s) => s.id))
+          .select(
+            "id, chapter_name, chapter_number, subject_id, academic_subject_id, completion_xp, completion_coins",
+          )
+          .or(`subject_id.in.(${list}),academic_subject_id.in.(${list})`)
           .eq("is_active", true)
           .order("chapter_number")).data ?? [];
+      const chs = raw.map((c) => ({
+        ...c,
+        subject_id: c.subject_id ?? c.academic_subject_id ?? "",
+      }));
       const chapterCompletions =
         (await supabase
           .from("chapter_completions")

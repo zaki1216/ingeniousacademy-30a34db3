@@ -79,7 +79,7 @@ async function loadCurriculum(userId: string): Promise<Curriculum | null> {
       id: c.id,
       chapter_name: c.chapter_name ?? "",
       chapter_number: c.chapter_number,
-      subject_id: c.subject_id,
+      subject_id: c.subject_id ?? "",
     })),
     lectures: (lectures ?? []) as Curriculum["lectures"],
     done: new Set((completions ?? []).map((c) => c.lecture_id)),

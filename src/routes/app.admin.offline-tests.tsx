@@ -49,7 +49,10 @@ function AdminOfflineTests() {
   });
   const chapters = useQuery({
     queryKey: ["chapters-all"],
-    queryFn: async () => (await supabase.from("chapters").select("id, chapter_name, chapter_number, subject_id")).data ?? [],
+    queryFn: async () =>
+      ((await supabase.from("chapters").select("id, chapter_name, chapter_number, subject_id")).data ?? []).map(
+        (c) => ({ ...c, subject_id: c.subject_id ?? "" }),
+      ),
   });
 
   if (role !== "admin") return <p className="text-muted-foreground">Admins only.</p>;

@@ -72,7 +72,7 @@ async function computeUnlockState(userId: string) {
     byChapter.set(l.chapter_id, arr);
   }
   const subjectOfChapter = new Map<string, string>();
-  for (const c of chaptersRes.data ?? []) subjectOfChapter.set(c.id, c.subject_id);
+  for (const c of chaptersRes.data ?? []) subjectOfChapter.set(c.id, c.subject_id ?? "");
 
   const out: LectureUnlockState[] = [];
   for (const [chapterId, lecs] of byChapter) {

@@ -37,7 +37,7 @@ import { AcademyEmpty } from "@/components/academy/AcademyStates";
 import {
   deleteAcademicSubject, deleteChapter, deleteCourse, deleteLecture,
   fetchAcademicSubjects, fetchBoards, fetchChapters, fetchCourseMappings,
-  fetchCoursesForSubject, fetchLectures, fetchStandards,
+  fetchCoursesForSubject, fetchDirectChapters, fetchLectures, fetchStandards,
   saveAcademicSubject, saveChapter, saveCourse, saveLecture, swapOrder,
   type AcademicSubject, type Chapter, type Course, type Lecture,
 } from "@/lib/curriculum/hierarchy";
@@ -150,13 +150,22 @@ export function CurriculumExplorer() {
       )}
 
       {subjectId && !courseId && standardId && (
-        <CoursesPanel
-          standardId={standardId}
-          academicSubjectId={subjectId}
-          courses={(courses.data ?? []).filter((c) => match(c.subject_name, search))}
-          onOpen={setCourseId}
-          onChanged={invalidate}
-        />
+        <div className="space-y-6">
+          <ChaptersPanel
+            parent={{ academicSubjectId: subjectId }}
+            title="Chapters"
+            emptyText="Add chapters directly to this subject — no course required."
+            search={search}
+            onChanged={invalidate}
+          />
+          <CoursesPanel
+            standardId={standardId}
+            academicSubjectId={subjectId}
+            courses={(courses.data ?? []).filter((c) => match(c.subject_name, search))}
+            onOpen={setCourseId}
+            onChanged={invalidate}
+          />
+        </div>
       )}
 
       {courseId && course && <CourseContentPanel course={course} search={search} onChanged={invalidate} />}
@@ -550,9 +559,40 @@ export function CourseContentPanel({
   search?: string;
   onChanged: () => void;
 }) {
+  return (
+    <ChaptersPanel
+      parent={{ courseId: course.id }}
+      title={course.subject_name}
+      badge={course.is_shared ? <Badge><Share2 className="h-3 w-3 mr-1" />Shared</Badge> : null}
+      emptyText="Add the first chapter of this course."
+      search={search}
+      onChanged={onChanged}
+    />
+  );
+}
+
+/**
+ * Chapters + lectures for one parent — a course/module or a subject directly.
+ * Both parents use the exact same chapter and lecture editors.
+ */
+export function ChaptersPanel({
+  parent, title, badge, emptyText, search = "", onChanged,
+}: {
+  parent: ChapterParent;
+  title: string;
+  badge?: React.ReactNode;
+  emptyText: string;
+  search?: string;
+  onChanged: () => void;
+}) {
+  const parentId = parent.courseId ?? parent.academicSubjectId ?? "";
   const chapters = useQuery({
-    queryKey: ["cx-chapters", course.id],
-    queryFn: () => fetchChapters(course.id, { includeInactive: true }),
+    queryKey: ["cx-chapters", parent.courseId ?? null, parent.academicSubjectId ?? null],
+    enabled: !!parentId,
+    queryFn: () =>
+      parent.courseId
+        ? fetchChapters(parent.courseId, { includeInactive: true })
+        : fetchDirectChapters(parent.academicSubjectId!, { includeInactive: true }),
   });
   const chapterIds = (chapters.data ?? []).map((c) => c.id);
   const lectures = useQuery({
@@ -577,15 +617,15 @@ export function CourseContentPanel({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            {course.subject_name}
-            {course.is_shared && <Badge><Share2 className="h-3 w-3 mr-1" />Shared</Badge>}
+            {title}
+            {badge}
           </h2>
           <p className="text-sm text-muted-foreground">
             {chapters.data?.length ?? 0} chapters • {totalLectures} lectures
           </p>
         </div>
         <ChapterDialog
-          courseId={course.id}
+          parent={parent}
           nextNumber={(chapters.data?.length ?? 0) + 1}
           onSaved={() => { chapters.refetch(); onChanged(); }}
           trigger={<Button size="sm"><Plus className="h-4 w-4 mr-1" />Add chapter</Button>}
@@ -644,7 +684,7 @@ function ChapterCard({
               }}
             />
             <ChapterDialog
-              courseId={chapter.subject_id}
+              parent={{ courseId: chapter.subject_id, academicSubjectId: chapter.academic_subject_id }}
               initial={chapter}
               onSaved={onChanged}
               trigger={<Button size="sm" variant="outline" aria-label="Edit chapter"><Pencil className="h-4 w-4" /></Button>}
@@ -694,10 +734,12 @@ function ChapterCard({
   );
 }
 
+export type ChapterParent = { courseId?: string | null; academicSubjectId?: string | null };
+
 function ChapterDialog({
-  courseId, initial, nextNumber, onSaved, trigger,
+  parent, initial, nextNumber, onSaved, trigger,
 }: {
-  courseId: string;
+  parent: ChapterParent;
   initial?: Chapter;
   nextNumber?: number;
   onSaved: () => void;
@@ -735,7 +777,13 @@ function ChapterDialog({
             onClick={async () => {
               setSaving(true);
               try {
-                await saveChapter({ id: initial?.id, subject_id: courseId, ...v, chapter_name: v.chapter_name.trim() });
+                await saveChapter({
+                  id: initial?.id,
+                  subject_id: parent.courseId ?? null,
+                  academic_subject_id: parent.academicSubjectId ?? null,
+                  ...v,
+                  chapter_name: v.chapter_name.trim(),
+                });
                 toast.success("Chapter saved");
                 setOpen(false);
                 onSaved();
