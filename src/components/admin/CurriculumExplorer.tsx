@@ -550,9 +550,40 @@ export function CourseContentPanel({
   search?: string;
   onChanged: () => void;
 }) {
+  return (
+    <ChaptersPanel
+      parent={{ courseId: course.id }}
+      title={course.subject_name}
+      badge={course.is_shared ? <Badge><Share2 className="h-3 w-3 mr-1" />Shared</Badge> : null}
+      emptyText="Add the first chapter of this course."
+      search={search}
+      onChanged={onChanged}
+    />
+  );
+}
+
+/**
+ * Chapters + lectures for one parent — a course/module or a subject directly.
+ * Both parents use the exact same chapter and lecture editors.
+ */
+export function ChaptersPanel({
+  parent, title, badge, emptyText, search = "", onChanged,
+}: {
+  parent: ChapterParent;
+  title: string;
+  badge?: React.ReactNode;
+  emptyText: string;
+  search?: string;
+  onChanged: () => void;
+}) {
+  const parentId = parent.courseId ?? parent.academicSubjectId ?? "";
   const chapters = useQuery({
-    queryKey: ["cx-chapters", course.id],
-    queryFn: () => fetchChapters(course.id, { includeInactive: true }),
+    queryKey: ["cx-chapters", parent.courseId ?? null, parent.academicSubjectId ?? null],
+    enabled: !!parentId,
+    queryFn: () =>
+      parent.courseId
+        ? fetchChapters(parent.courseId, { includeInactive: true })
+        : fetchDirectChapters(parent.academicSubjectId!, { includeInactive: true }),
   });
   const chapterIds = (chapters.data ?? []).map((c) => c.id);
   const lectures = useQuery({
