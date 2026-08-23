@@ -327,6 +327,7 @@ export type Database = {
       }
       chapters: {
         Row: {
+          academic_subject_id: string | null
           chapter_name: string
           chapter_number: number
           completion_coins: number
@@ -335,9 +336,10 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean
-          subject_id: string
+          subject_id: string | null
         }
         Insert: {
+          academic_subject_id?: string | null
           chapter_name: string
           chapter_number?: number
           completion_coins?: number
@@ -346,9 +348,10 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
-          subject_id: string
+          subject_id?: string | null
         }
         Update: {
+          academic_subject_id?: string | null
           chapter_name?: string
           chapter_number?: number
           completion_coins?: number
@@ -357,9 +360,16 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
-          subject_id?: string
+          subject_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "chapters_academic_subject_id_fkey"
+            columns: ["academic_subject_id"]
+            isOneToOne: false
+            referencedRelation: "academic_subjects"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "chapters_subject_id_fkey"
             columns: ["subject_id"]
