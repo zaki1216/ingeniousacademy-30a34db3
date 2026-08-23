@@ -37,7 +37,7 @@ import { AcademyEmpty } from "@/components/academy/AcademyStates";
 import {
   deleteAcademicSubject, deleteChapter, deleteCourse, deleteLecture,
   fetchAcademicSubjects, fetchBoards, fetchChapters, fetchCourseMappings,
-  fetchCoursesForSubject, fetchLectures, fetchStandards,
+  fetchCoursesForSubject, fetchDirectChapters, fetchLectures, fetchStandards,
   saveAcademicSubject, saveChapter, saveCourse, saveLecture, swapOrder,
   type AcademicSubject, type Chapter, type Course, type Lecture,
 } from "@/lib/curriculum/hierarchy";
@@ -675,7 +675,7 @@ function ChapterCard({
               }}
             />
             <ChapterDialog
-              courseId={chapter.subject_id}
+              parent={{ courseId: chapter.subject_id, academicSubjectId: chapter.academic_subject_id }}
               initial={chapter}
               onSaved={onChanged}
               trigger={<Button size="sm" variant="outline" aria-label="Edit chapter"><Pencil className="h-4 w-4" /></Button>}
