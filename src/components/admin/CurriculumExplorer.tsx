@@ -694,10 +694,12 @@ function ChapterCard({
   );
 }
 
+export type ChapterParent = { courseId?: string | null; academicSubjectId?: string | null };
+
 function ChapterDialog({
-  courseId, initial, nextNumber, onSaved, trigger,
+  parent, initial, nextNumber, onSaved, trigger,
 }: {
-  courseId: string;
+  parent: ChapterParent;
   initial?: Chapter;
   nextNumber?: number;
   onSaved: () => void;
