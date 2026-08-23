@@ -608,15 +608,15 @@ export function ChaptersPanel({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            {course.subject_name}
-            {course.is_shared && <Badge><Share2 className="h-3 w-3 mr-1" />Shared</Badge>}
+            {title}
+            {badge}
           </h2>
           <p className="text-sm text-muted-foreground">
             {chapters.data?.length ?? 0} chapters • {totalLectures} lectures
           </p>
         </div>
         <ChapterDialog
-          courseId={course.id}
+          parent={parent}
           nextNumber={(chapters.data?.length ?? 0) + 1}
           onSaved={() => { chapters.refetch(); onChanged(); }}
           trigger={<Button size="sm"><Plus className="h-4 w-4 mr-1" />Add chapter</Button>}
