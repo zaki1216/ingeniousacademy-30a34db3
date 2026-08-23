@@ -100,9 +100,34 @@ export function useBuildingData(building: BuildingCurriculum): UseBuildingDataRe
     staleTime: 60_000,
   });
 
+  /**
+   * Subjects that own chapters directly (no course/module in between). They are
+   * surfaced as ordinary wings so students never see an empty "course" level.
+   */
+  const directSubjects = useQuery({
+    queryKey: ["building-direct-subjects", building.id, standardId],
+    enabled: !!standardId,
+    queryFn: async () => {
+      const subs =
+        (await supabase
+          .from("academic_subjects")
+          .select("id, name, display_name")
+          .eq("standard_id", standardId!)
+          .eq("is_active", true)
+          .order("sort_order")).data ?? [];
+      return subs
+        .map((s) => ({ id: s.id, subject_name: s.display_name || s.name || "" }))
+        .filter((s) => building.subjectMatcher({ subject_name: s.subject_name }));
+    },
+    staleTime: 60_000,
+  });
+
   const matchedSubjects = useMemo(
-    () => (subjects.data ?? []).map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
-    [subjects.data],
+    () => [
+      ...(subjects.data ?? []).map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
+      ...(directSubjects.data ?? []),
+    ],
+    [subjects.data, directSubjects.data],
   );
 
   const world = useQuery({
