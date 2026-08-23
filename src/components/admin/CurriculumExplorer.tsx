@@ -737,7 +737,13 @@ function ChapterDialog({
             onClick={async () => {
               setSaving(true);
               try {
-                await saveChapter({ id: initial?.id, subject_id: courseId, ...v, chapter_name: v.chapter_name.trim() });
+                await saveChapter({
+                  id: initial?.id,
+                  subject_id: parent.courseId ?? null,
+                  academic_subject_id: parent.academicSubjectId ?? null,
+                  ...v,
+                  chapter_name: v.chapter_name.trim(),
+                });
                 toast.success("Chapter saved");
                 setOpen(false);
                 onSaved();
