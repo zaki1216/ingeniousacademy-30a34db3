@@ -41,7 +41,10 @@ export type CourseMapping = {
 };
 export type Chapter = {
   id: string;
-  subject_id: string;
+  /** Course/module parent. Null when the chapter hangs directly off a subject. */
+  subject_id: string | null;
+  /** Subject parent. Null when the chapter belongs to a course/module. */
+  academic_subject_id: string | null;
   chapter_name: string;
   chapter_number: number;
   description: string | null;
