@@ -150,13 +150,22 @@ export function CurriculumExplorer() {
       )}
 
       {subjectId && !courseId && standardId && (
-        <CoursesPanel
-          standardId={standardId}
-          academicSubjectId={subjectId}
-          courses={(courses.data ?? []).filter((c) => match(c.subject_name, search))}
-          onOpen={setCourseId}
-          onChanged={invalidate}
-        />
+        <div className="space-y-6">
+          <ChaptersPanel
+            parent={{ academicSubjectId: subjectId }}
+            title="Chapters"
+            emptyText="Add chapters directly to this subject — no course required."
+            search={search}
+            onChanged={invalidate}
+          />
+          <CoursesPanel
+            standardId={standardId}
+            academicSubjectId={subjectId}
+            courses={(courses.data ?? []).filter((c) => match(c.subject_name, search))}
+            onOpen={setCourseId}
+            onChanged={invalidate}
+          />
+        </div>
       )}
 
       {courseId && course && <CourseContentPanel course={course} search={search} onChanged={invalidate} />}
