@@ -283,9 +283,15 @@ export async function deleteCourse(id: string) {
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Create/update a chapter. Exactly one parent is stored: a course/module
+ * (`subject_id`) or a subject (`academic_subject_id`). Direct chapters never
+ * touch `subject_standards`, so the subject↔standard mapping stays intact.
+ */
 export async function saveChapter(input: {
   id?: string;
-  subject_id: string;
+  subject_id?: string | null;
+  academic_subject_id?: string | null;
   chapter_name: string;
   chapter_number: number;
   description?: string | null;
@@ -293,8 +299,10 @@ export async function saveChapter(input: {
   completion_xp?: number;
   completion_coins?: number;
 }) {
+  const direct = !input.subject_id && !!input.academic_subject_id;
   const payload = {
-    subject_id: input.subject_id,
+    subject_id: direct ? null : input.subject_id ?? null,
+    academic_subject_id: direct ? input.academic_subject_id! : null,
     chapter_name: input.chapter_name,
     chapter_number: input.chapter_number,
     description: input.description ?? null,
