@@ -129,8 +129,20 @@ export async function fetchAllCourses(): Promise<Course[]> {
   return (data ?? []) as Course[];
 }
 
+/** Chapters that belong to a course/module. */
 export async function fetchChapters(courseId: string, opts?: { includeInactive?: boolean }): Promise<Chapter[]> {
   let q = supabase.from("chapters").select("*").eq("subject_id", courseId);
+  if (!opts?.includeInactive) q = q.eq("is_active", true);
+  const { data } = await q.order("chapter_number");
+  return (data ?? []) as Chapter[];
+}
+
+/** Chapters that hang directly off a subject (no course/module in between). */
+export async function fetchDirectChapters(
+  academicSubjectId: string,
+  opts?: { includeInactive?: boolean },
+): Promise<Chapter[]> {
+  let q = supabase.from("chapters").select("*").eq("academic_subject_id", academicSubjectId);
   if (!opts?.includeInactive) q = q.eq("is_active", true);
   const { data } = await q.order("chapter_number");
   return (data ?? []) as Chapter[];
