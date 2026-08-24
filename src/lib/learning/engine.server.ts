@@ -88,12 +88,14 @@ async function loadCurriculum(userId: string): Promise<Curriculum | null> {
     .eq("user_id", userId);
 
   return {
-    subjects: (subjects ?? []).map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
+    subjects: [...courseList, ...directList].filter((s) =>
+      (chapters ?? []).some((c) => (c.subject_id ?? c.academic_subject_id) === s.id),
+    ),
     chapters: (chapters ?? []).map((c) => ({
       id: c.id,
       chapter_name: c.chapter_name ?? "",
       chapter_number: c.chapter_number,
-      subject_id: c.subject_id ?? "",
+      subject_id: c.subject_id ?? c.academic_subject_id ?? "",
     })),
     lectures: (lectures ?? []) as Curriculum["lectures"],
     done: new Set((completions ?? []).map((c) => c.lecture_id)),
