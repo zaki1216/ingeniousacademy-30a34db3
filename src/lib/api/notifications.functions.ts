@@ -134,12 +134,14 @@ export const notifyLecturePublished = createServerFn({ method: "POST" })
 
     const chapter = await db
       .from("chapters")
-      .select("id, chapter_name, subject_id")
+      .select("id, chapter_name, subject_id, academic_subject_id")
       .eq("id", lecture.data.chapter_id)
       .maybeSingle();
     const subject = chapter.data?.subject_id
       ? (await db.from("subjects").select("subject_name").eq("id", chapter.data.subject_id).maybeSingle()).data
-      : null;
+      : chapter.data?.academic_subject_id
+        ? { subject_name: (await db.from("academic_subjects").select("name").eq("id", chapter.data.academic_subject_id).maybeSingle()).data?.name ?? null }
+        : null;
 
     return notifyStudents({
       target: { kind: "chapter", chapterId: lecture.data.chapter_id },
@@ -206,12 +208,14 @@ export const notifyLectureResourcePublished = createServerFn({ method: "POST" })
 
     const chapter = await db
       .from("chapters")
-      .select("chapter_name, subject_id")
+      .select("chapter_name, subject_id, academic_subject_id")
       .eq("id", lecture.data.chapter_id)
       .maybeSingle();
     const subject = chapter.data?.subject_id
       ? (await db.from("subjects").select("subject_name").eq("id", chapter.data.subject_id).maybeSingle()).data
-      : null;
+      : chapter.data?.academic_subject_id
+        ? { subject_name: (await db.from("academic_subjects").select("name").eq("id", chapter.data.academic_subject_id).maybeSingle()).data?.name ?? null }
+        : null;
 
     const icon = res.data.kind === "ppt" ? "📊" : "📄";
     return notifyStudents({
