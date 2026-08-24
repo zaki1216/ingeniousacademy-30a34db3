@@ -807,76 +807,102 @@ function LectureDialog({
   trigger: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [lectureId, setLectureId] = useState<string | undefined>(initial?.id);
   const [v, setV] = useState({
     lecture_title: initial?.lecture_title ?? "",
     lecture_number: initial?.lecture_number ?? nextNumber ?? 1,
     youtube_url: initial?.youtube_url ?? "",
     description: initial?.description ?? "",
-    status: initial?.status ?? "published",
+    status: initial?.status ?? "draft",
     thumbnail_url: initial?.thumbnail_url ?? "",
     duration_seconds: initial?.duration_seconds ?? 0,
   });
   const [saving, setSaving] = useState(false);
+
+  async function save(status: string, close: boolean) {
+    if (!v.lecture_title.trim() || !v.youtube_url.trim()) {
+      toast.error("Title and video URL are required");
+      return;
+    }
+    setSaving(true);
+    try {
+      const id = await saveLecture({
+        id: lectureId,
+        chapter_id: chapterId,
+        lecture_title: v.lecture_title.trim(),
+        lecture_number: v.lecture_number,
+        youtube_url: v.youtube_url.trim(),
+        description: v.description || null,
+        status,
+        thumbnail_url: v.thumbnail_url || null,
+        duration_seconds: v.duration_seconds || null,
+      });
+      setLectureId(id);
+      setV((s) => ({ ...s, status }));
+      toast.success(status === "published" ? "Lecture published" : "Draft saved");
+      onSaved();
+      if (close) setOpen(false);
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setSaving(false); }
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{initial ? "Edit lecture" : "Add lecture"}</DialogTitle></DialogHeader>
-        <div className="space-y-3">
-          <div className="grid grid-cols-4 gap-2">
-            <div className="col-span-1"><Label>#</Label><Input type="number" value={v.lecture_number} onChange={(e) => setV({ ...v, lecture_number: Number(e.target.value) })} /></div>
-            <div className="col-span-3"><Label>Title *</Label><Input value={v.lecture_title} onChange={(e) => setV({ ...v, lecture_title: e.target.value })} /></div>
-          </div>
-          <div><Label>Video URL *</Label><Input value={v.youtube_url} onChange={(e) => setV({ ...v, youtube_url: e.target.value })} placeholder="https://youtu.be/…" /></div>
-          <div><Label>Description</Label><Textarea value={v.description} onChange={(e) => setV({ ...v, description: e.target.value })} /></div>
-          <div className="grid grid-cols-2 gap-2">
-            <div><Label>Thumbnail URL</Label><Input value={v.thumbnail_url} onChange={(e) => setV({ ...v, thumbnail_url: e.target.value })} /></div>
-            <div><Label>Duration (seconds)</Label><Input type="number" value={v.duration_seconds} onChange={(e) => setV({ ...v, duration_seconds: Number(e.target.value) })} /></div>
-          </div>
-          <div>
-            <Label>Status</Label>
+        <div className="space-y-4">
+          <section className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lecture details</div>
+            <div className="grid grid-cols-4 gap-2">
+              <div className="col-span-1"><Label>Order</Label><Input type="number" value={v.lecture_number} onChange={(e) => setV({ ...v, lecture_number: Number(e.target.value) })} /></div>
+              <div className="col-span-3"><Label>Title *</Label><Input value={v.lecture_title} onChange={(e) => setV({ ...v, lecture_title: e.target.value })} /></div>
+            </div>
+            <div><Label>Description</Label><Textarea value={v.description} onChange={(e) => setV({ ...v, description: e.target.value })} /></div>
+          </section>
+
+          <section className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Video</div>
+            <div><Label>Video URL *</Label><Input value={v.youtube_url} onChange={(e) => setV({ ...v, youtube_url: e.target.value })} placeholder="https://youtu.be/…" /></div>
+            <div className="grid grid-cols-2 gap-2">
+              <div><Label>Thumbnail URL</Label><Input value={v.thumbnail_url} onChange={(e) => setV({ ...v, thumbnail_url: e.target.value })} /></div>
+              <div><Label>Duration (seconds)</Label><Input type="number" value={v.duration_seconds} onChange={(e) => setV({ ...v, duration_seconds: Number(e.target.value) })} /></div>
+            </div>
+          </section>
+
+          <section className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Study material (Notes PDF / PPT)</div>
+            {lectureId ? (
+              <LectureResources lectureId={lectureId} />
+            ) : (
+              <p className="text-xs text-muted-foreground">Save the lecture first, then attach Notes PDF or PPT here.</p>
+            )}
+          </section>
+
+          <section className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Publishing</div>
             <Select value={v.status} onValueChange={(s) => setV({ ...v, status: s })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
+                <SelectItem value="draft">Draft (hidden from students)</SelectItem>
                 <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
                 <SelectItem value="archived">Archived</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          {initial?.id && <LectureResources lectureId={initial.id} />}
+          </section>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button
-            disabled={saving || !v.lecture_title.trim() || !v.youtube_url.trim()}
-            onClick={async () => {
-              setSaving(true);
-              try {
-                await saveLecture({
-                  id: initial?.id,
-                  chapter_id: chapterId,
-                  lecture_title: v.lecture_title.trim(),
-                  lecture_number: v.lecture_number,
-                  youtube_url: v.youtube_url.trim(),
-                  description: v.description || null,
-                  status: v.status,
-                  thumbnail_url: v.thumbnail_url || null,
-                  duration_seconds: v.duration_seconds || null,
-                });
-                toast.success("Lecture saved");
-                setOpen(false);
-                onSaved();
-              } catch (e) { toast.error((e as Error).message); }
-              finally { setSaving(false); }
-            }}
-          >Save</Button>
+        <DialogFooter className="flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>Cancel</Button>
+          <Button variant="secondary" disabled={saving} onClick={() => save("draft", false)}>Save draft</Button>
+          <Button disabled={saving} onClick={() => save(v.status === "archived" ? "archived" : "published", true)}>
+            {v.status === "archived" ? "Save" : "Publish"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
 
 /** Read-only preview: never awards XP, coins or completes a quest. */
 function LecturePreview({ lecture }: { lecture: Lecture }) {
