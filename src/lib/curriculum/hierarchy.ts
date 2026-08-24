@@ -346,8 +346,13 @@ export async function saveLecture(input: {
     duration_seconds: input.duration_seconds ?? null,
   };
   if (input.id) {
+    const prev = await supabase.from("lectures").select("status").eq("id", input.id).maybeSingle();
     const { error } = await supabase.from("lectures").update(payload).eq("id", input.id);
     if (error) throw new Error(error.message);
+    // Notify only on the first draft → published transition (server also dedupes by eventKey).
+    if (payload.status === "published" && prev.data?.status !== "published") {
+      void notifyLecturePublished({ data: { lectureId: input.id } }).catch(() => undefined);
+    }
     return input.id;
   }
   const id = takeId(await supabase.from("lectures").insert(payload).select("id").single());
@@ -356,6 +361,7 @@ export async function saveLecture(input: {
   }
   return id;
 }
+
 
 export async function deleteLecture(id: string) {
   const { error } = await supabase.from("lectures").delete().eq("id", id);
