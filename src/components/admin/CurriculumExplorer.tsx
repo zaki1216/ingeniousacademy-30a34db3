@@ -341,14 +341,14 @@ function CoursesPanel({
   return (
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="font-semibold">Courses / Modules</h2>
+        <h2 className="font-semibold">Courses / Modules <span className="text-xs font-normal text-muted-foreground">(optional)</span></h2>
         <CourseDialog
           defaultMapping={{ standard_id: standardId, academic_subject_id: academicSubjectId }}
           onSaved={onChanged}
           trigger={<Button size="sm"><Plus className="h-4 w-4 mr-1" />Add course</Button>}
         />
       </div>
-      {courses.length === 0 && <AcademyEmpty title="No courses yet" description="Add a learning stream such as Algebra, Grammar or Science 1." />}
+      {courses.length === 0 && <AcademyEmpty title="No courses yet" description="Optional. Add a learning stream such as Algebra, Grammar or Science 1 — chapters can also live directly on the subject." />}
       {courses.map((c, i) => (
         <Card key={c.id}>
           <CardContent className="p-3 flex flex-wrap items-center gap-2">
