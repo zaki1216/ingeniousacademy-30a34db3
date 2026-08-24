@@ -47,14 +47,28 @@ async function loadCurriculum(userId: string): Promise<Curriculum | null> {
     : { data: [] as { id: string; subject_name: string; created_at: string }[] };
 
 
-  const subjectIds = (subjects ?? []).map((s) => s.id);
+  // Subjects that own chapters directly (no course/module in between).
+  const { data: directSubjects } = await supabaseAdmin
+    .from("academic_subjects")
+    .select("id, name, display_name")
+    .eq("standard_id", standardId)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  const courseList = (subjects ?? []).map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" }));
+  const directList = (directSubjects ?? []).map((s) => ({
+    id: s.id,
+    subject_name: s.display_name || s.name || "",
+  }));
+  const subjectIds = [...courseList, ...directList].map((s) => s.id);
   const empty: Curriculum = { subjects: [], chapters: [], lectures: [], done: new Set() };
   if (subjectIds.length === 0) return empty;
 
+  const orList = subjectIds.map((id) => `"${id}"`).join(",");
   const { data: chapters } = await supabaseAdmin
     .from("chapters")
-    .select("id, chapter_name, chapter_number, subject_id")
-    .in("subject_id", subjectIds)
+    .select("id, chapter_name, chapter_number, subject_id, academic_subject_id")
+    .or(`subject_id.in.(${orList}),academic_subject_id.in.(${orList})`)
     .eq("is_active", true)
     .order("chapter_number", { ascending: true });
 
@@ -74,12 +88,14 @@ async function loadCurriculum(userId: string): Promise<Curriculum | null> {
     .eq("user_id", userId);
 
   return {
-    subjects: (subjects ?? []).map((s) => ({ id: s.id, subject_name: s.subject_name ?? "" })),
+    subjects: [...courseList, ...directList].filter((s) =>
+      (chapters ?? []).some((c) => (c.subject_id ?? c.academic_subject_id) === s.id),
+    ),
     chapters: (chapters ?? []).map((c) => ({
       id: c.id,
       chapter_name: c.chapter_name ?? "",
       chapter_number: c.chapter_number,
-      subject_id: c.subject_id ?? "",
+      subject_id: c.subject_id ?? c.academic_subject_id ?? "",
     })),
     lectures: (lectures ?? []) as Curriculum["lectures"],
     done: new Set((completions ?? []).map((c) => c.lecture_id)),
