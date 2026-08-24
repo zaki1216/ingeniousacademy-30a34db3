@@ -37,11 +37,32 @@ function JourneyHome() {
     queryKey: ["journey-worlds", standardId, user?.id],
     enabled: !!standardId && !!user?.id,
     queryFn: async () => {
-      const subs = await fetchSubjectsForStandard(standardId!);
-      const subIds = subs.map((s) => s.id);
-      const chs = subIds.length
-        ? (await supabase.from("chapters").select("id, subject_id").in("subject_id", subIds)).data ?? []
+      const courses = await fetchSubjectsForStandard(standardId!);
+      const directSubjects =
+        ((await supabase
+          .from("academic_subjects")
+          .select("id, name, display_name")
+          .eq("standard_id", standardId!)
+          .eq("is_active", true)
+          .order("sort_order")).data ?? []).map((s) => ({
+            id: s.id,
+            subject_name: s.display_name || s.name || "",
+          }));
+      const subIds = [...courses.map((s) => s.id), ...directSubjects.map((s) => s.id)];
+      const list = subIds.map((id) => `"${id}"`).join(",");
+      const rawChs = subIds.length
+        ? (await supabase
+            .from("chapters")
+            .select("id, subject_id, academic_subject_id")
+            .or(`subject_id.in.(${list}),academic_subject_id.in.(${list})`)).data ?? []
         : [];
+      const chs = rawChs.map((c) => ({ id: c.id, subject_id: c.subject_id ?? c.academic_subject_id ?? "" }));
+      // Subjects that own chapters directly become worlds of their own; empty
+      // ones are hidden so students never see a placeholder level.
+      const subs = [
+        ...courses.map((c) => ({ id: c.id, subject_name: c.subject_name })),
+        ...directSubjects.filter((s) => chs.some((c) => c.subject_id === s.id)),
+      ];
       const chIds = chs.map((c) => c.id);
       const lecs = chIds.length
         ? (await supabase.from("lectures").select("id, chapter_id").in("chapter_id", chIds)).data ?? []

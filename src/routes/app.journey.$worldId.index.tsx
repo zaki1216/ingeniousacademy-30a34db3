@@ -49,13 +49,21 @@ function WorldPage() {
     queryKey: ["journey-world", worldId, user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
-      const subject = (await supabase.from("subjects").select("id, subject_name").eq("id", worldId).maybeSingle()).data;
+      // A world is either a course/module (`subjects`) or a subject that owns
+      // its chapters directly (`academic_subjects`).
+      const course = (await supabase.from("subjects").select("id, subject_name").eq("id", worldId).maybeSingle()).data;
+      const directSubject = course
+        ? null
+        : (await supabase.from("academic_subjects").select("id, name, display_name").eq("id", worldId).maybeSingle()).data;
+      const subject = course ?? (directSubject
+        ? { id: directSubject.id, subject_name: directSubject.display_name || directSubject.name || "" }
+        : null);
       const chs =
         (
           await supabase
             .from("chapters")
             .select("id, chapter_name, chapter_number, completion_xp, completion_coins")
-            .eq("subject_id", worldId)
+            .or(`subject_id.eq.${worldId},academic_subject_id.eq.${worldId}`)
             .order("chapter_number")
         ).data ?? [];
       const chapterCompletions = (await supabase.from("chapter_completions").select("chapter_id").eq("user_id", user!.id)).data ?? [];
