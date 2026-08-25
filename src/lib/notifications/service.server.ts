@@ -55,11 +55,24 @@ export async function resolveRecipients(target: NotificationTarget): Promise<str
   if (target.kind === "chapter") {
     const ch = await supabaseAdmin
       .from("chapters")
-      .select("subject_id")
+      .select("subject_id, academic_subject_id")
       .eq("id", target.chapterId)
       .maybeSingle();
-    standardIds = ch.data?.subject_id ? await standardIdsForSubject(ch.data.subject_id) : [];
+    if (ch.data?.subject_id) {
+      standardIds = await standardIdsForSubject(ch.data.subject_id);
+    } else if (ch.data?.academic_subject_id) {
+      // Chapter sits directly under a subject of one standard.
+      const subj = await supabaseAdmin
+        .from("academic_subjects")
+        .select("standard_id")
+        .eq("id", ch.data.academic_subject_id)
+        .maybeSingle();
+      standardIds = subj.data?.standard_id ? [subj.data.standard_id] : [];
+    } else {
+      standardIds = [];
+    }
   }
+
   if (standardIds && standardIds.length === 0) return [];
 
   let query = supabaseAdmin.from("profiles").select("id").eq("is_active", true);
