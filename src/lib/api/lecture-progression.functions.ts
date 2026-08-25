@@ -45,13 +45,24 @@ async function computeUnlockState(userId: string) {
   if (!standardId) return [] as LectureUnlockState[];
 
   const { subjectsForStandard } = await import("@/lib/curriculum/shared.server");
-  const subjectIds = (await subjectsForStandard(supabaseAdmin, standardId)).map((s) => s.id);
+  const courseIds = (await subjectsForStandard(supabaseAdmin, standardId)).map((s) => s.id);
+
+  // Subjects that own chapters directly (no course/module in between).
+  const directRes = await supabaseAdmin
+    .from("academic_subjects")
+    .select("id")
+    .eq("standard_id", standardId)
+    .eq("is_active", true);
+  const directIds = (directRes.data ?? []).map((s) => s.id);
+
+  const subjectIds = [...courseIds, ...directIds];
   if (subjectIds.length === 0) return [];
 
+  const orList = subjectIds.map((id) => `"${id}"`).join(",");
   const chaptersRes = await supabaseAdmin
     .from("chapters")
-    .select("id, subject_id")
-    .in("subject_id", subjectIds);
+    .select("id, subject_id, academic_subject_id")
+    .or(`subject_id.in.(${orList}),academic_subject_id.in.(${orList})`);
   const chapterIds = (chaptersRes.data ?? []).map((c) => c.id);
   if (chapterIds.length === 0) return [];
 
@@ -72,7 +83,9 @@ async function computeUnlockState(userId: string) {
     byChapter.set(l.chapter_id, arr);
   }
   const subjectOfChapter = new Map<string, string>();
-  for (const c of chaptersRes.data ?? []) subjectOfChapter.set(c.id, c.subject_id ?? "");
+  for (const c of chaptersRes.data ?? [])
+    subjectOfChapter.set(c.id, c.subject_id ?? c.academic_subject_id ?? "");
+
 
   const out: LectureUnlockState[] = [];
   for (const [chapterId, lecs] of byChapter) {
