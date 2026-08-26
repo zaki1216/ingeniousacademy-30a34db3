@@ -368,29 +368,40 @@ export function resolveWings<
 
   if (building.wingStrategy === "split-subjects") {
     const wingDefs = building.wings ?? [];
-    const assigned = new Map<string, S>();
+    // Several subjects can land in the same wing (e.g. a "Science 01" course and
+    // a course-free "Science" subject). Keep them all so none is dropped.
+    const assigned = new Map<string, S[]>();
     const fallback = wingDefs.find((w) => w.fallback);
     for (const s of subjects) {
       const w =
         wingDefs.find((w) => w.subjectMatcher?.({ subject_name: s.subject_name })) ??
         fallback;
-      if (w) assigned.set(w.id, s);
+      if (!w) continue;
+      const arr = assigned.get(w.id) ?? [];
+      arr.push(s);
+      assigned.set(w.id, arr);
     }
     return wingDefs.map((w) => {
-      const subj = assigned.get(w.id);
+      const subs = assigned.get(w.id) ?? [];
+      const ids = new Set(subs.map((s) => s.id));
+      const wingChapters = chapters.filter((c) => ids.has(c.subject_id));
+      // Label the wing after a subject that actually holds content.
+      const primary =
+        subs.find((s) => wingChapters.some((c) => c.subject_id === s.id)) ?? subs[0];
       return {
         id: w.id,
-        name: subj?.subject_name ?? w.name,
+        name: primary?.subject_name ?? w.name,
         tag: w.tag,
         emoji: w.emoji,
         description: w.description,
         gradient: w.gradient,
         glow: w.glow,
-        subject: subj,
-        chapters: subj ? chapters.filter((c) => c.subject_id === subj.id) : [],
+        subject: primary,
+        chapters: wingChapters,
       };
     });
   }
+
 
   // split-chapters
   const wingDefs = building.wings ?? [];
