@@ -325,7 +325,7 @@ function DungeonPage() {
       {activeLecture && (
         <Card className="border-primary/30">
           <CardContent className="p-3 space-y-2">
-            <YouTubePlayer url={activeLecture.url} title={activeLecture.title} onComplete={handleVideoEnded} />
+            <YouTubePlayer key={activeLecture.id} url={activeLecture.url} title={activeLecture.title} onComplete={handleVideoEnded} />
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <div className="text-[10px] uppercase tracking-widest text-amber-300 font-bold">

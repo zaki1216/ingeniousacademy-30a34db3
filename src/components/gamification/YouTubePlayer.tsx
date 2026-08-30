@@ -4,7 +4,7 @@ import { getYouTubeId } from "@/lib/utils/youtube";
 declare global {
   interface Window {
     YT?: {
-      Player: new (el: HTMLElement, opts: Record<string, unknown>) => unknown;
+      Player: new (el: HTMLElement, opts: Record<string, unknown>) => { destroy?: () => void };
       PlayerState: { ENDED: number };
     };
     onYouTubeIframeAPIReady?: () => void;
@@ -36,6 +36,7 @@ export function YouTubePlayer({
   onComplete?: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<{ destroy?: () => void } | null>(null);
   const calledRef = useRef(false);
 
   useEffect(() => {
@@ -43,9 +44,18 @@ export function YouTubePlayer({
     const id = getYouTubeId(url);
     if (!id || !ref.current) return;
     let destroyed = false;
+
+    // The YT API replaces the target element with its iframe — always give it a
+    // fresh child element so switching lectures mounts a brand-new player.
+    ref.current.innerHTML = "";
+    const mount = document.createElement("div");
+    mount.className = "w-full h-full";
+    ref.current.appendChild(mount);
+
     loadYouTubeAPI().then(() => {
-      if (destroyed || !ref.current || !window.YT) return;
-      new window.YT.Player(ref.current, {
+      if (destroyed || !window.YT) return;
+      playerRef.current?.destroy?.();
+      playerRef.current = new window.YT.Player(mount, {
         videoId: id,
         playerVars: { rel: 0, modestbranding: 1 },
         events: {
@@ -58,7 +68,11 @@ export function YouTubePlayer({
         },
       });
     });
-    return () => { destroyed = true; };
+    return () => {
+      destroyed = true;
+      playerRef.current?.destroy?.();
+      playerRef.current = null;
+    };
   }, [url, onComplete]);
 
   return (
