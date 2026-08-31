@@ -6,7 +6,7 @@
  * writes the existing curriculum tables through `@/lib/curriculum/hierarchy`,
  * so no content or student progress is duplicated.
  */
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowDown, ArrowUp, ChevronRight, Eye, Layers, Pencil, Plus, PlayCircle, Search, Share2, Trash2,
@@ -818,6 +818,24 @@ function LectureDialog({
     duration_seconds: initial?.duration_seconds ?? 0,
   });
   const [saving, setSaving] = useState(false);
+
+  // Always start create-mode dialogs from a completely blank state when opened.
+  // Without this, the previous save's lectureId/form data leaks into the next
+  // "Add lecture" and it behaves like Edit on the last-created lecture.
+  useEffect(() => {
+    if (!open) return;
+    setLectureId(initial?.id);
+    setV({
+      lecture_title: initial?.lecture_title ?? "",
+      lecture_number: initial?.lecture_number ?? nextNumber ?? 1,
+      youtube_url: initial?.youtube_url ?? "",
+      description: initial?.description ?? "",
+      status: initial?.status ?? "draft",
+      thumbnail_url: initial?.thumbnail_url ?? "",
+      duration_seconds: initial?.duration_seconds ?? 0,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   async function save(status: string, close: boolean) {
     if (!v.lecture_title.trim() || !v.youtube_url.trim()) {
