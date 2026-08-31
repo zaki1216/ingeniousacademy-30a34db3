@@ -6,7 +6,7 @@
  * writes the existing curriculum tables through `@/lib/curriculum/hierarchy`,
  * so no content or student progress is duplicated.
  */
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowDown, ArrowUp, ChevronRight, Eye, Layers, Pencil, Plus, PlayCircle, Search, Share2, Trash2,
